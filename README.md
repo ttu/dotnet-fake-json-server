@@ -1,6 +1,8 @@
 .NET Fake JSON Server
 --------------------------
 
+[![Build status](https://ci.appveyor.com/api/projects/status/hacg7qupp5oxbct8?svg=true)](https://ci.appveyor.com/project/ttu/dotnet-fake-json-server)
+
 REST API for json db
 
 * .NET Core Web API
@@ -48,3 +50,6 @@ Get user with id `GET api/user/1`
 }
 ```
 
+### License
+
+Licensed under the [MIT](LICENSE) License.
