@@ -3,67 +3,75 @@
 
 [![Build status](https://ci.appveyor.com/api/projects/status/hacg7qupp5oxbct8?svg=true)](https://ci.appveyor.com/project/ttu/dotnet-fake-json-server)
 
-REST API for developers for prototyping. 
+Fake REST API for developers for prototyping
  
-* No endpoint configuration required
 * .NET Core Web API
 * Uses [JSON Flat File DataStore](https://github.com/ttu/json-flatfile-datastore)
+
+## Routes
+
+```
+GET    /
+GET    /status
+GET    /api
+GET    /api/{item}
+POST   /api/{item}
+GET    /api/{item}/{id}
+PUT    /api/{item}/{id}
+DELETE /api/{item}/{id}
+```
+
+For now supports only id as key field and integer as it's value type.
+
+Dyanamic routes are defined by the name of item's collection and id: `api/{item}/{id}`. All eamples below use user as collection name.
 
 ##### Example JSON Data
 
 ```json
 {
   "user": [
-    {
-      "id": 1,
-      "name": "Phil",
-      "age": 40,
-      "city": "NY"
-    },
-    {
-      "id": 2,
-      "name": "Larry",
-      "age": 37,
-      "city": "London"
-    }
-  ]
+    { "id": 1, "name": "Phil", "age": 40, "city": "NY" },
+    { "id": 2, "name": "Larry", "age": 37, "city": "London" },
+    { "id": 3, "name": "Thomas", "age": 40, "city": "London" }
+  ],
+  "movie": []
 }
 ```
 
-## Status
+##### Root
+
+`GET /`
+
+Returns static files from wwwroot. Default file is `index.html`.
+
+##### Status
+
+Status endpoint, which returns current status of the service.
 
 ```sh
 $ curl http://localhost:57602/status
 ```
 ```json
-{"Status": "Ok"}
+{"status": "Ok"}
 ```
-
-## Routes
-
-For now supports only id as key field and integer as it's value type.
-
-Dyanamic routes are defined by collection and id: `api/{collection}/{id}`
 
 #####  List collections 
 
-`GET api`
+`GET /api`
 
 ```sh
 $ curl http://localhost:57602/api
 ```
 
 ```json
-[ "users", "movies" ]
+[ "user", "movie" ]
 ```
 
-##### Get users
+##### Get items
 
-`GET api/user`
+`GET /api/{item}`
 
-Returns list of items. Amount of items can be defined with `skip` and `take` query parameters. 
-
-By default returns first 10 items. 
+Returns list of items. Amount of items can be defined with `skip` and `take` parameters. By default request returns first 10 items. 
 ```sh
 $ curl http://localhost:57602/api/user
 ```
@@ -75,7 +83,7 @@ $ curl http://localhost:57602/api/user?skip=5&take=20
 ```
 
 
-##### Get users with query 
+##### Get items with query 
 
 `GET api/user?field=value&otherField=value`
 
@@ -83,38 +91,27 @@ $ curl http://localhost:57602/api/user?skip=5&take=20
 $ curl http://localhost:57602/api/user?age=40
 ```
 ```json
-[
-    {
-        "id": 1,
-        "name": "Phil",
-        "age": 40,
-        "city": "NY"
-    },
-    {
-        "id": 4,
-        "name": "Thomas",
-        "age": 40,
-        "city": "London"
-    }
+[ 
+ { "id": 1, "name": "Phil", "age": 40, "city": "NY" },
+ { "id": 3, "name": "Thomas", "age": 40, "city": "London" }
 ]
 ```
 
-##### Get user with id 
+##### Get item with id 
 
-`GET api/user/{id}`
+`GET /api/{item}/{id}`
 
 ```sh
 $ curl http://localhost:57602/api/user/1
 ```
 
 ```json
-{
-    "id": 1,
-    "name": "Phil",
-    "age": 40,
-    "city": "NY"
-}
+{ "id": 1, "name": "Phil", "age": 40, "city": "NY" }
 ```
+
+#### CORS
+
+CORS is enabled and it allows everything.
 
 ### License
 
