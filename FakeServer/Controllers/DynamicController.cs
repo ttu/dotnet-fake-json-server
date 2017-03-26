@@ -38,28 +38,32 @@ namespace FakeServer.Controllers
         // GET api/user
         // GET api/user?some=value&other=value
         [HttpGet("{collectionId}")]
-        public IActionResult GetCollection(string collectionId)
+        public IActionResult GetItems(string collectionId, int skip = 0, int take = 10)
         {
             var data = _ds.GetCollection(collectionId).AsQueryable();
 
-            if (Request.Query.Keys.Count == 0)
+            var queryParams = Request.Query.Keys.ToList();
+            queryParams.Remove("skip");
+            queryParams.Remove("take");
+
+            if (queryParams.Count == 0)
             {
-                return Ok(data);
+                return Ok(data.Skip(skip).Take(take));
             }
 
             // TODO: How to build Expressions with dynamics? Expressions.Dynamic?
 
-            foreach (var key in Request.Query.Keys)
+            foreach (var key in queryParams)
             {
                 data = data.Where(d => Equals(d as ExpandoObject, key, Request.Query[key]));
             }
 
-            return Ok(data);
+            return Ok(data.Skip(skip).Take(take));
         }
 
         // GET api/user/1
         [HttpGet("{collectionId}/{id}")]
-        public IActionResult GetEntity(string collectionId, int id)
+        public IActionResult GetItem(string collectionId, int id)
         {
             var result = _ds.GetCollection(collectionId).Find(e => e.id == id).FirstOrDefault();
 
@@ -71,7 +75,7 @@ namespace FakeServer.Controllers
 
         // POST api/user
         [HttpPost("{collectionId}")]
-        public async Task<IActionResult> AddNewEntity(string collectionId, [FromBody]dynamic value)
+        public async Task<IActionResult> AddNewItem(string collectionId, [FromBody]dynamic value)
         {
             await _ds.GetCollection(collectionId).InsertOneAsync(value);
             return Ok();
@@ -79,7 +83,7 @@ namespace FakeServer.Controllers
 
         // PUT api/user/5
         [HttpPut("{collectionId}/{id}")]
-        public async Task<IActionResult> ReplaceEntity(string collectionId, int id, [FromBody]dynamic value)
+        public async Task<IActionResult> ReplaceItem(string collectionId, int id, [FromBody]dynamic value)
         {
             await _ds.GetCollection(collectionId).ReplaceOneAsync((Predicate<dynamic>)(e => e.id == id), value);
             return Ok();
@@ -87,7 +91,7 @@ namespace FakeServer.Controllers
 
         // DELETE api/user/5
         [HttpDelete("{collectionId}/{id}")]
-        public async Task<IActionResult> DeleteEntity(string collectionId, int id)
+        public async Task<IActionResult> DeleteItem(string collectionId, int id)
         {
             await _ds.GetCollection(collectionId).DeleteOneAsync(e => e.id == id);
             return Ok();

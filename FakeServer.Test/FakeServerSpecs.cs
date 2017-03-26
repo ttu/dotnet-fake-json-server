@@ -52,26 +52,40 @@ namespace FakeServer.Test
                 var result = await client.GetAsync($"{_fixture.BaseUrl}/api/user");
                 result.EnsureSuccessStatusCode();
 
-                var entities = JsonConvert.DeserializeObject<IEnumerable<JObject>>(await result.Content.ReadAsStringAsync());
-                Assert.Equal(4, entities.Count());
+                var items = JsonConvert.DeserializeObject<IEnumerable<JObject>>(await result.Content.ReadAsStringAsync());
+                Assert.Equal(4, items.Count());
             }
         }
 
         [Fact]
-        public async Task GetEntity()
+        public async Task GetUsers_SkipTake()
+        {
+            using (var client = new HttpClient())
+            {
+                var result = await client.GetAsync($"{_fixture.BaseUrl}/api/user?skip=1&take=2");
+                result.EnsureSuccessStatusCode();
+
+                var items = JsonConvert.DeserializeObject<IEnumerable<JObject>>(await result.Content.ReadAsStringAsync());
+                Assert.Equal(2, items.Count());
+                Assert.Equal("2", items.First()["id"]);
+            }
+        }
+
+        [Fact]
+        public async Task GetItem_Id()
         {
             using (var client = new HttpClient())
             {
                 var result = await client.GetAsync($"{_fixture.BaseUrl}/api/user/1");
                 result.EnsureSuccessStatusCode();
 
-                var enityt = JsonConvert.DeserializeObject<JObject>(await result.Content.ReadAsStringAsync());
-                Assert.Equal("James", enityt["name"].Value<string>());
+                var item = JsonConvert.DeserializeObject<JObject>(await result.Content.ReadAsStringAsync());
+                Assert.Equal("James", item["name"].Value<string>());
             }
         }
 
         [Fact]
-        public async Task GetEntity_QueryParams()
+        public async Task GetItem_QueryParams()
         {
             using (var client = new HttpClient())
             {
@@ -82,7 +96,7 @@ namespace FakeServer.Test
         }
 
         [Fact]
-        public async Task PostAndDeleteEntity_ExistingCollection()
+        public async Task PostAndDeleteItem_ExistingCollection()
         {
             using (var client = new HttpClient())
             {
@@ -94,26 +108,26 @@ namespace FakeServer.Test
 
                 result = await client.GetAsync($"{_fixture.BaseUrl}/api/user/5"); ;
                 result.EnsureSuccessStatusCode();
-                var enityt = JsonConvert.DeserializeObject<JObject>(await result.Content.ReadAsStringAsync());
-                Assert.Equal(newUser.name, enityt["name"].Value<string>());
+                var item = JsonConvert.DeserializeObject<JObject>(await result.Content.ReadAsStringAsync());
+                Assert.Equal(newUser.name, item["name"].Value<string>());
 
                 result = await client.GetAsync($"{_fixture.BaseUrl}/api/user");
                 result.EnsureSuccessStatusCode();
-                var entities = JsonConvert.DeserializeObject<IEnumerable<JObject>>(await result.Content.ReadAsStringAsync());
-                Assert.Equal(5, entities.Count());
+                var items = JsonConvert.DeserializeObject<IEnumerable<JObject>>(await result.Content.ReadAsStringAsync());
+                Assert.Equal(5, items.Count());
 
                 result = await client.DeleteAsync($"{_fixture.BaseUrl}/api/user/5");
                 result.EnsureSuccessStatusCode();
 
                 result = await client.GetAsync($"{_fixture.BaseUrl}/api/user");
                 result.EnsureSuccessStatusCode();
-                entities = JsonConvert.DeserializeObject<IEnumerable<JObject>>(await result.Content.ReadAsStringAsync());
-                Assert.Equal(4, entities.Count());
+                items = JsonConvert.DeserializeObject<IEnumerable<JObject>>(await result.Content.ReadAsStringAsync());
+                Assert.Equal(4, items.Count());
             }
         }
 
         [Fact]
-        public async Task PostAndDeleteEntity_NewCollection()
+        public async Task PostAndDeleteItem_NewCollection()
         {
             using (var client = new HttpClient())
             {
@@ -135,21 +149,21 @@ namespace FakeServer.Test
 
                 result = await client.GetAsync($"{_fixture.BaseUrl}/api/hello/1");
                 result.EnsureSuccessStatusCode();
-                var enityt = JsonConvert.DeserializeObject<JObject>(await result.Content.ReadAsStringAsync());
-                Assert.Equal(newUser.name, enityt["name"].Value<string>());
+                var item = JsonConvert.DeserializeObject<JObject>(await result.Content.ReadAsStringAsync());
+                Assert.Equal(newUser.name, item["name"].Value<string>());
 
                 result = await client.GetAsync($"{_fixture.BaseUrl}/api/hello");
                 result.EnsureSuccessStatusCode();
-                var entites = JsonConvert.DeserializeObject<IEnumerable<JObject>>(await result.Content.ReadAsStringAsync());
-                Assert.Equal(1, entites.Count());
+                var items = JsonConvert.DeserializeObject<IEnumerable<JObject>>(await result.Content.ReadAsStringAsync());
+                Assert.Equal(1, items.Count());
 
                 result = await client.DeleteAsync($"{_fixture.BaseUrl}/api/hello/1");
                 result.EnsureSuccessStatusCode();
 
                 result = await client.GetAsync($"{_fixture.BaseUrl}/api/hello");
                 result.EnsureSuccessStatusCode();
-                entites = JsonConvert.DeserializeObject<IEnumerable<JObject>>(await result.Content.ReadAsStringAsync());
-                Assert.Equal(0, entites.Count());
+                items = JsonConvert.DeserializeObject<IEnumerable<JObject>>(await result.Content.ReadAsStringAsync());
+                Assert.Equal(0, items.Count());
             }
         }
     }
