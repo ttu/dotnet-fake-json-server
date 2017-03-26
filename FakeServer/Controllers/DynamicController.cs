@@ -1,6 +1,8 @@
 ﻿using JsonFlatFileDataStore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CSharp.RuntimeBinder;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
@@ -87,6 +89,26 @@ namespace FakeServer.Controllers
         {
             await _ds.GetCollection(collectionId).ReplaceOneAsync((Predicate<dynamic>)(e => e.id == id), value);
             return Ok();
+        }
+
+        // PATCH api/user/5
+        [HttpPatch("{collectionId}/{id}")]
+        public async Task<IActionResult> UpdateItem(string collectionId, int id, [FromBody]dynamic value)
+        {
+            dynamic sourceData = JsonConvert.DeserializeObject<ExpandoObject>(value.ToString());
+
+            await _ds.GetCollection(collectionId).UpdateOneAsync((Predicate<dynamic>)(e => e.id == id), sourceData);
+            return Ok();
+        }
+
+        public static dynamic GetDynamicObject(Dictionary<string, object> properties)
+        {
+            var dynamicObject = new ExpandoObject() as IDictionary<string, Object>;
+            foreach (var property in properties)
+            {
+                dynamicObject.Add(property.Key, property.Value);
+            }
+            return dynamicObject;
         }
 
         // DELETE api/user/5

@@ -38,7 +38,7 @@ namespace FakeServer
 
             services.AddCors(options =>
             {
-                options.AddPolicy("CorsPolicy",
+                options.AddPolicy("AllowAnyPolicy",
                     builder => builder.AllowAnyOrigin()
                     .AllowAnyMethod()
                     .AllowAnyHeader()
@@ -62,7 +62,7 @@ namespace FakeServer
             app.UseDefaultFiles();
             app.UseStaticFiles();
 
-            app.UseCors("CorsPolicy");
+            app.UseCors("AllowAnyPolicy");
 
             app.UseMvc();
 
@@ -71,7 +71,7 @@ namespace FakeServer
                 rootApp.Run(context =>
                 {
                     context.Response.StatusCode = 200;
-                    return context.Response.WriteAsync("{\"Status\": \"Ok\"}");
+                    return context.Response.WriteAsync("{\"status\": \"Ok\"}");
                 });
             });
         }

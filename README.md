@@ -18,6 +18,7 @@ GET    /api/{item}
 POST   /api/{item}
 GET    /api/{item}/{id}
 PUT    /api/{item}/{id}
+PATCH  /api/{item}/{id}
 DELETE /api/{item}/{id}
 ```
 
@@ -30,9 +31,9 @@ Dyanamic routes are defined by the name of item's collection and id: `api/{item}
 ```json
 {
   "user": [
-    { "id": 1, "name": "Phil", "age": 40, "city": "NY" },
-    { "id": 2, "name": "Larry", "age": 37, "city": "London" },
-    { "id": 3, "name": "Thomas", "age": 40, "city": "London" }
+    { "id": 1, "name": "Phil", "age": 40, "location": "NY" },
+    { "id": 2, "name": "Larry", "age": 37, "location": "London" },
+    { "id": 3, "name": "Thomas", "age": 40, "location": "London" }
   ],
   "movie": []
 }
@@ -92,8 +93,8 @@ $ curl http://localhost:57602/api/user?age=40
 ```
 ```json
 [ 
- { "id": 1, "name": "Phil", "age": 40, "city": "NY" },
- { "id": 3, "name": "Thomas", "age": 40, "city": "London" }
+ { "id": 1, "name": "Phil", "age": 40, "location": "NY" },
+ { "id": 3, "name": "Thomas", "age": 40, "location": "London" }
 ]
 ```
 
@@ -106,7 +107,7 @@ $ curl http://localhost:57602/api/user/1
 ```
 
 ```json
-{ "id": 1, "name": "Phil", "age": 40, "city": "NY" }
+{ "id": 1, "name": "Phil", "age": 40, "location": "NY" }
 ```
 
 #### CORS
