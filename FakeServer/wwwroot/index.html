@@ -1,0 +1,24 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>JSON Fake REST API</title>
+</head>
+<body>
+    <div>Collections found:</div>
+    <div id="collections"></div>
+</body>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/superagent/3.5.2/superagent.min.js"></script>
+
+<script>
+
+    const request = window.superagent;
+
+    request
+        .get('http://localhost:57602/api')
+        .end((err, resp) => {
+            document.getElementById("collections").textContent = resp.body;
+        });
+</script>
+</html>

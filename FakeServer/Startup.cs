@@ -11,15 +11,17 @@ namespace FakeServer
 {
     public class Startup
     {
+        // TODO: Add to Configuration
+        private readonly string _jsonFileName = "datastore.json";
+
         private readonly string _path;
 
         public Startup(IHostingEnvironment env)
         {
-            // TODO: Add to Configuration
             _path = env.ContentRootPath;
 
             var builder = new ConfigurationBuilder()
-                .SetBasePath(env.ContentRootPath)
+                .SetBasePath(_path)
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
@@ -31,10 +33,18 @@ namespace FakeServer
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var path = Path.Combine(_path, "datastore.json");
+            var path = Path.Combine(_path, _jsonFileName);
             services.AddSingleton(typeof(DataStore), new DataStore(path));
 
-            // Add framework services.
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy",
+                    builder => builder.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials());
+            });
+
             services.AddMvc();
         }
 
@@ -48,6 +58,11 @@ namespace FakeServer
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
+
+            app.UseCors("CorsPolicy");
 
             app.UseMvc();
 
