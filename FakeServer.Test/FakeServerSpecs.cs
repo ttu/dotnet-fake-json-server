@@ -72,15 +72,25 @@ namespace FakeServer.Test
         }
 
         [Fact]
-        public async Task GetItem_Id()
+        public async Task GetItem_WithId_Found()
         {
             using (var client = new HttpClient())
             {
                 var result = await client.GetAsync($"{_fixture.BaseUrl}/api/user/1");
-                result.EnsureSuccessStatusCode();
+                Assert.Equal(System.Net.HttpStatusCode.OK, result.StatusCode);
 
                 var item = JsonConvert.DeserializeObject<JObject>(await result.Content.ReadAsStringAsync());
                 Assert.Equal("James", item["name"].Value<string>());
+            }
+        }
+
+        [Fact]
+        public async Task GetItem_WithId_NotFound()
+        {
+            using (var client = new HttpClient())
+            {
+                var result = await client.GetAsync($"{_fixture.BaseUrl}/api/user/100000");
+                Assert.Equal(System.Net.HttpStatusCode.NotFound, result.StatusCode);
             }
         }
 
@@ -100,7 +110,7 @@ namespace FakeServer.Test
         {
             using (var client = new HttpClient())
             {
-                // Original { "id": 1, "name": "Phil", "age": 40, "location": "NY" },
+                // Original { "id": 1, "name": "James", "age": 40, "location": "NY" },
                 var patchData = new { name = "Albert", age = 12 };
 
                 var content = new StringContent(JsonConvert.SerializeObject(patchData), Encoding.UTF8, "application/json");
@@ -120,7 +130,7 @@ namespace FakeServer.Test
                 var items = JsonConvert.DeserializeObject<IEnumerable<JObject>>(await result.Content.ReadAsStringAsync());
                 Assert.Equal(4, items.Count());
 
-                content = new StringContent(JsonConvert.SerializeObject(new { name = "Phil", age = 40 }), Encoding.UTF8, "application/json");
+                content = new StringContent(JsonConvert.SerializeObject(new { name = "James", age = 40 }), Encoding.UTF8, "application/json");
                 request = new HttpRequestMessage(new HttpMethod("PATCH"), $"{_fixture.BaseUrl}/api/user/1") { Content = content };
                 result = await client.SendAsync(request);
                 result.EnsureSuccessStatusCode();
@@ -179,7 +189,7 @@ namespace FakeServer.Test
                 collections = JsonConvert.DeserializeObject<IEnumerable<string>>(await result.Content.ReadAsStringAsync());
                 Assert.Equal(4, collections.Count());
 
-                result = await client.GetAsync($"{_fixture.BaseUrl}/api/hello/1");
+                result = await client.GetAsync($"{_fixture.BaseUrl}/api/hello/0");
                 result.EnsureSuccessStatusCode();
                 var item = JsonConvert.DeserializeObject<JObject>(await result.Content.ReadAsStringAsync());
                 Assert.Equal(newUser.name, item["name"].Value<string>());
@@ -189,7 +199,7 @@ namespace FakeServer.Test
                 var items = JsonConvert.DeserializeObject<IEnumerable<JObject>>(await result.Content.ReadAsStringAsync());
                 Assert.Equal(1, items.Count());
 
-                result = await client.DeleteAsync($"{_fixture.BaseUrl}/api/hello/1");
+                result = await client.DeleteAsync($"{_fixture.BaseUrl}/api/hello/0");
                 result.EnsureSuccessStatusCode();
 
                 result = await client.GetAsync($"{_fixture.BaseUrl}/api/hello");

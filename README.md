@@ -7,6 +7,7 @@ Fake REST API for developers for prototyping
  
 * .NET Core Web API
 * Uses [JSON Flat File DataStore](https://github.com/ttu/json-flatfile-datastore)
+  * All changes are automatically saved to `datastore.json`
 
 ## Routes
 
@@ -102,6 +103,8 @@ $ curl http://localhost:57602/api/user?age=40
 
 `GET /api/{item}/{id}`
 
+Returns 200 OK or 404 Not Found if item is not found
+
 ```sh
 $ curl http://localhost:57602/api/user/1
 ```
@@ -109,6 +112,52 @@ $ curl http://localhost:57602/api/user/1
 ```json
 { "id": 1, "name": "Phil", "age": 40, "location": "NY" }
 ```
+
+##### Add item 
+
+`POST /api/{item}`
+
+Returns 200 OK or 404 Not Found if item is not found
+
+```sh
+$ curl -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{ "name": "Phil", "age": 40, "location": "NY" }' http://localhost:57602/api/user/
+```
+Response has new item's id
+
+```json
+{ "id": 6 }
+```
+
+##### Replace item 
+
+`PUT /api/{item}/{id}`
+
+Returns 200 OK or 404 Not Found if item is not found
+
+```sh
+$ curl -H "Accept: application/json" -H "Content-type: application/json" -X PUT -d '{ "name": "Roger", "age": 28, "location": "SF" }' http://localhost:57602/api/user/1
+```
+
+##### Update item 
+
+`PATCH /api/{item}/{id}`
+
+Returns 200 OK, 400 Bad Request if PATCH is empty or 404 Not Found if item is not found
+
+```sh
+$ curl -H "Accept: application/json" -H "Content-type: application/json" -X PATCH -d '{ "name": "Timmy" }' http://localhost:57602/api/user/1
+```
+
+##### Delete item 
+
+`DELETE /api/{item}/{id}`
+
+Returns 200 OK or 404 Not Found if item is not found
+
+```sh
+$ curl -X DELETE http://localhost:57602/api/user/1
+```
+
 
 #### CORS
 

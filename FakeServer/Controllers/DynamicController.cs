@@ -1,14 +1,11 @@
 ﻿using JsonFlatFileDataStore;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.CSharp.RuntimeBinder;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace FakeServer.Controllers
@@ -23,22 +20,18 @@ namespace FakeServer.Controllers
             _ds = ds;
         }
 
-        // GET api/
         [HttpGet]
         public IEnumerable<string> GetCollections()
         {
             return _ds.ListCollections();
         }
 
-        // POST api/
         [HttpPost]
         public void UpdateAllData([FromBody]string value)
         {
             _ds.UpdateAll(value);
         }
 
-        // GET api/user
-        // GET api/user?some=value&other=value
         [HttpGet("{collectionId}")]
         public IActionResult GetItems(string collectionId, int skip = 0, int take = 10)
         {
@@ -63,7 +56,6 @@ namespace FakeServer.Controllers
             return Ok(data.Skip(skip).Take(take));
         }
 
-        // GET api/user/1
         [HttpGet("{collectionId}/{id}")]
         public IActionResult GetItem(string collectionId, int id)
         {
@@ -75,48 +67,67 @@ namespace FakeServer.Controllers
             return Ok(result);
         }
 
-        // POST api/user
         [HttpPost("{collectionId}")]
-        public async Task<IActionResult> AddNewItem(string collectionId, [FromBody]dynamic value)
+        public async Task<IActionResult> AddNewItem(string collectionId, [FromBody]JToken value)
         {
-            await _ds.GetCollection(collectionId).InsertOneAsync(value);
-            return Ok();
+            var collection = _ds.GetCollection(collectionId);
+
+            dynamic itemToInsert = JsonConvert.DeserializeObject<ExpandoObject>(value.ToString());
+            itemToInsert.id = collection.GetNextIdValue();
+
+            await collection.InsertOneAsync(itemToInsert);
+            return Ok(new { id = itemToInsert.id });
         }
 
-        // PUT api/user/5
         [HttpPut("{collectionId}/{id}")]
         public async Task<IActionResult> ReplaceItem(string collectionId, int id, [FromBody]dynamic value)
         {
-            await _ds.GetCollection(collectionId).ReplaceOneAsync((Predicate<dynamic>)(e => e.id == id), value);
-            return Ok();
+            // Make sure that new data has id field correctly
+            value.id = id;
+
+            var success = await _ds.GetCollection(collectionId).ReplaceOneAsync((Predicate<dynamic>)(e => e.id == id), value);
+
+            if (success)
+                return Ok();
+            else
+                return NotFound();
         }
 
-        // PATCH api/user/5
         [HttpPatch("{collectionId}/{id}")]
-        public async Task<IActionResult> UpdateItem(string collectionId, int id, [FromBody]dynamic value)
+        public async Task<IActionResult> UpdateItem(string collectionId, int id, [FromBody]JToken value)
         {
             dynamic sourceData = JsonConvert.DeserializeObject<ExpandoObject>(value.ToString());
 
-            await _ds.GetCollection(collectionId).UpdateOneAsync((Predicate<dynamic>)(e => e.id == id), sourceData);
-            return Ok();
+            if (!((IDictionary<string, Object>)sourceData).Any())
+                return BadRequest();
+
+            var success = await _ds.GetCollection(collectionId).UpdateOneAsync((Predicate<dynamic>)(e => e.id == id), sourceData);
+
+            if (success)
+                return Ok();
+            else
+                return NotFound();
         }
 
-        public static dynamic GetDynamicObject(Dictionary<string, object> properties)
+        [HttpDelete("{collectionId}/{id}")]
+        public async Task<IActionResult> DeleteItem(string collectionId, int id)
         {
-            var dynamicObject = new ExpandoObject() as IDictionary<string, Object>;
+            var success = await _ds.GetCollection(collectionId).DeleteOneAsync(e => e.id == id);
+
+            if (success)
+                return Ok();
+            else
+                return NotFound();
+        }
+
+        private dynamic GetDynamicObject(Dictionary<string, object> properties)
+        {
+            var dynamicObject = new ExpandoObject() as IDictionary<string, object>;
             foreach (var property in properties)
             {
                 dynamicObject.Add(property.Key, property.Value);
             }
             return dynamicObject;
-        }
-
-        // DELETE api/user/5
-        [HttpDelete("{collectionId}/{id}")]
-        public async Task<IActionResult> DeleteItem(string collectionId, int id)
-        {
-            await _ds.GetCollection(collectionId).DeleteOneAsync(e => e.id == id);
-            return Ok();
         }
 
         private bool Equals(dynamic x, string propName, dynamic value)
