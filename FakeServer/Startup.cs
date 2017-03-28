@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.PlatformAbstractions;
+using Serilog;
 using Swashbuckle.AspNetCore.Swagger;
 using System.IO;
 
@@ -28,6 +29,11 @@ namespace FakeServer
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
+
+            Log.Logger = new LoggerConfiguration()
+                           .MinimumLevel.Information()
+                           .WriteTo.RollingFile(Path.Combine(PlatformServices.Default.Application.ApplicationBasePath, "log-{Date}.txt"))
+                           .CreateLogger();
         }
 
         public IConfigurationRoot Configuration { get; }
@@ -60,10 +66,14 @@ namespace FakeServer
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IApplicationLifetime appLifetime)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
+
+            loggerFactory.AddSerilog();
+            // Ensure any buffered events are sent at shutdown
+            appLifetime.ApplicationStopped.Register(Log.CloseAndFlush);
 
             if (env.IsDevelopment())
             {
