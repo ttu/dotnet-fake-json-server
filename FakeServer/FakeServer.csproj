@@ -7,6 +7,11 @@
     <Description>Fake JSON Server</Description>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>bin\Debug\netcoreapp1.1\FakeServer.xml</DocumentationFile>
+    <NoWarn>1591;1701;1702;1705</NoWarn>
+  </PropertyGroup>
+
   <ItemGroup>
     <Content Include="wwwroot\index.html" />
   </ItemGroup>
@@ -18,6 +23,7 @@
     <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="1.1.1" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="1.1.1" />
     <PackageReference Include="System.Linq.Dynamic.Core" Version="1.0.6.11" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="1.0.0-rc3" />
   </ItemGroup>
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="1.0.0" />

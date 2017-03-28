@@ -20,18 +20,37 @@ namespace FakeServer.Controllers
             _ds = ds;
         }
 
+        /// <summary>
+        /// List collections
+        /// </summary>
+        /// <returns>List of collections</returns>
         [HttpGet]
         public IEnumerable<string> GetCollections()
         {
             return _ds.ListCollections();
         }
 
+        /// <summary>
+        /// Replace database.json content
+        /// </summary>
+        /// <param name="value">New JSON content</param>
         [HttpPost]
         public void UpdateAllData([FromBody]string value)
         {
             _ds.UpdateAll(value);
         }
 
+        /// <summary>
+        /// Get items
+        /// </summary>
+        /// <remarks>
+        /// Add filtering with query parameters. E.q. /api/user?age=22 (not possilbe with Swagger)
+        /// </remarks>
+        /// <param name="collectionId">Collection id</param>
+        /// <param name="skip">Items to skip</param>
+        /// <param name="take">Items to take</param>
+        /// <returns>List of items</returns>
+        /// <response code="200">List</response>
         [HttpGet("{collectionId}")]
         public IActionResult GetItems(string collectionId, int skip = 0, int take = 10)
         {
@@ -56,6 +75,14 @@ namespace FakeServer.Controllers
             return Ok(data.Skip(skip).Take(take));
         }
 
+        /// <summary>
+        /// Get single item
+        /// </summary>
+        /// <param name="collectionId">Collection id</param>
+        /// <param name="id">Item id</param>
+        /// <returns>Item</returns>
+        /// <response code="200">Item found</response>
+        /// <response code="404">Item not found</response>
         [HttpGet("{collectionId}/{id}")]
         public IActionResult GetItem(string collectionId, int id)
         {
@@ -67,25 +94,41 @@ namespace FakeServer.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// Add new item
+        /// </summary>
+        /// <param name="collectionId">Collection id</param>
+        /// <param name="item">Item to add</param>
+        /// <returns>Created item id</returns>
+        /// <response code="200">Item created</response>
         [HttpPost("{collectionId}")]
-        public async Task<IActionResult> AddNewItem(string collectionId, [FromBody]JToken value)
+        public async Task<IActionResult> AddNewItem(string collectionId, [FromBody]JToken item)
         {
             var collection = _ds.GetCollection(collectionId);
 
-            dynamic itemToInsert = JsonConvert.DeserializeObject<ExpandoObject>(value.ToString());
+            dynamic itemToInsert = JsonConvert.DeserializeObject<ExpandoObject>(item.ToString());
             itemToInsert.id = collection.GetNextIdValue();
 
             await collection.InsertOneAsync(itemToInsert);
             return Ok(new { id = itemToInsert.id });
         }
 
+        /// <summary>
+        /// Replacec item from collection
+        /// </summary>
+        /// <param name="collectionId">Collection id</param>
+        /// <param name="id">Id of the item to be replaced</param>
+        /// <param name="item">Item's new content</param>
+        /// <returns></returns>
+        /// <response code="200">Item found and replaced</response>
+        /// <response code="404">Item not found</response>
         [HttpPut("{collectionId}/{id}")]
-        public async Task<IActionResult> ReplaceItem(string collectionId, int id, [FromBody]dynamic value)
+        public async Task<IActionResult> ReplaceItem(string collectionId, int id, [FromBody]dynamic item)
         {
             // Make sure that new data has id field correctly
-            value.id = id;
+            item.id = id;
 
-            var success = await _ds.GetCollection(collectionId).ReplaceOneAsync((Predicate<dynamic>)(e => e.id == id), value);
+            var success = await _ds.GetCollection(collectionId).ReplaceOneAsync((Predicate<dynamic>)(e => e.id == id), item);
 
             if (success)
                 return Ok();
@@ -93,10 +136,29 @@ namespace FakeServer.Controllers
                 return NotFound();
         }
 
+        /// <summary>
+        /// Update item's content
+        /// </summary>
+        /// <remarks>
+        /// Patch data contains fields to be updated.
+        /// 
+        ///     {
+        ///        "stringField": "some value",
+        ///        "intField": 22,
+        ///        "boolField": true
+        ///     }
+        /// </remarks>
+        /// <param name="collectionId"></param>
+        /// <param name="id">Id of the item to be updated</param>
+        /// <param name="patchData">Patch data</param>
+        /// <returns></returns>
+        /// <response code="200">Item found and updated</response>
+        /// <response code="400">Patch data is empty</response>
+        /// <response code="404">Item not found</response>
         [HttpPatch("{collectionId}/{id}")]
-        public async Task<IActionResult> UpdateItem(string collectionId, int id, [FromBody]JToken value)
+        public async Task<IActionResult> UpdateItem(string collectionId, int id, [FromBody]JToken patchData)
         {
-            dynamic sourceData = JsonConvert.DeserializeObject<ExpandoObject>(value.ToString());
+            dynamic sourceData = JsonConvert.DeserializeObject<ExpandoObject>(patchData.ToString());
 
             if (!((IDictionary<string, Object>)sourceData).Any())
                 return BadRequest();
@@ -109,6 +171,14 @@ namespace FakeServer.Controllers
                 return NotFound();
         }
 
+        /// <summary>
+        /// Remove item from collection
+        /// </summary>
+        /// <param name="collectionId">Collection id</param>
+        /// <param name="id">Id of the item to be removed</param>
+        /// <returns></returns>
+        /// <response code="200">Item found and removed</response>
+        /// <response code="404">Item not found</response>
         [HttpDelete("{collectionId}/{id}")]
         public async Task<IActionResult> DeleteItem(string collectionId, int id)
         {

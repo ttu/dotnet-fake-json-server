@@ -27,6 +27,10 @@ For now supports only id as key field and integer as it's value type.
 
 Dyanamic routes are defined by the name of item's collection and id: `api/{item}/{id}`. All eamples below use user as collection name.
 
+### Swagger
+
+Swagger is configured to endpoint `/swagger` and Swagger UI opens when project is started.
+
 ##### Example JSON Data
 
 ```json
