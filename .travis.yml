@@ -1,7 +1,9 @@
 language: csharp
 dist: trusty
-sudo: required
 mono: none
 dotnet: 1.0.1
+solution: FakeServer.sln
 script:
-  - dotnet restore && dotnet build && cd FakeServer.Test && dotnet test
+  - dotnet restore
+  - dotnet build
+  - dotnet test FakeServer.Test/FakeServer.Test.csproj
