@@ -12,9 +12,15 @@
     <NoWarn>1591;1701;1702;1705</NoWarn>
   </PropertyGroup>
 
-  <ItemGroup>
+
+  <!-- 
+   This made build on Travis CI fail. Apparently this is fixed in some later .NET Core SDK versions, so uncomment it when it works with Travis.
+
+   error : Duplicate 'Content' items were included. The .NET SDK includes 'Content' items from your project directory by default. You can either remove these items from your project file, or set the 'EnableDefaultContentItems' property to 'false' if you want to explicitly include them in your project file. For more information, see https://aka.ms/sdkimplicititems. The duplicate items were: 'wwwroot/index.html'
+  -->
+  <!--<ItemGroup>
     <Content Include="wwwroot\index.html" />
-  </ItemGroup>
+  </ItemGroup>-->
   <ItemGroup>
     <PackageReference Include="JsonFlatFileDataStore" Version="1.1.0" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.0.0" />
