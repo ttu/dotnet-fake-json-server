@@ -99,9 +99,31 @@ namespace FakeServer.Test
         {
             using (var client = new HttpClient())
             {
-                var result = await client.GetAsync($"{_fixture.BaseUrl}/api/user?name=Phil&age=25");
+                var result = await client.GetAsync($"{_fixture.BaseUrl}/api/user?name=Phil&age=25&take=5");
                 var allUsers = JsonConvert.DeserializeObject<JArray>(await result.Content.ReadAsStringAsync());
                 Assert.Equal("Phil", allUsers[0]["name"].Value<string>());
+            }
+        }
+
+        [Fact]
+        public async Task GetItem_Nested()
+        {
+            using (var client = new HttpClient())
+            {
+                var result = await client.GetAsync($"{_fixture.BaseUrl}/api/family/1/address/country");
+                var country = JsonConvert.DeserializeObject<JObject>(await result.Content.ReadAsStringAsync());
+                Assert.Equal("Brazil", country["name"].Value<string>());
+            }
+        }
+
+        [Fact]
+        public async Task GetItem_Nested_MultipleId()
+        {
+            using (var client = new HttpClient())
+            {
+                var result = await client.GetAsync($"{_fixture.BaseUrl}/api/family/18/parents/1/work");
+                var workplace = JsonConvert.DeserializeObject<JObject>(await result.Content.ReadAsStringAsync());
+                Assert.Equal("EVIDENDS", workplace["companyName"].Value<string>());
             }
         }
 

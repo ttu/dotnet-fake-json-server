@@ -82,7 +82,7 @@ Returns list of items. Amount of items can be defined with `skip` and `take` par
 $ curl http://localhost:57602/api/user
 ```
 
-Example request returns items from 6 to 26
+Example request returns items from 6 to 26.
 
 ```sh
 $ curl http://localhost:57602/api/user?skip=5&take=20
@@ -154,6 +154,34 @@ $ curl http://localhost:57602/api/user/1
 
 ```json
 { "id": 1, "name": "Phil", "age": 40, "location": "NY" }
+```
+
+##### Get nested items
+
+`GET /api/{item}/{id}/{restOfThePath}`
+
+It is possible to request only child objects instead of full item. Path to nested item can contain id field integers and property names.
+
+```json
+[
+  {
+    "id": 0,
+    "companyName": "ACME",
+    "employees": [ 
+      { "id": 1, "name": "Thomas", "address": { "city": "London" } }
+    ]
+  }
+]
+```
+
+Example query will return address object from the employee.
+
+```sh
+$ curl http://localhost:57602/api/company/0/employees/1/address
+```
+
+```json
+{ "address": { "city": "London" } }
 ```
 
 ##### Add item 

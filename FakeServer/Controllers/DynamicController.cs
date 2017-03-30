@@ -95,6 +95,37 @@ namespace FakeServer.Controllers
         }
 
         /// <summary>
+        /// Get nested item
+        /// </summary>
+        /// <remarks>
+        /// Add full path separated with periods. E.q. /api/user/1/parents/0/work
+        /// </remarks>
+        /// <param name="collectionId">Collection id</param>
+        /// <param name="id">Item id</param>
+        /// <param name="path">Rest of the path</param>
+        /// <returns></returns>
+        /// <response code="200">Nested item found</response>
+        /// <response code="400">Parent item not found</response>
+        /// <response code="404">Nested item not found</response>
+        [HttpGet("{collectionId}/{id}/{*path}")]
+        public IActionResult GetNested(string collectionId, int id, string path)
+        {
+            var routes = path.Split('/');
+
+            var item = _ds.GetCollection(collectionId).AsQueryable().FirstOrDefault(e => e.id == id);
+
+            if (item == null)
+                return BadRequest();
+
+            var nested = GetNestedProperty(item, path);
+
+            if (nested == null)
+                return NotFound();
+
+            return Ok(nested);
+        }
+
+        /// <summary>
         /// Add new item
         /// </summary>
         /// <param name="collectionId">Collection id</param>
@@ -114,7 +145,7 @@ namespace FakeServer.Controllers
         }
 
         /// <summary>
-        /// Replacec item from collection
+        /// Replace item from collection
         /// </summary>
         /// <param name="collectionId">Collection id</param>
         /// <param name="id">Id of the item to be replaced</param>
@@ -209,6 +240,41 @@ namespace FakeServer.Controllers
                 return valueEnumerable.Any(e => GetPropertyAndCompare(e, tail, valueToCompare));
             else
                 return GetPropertyAndCompare(currentValue as ExpandoObject, tail, valueToCompare);
+        }
+
+        private ExpandoObject GetNestedProperty(ExpandoObject current, string propertyName)
+        {
+            var propertyNameCurrent = propertyName.Contains('/') ? propertyName.Split('/').First() : propertyName;
+            var tail = propertyName.Contains('/') ? propertyName.Substring(propertyName.IndexOf('/') + 1) : string.Empty;
+            var peekProperty = tail.Contains('/') ? tail.Split('/').FirstOrDefault() : string.Empty;
+
+            var currentValue = ((IDictionary<string, object>)current)[propertyNameCurrent];
+
+            dynamic returnValue;
+
+            int? idValue = null;
+            if (int.TryParse(peekProperty, out int parsedInteger))
+            {
+                idValue = parsedInteger;
+                tail = tail.Contains('/') ? tail.Substring(tail.IndexOf('/') + 1) : string.Empty;
+            }
+
+            if (idValue.HasValue)
+            {
+                if (currentValue is IEnumerable<dynamic> valueEnumerable)
+                    returnValue = valueEnumerable.FirstOrDefault(e => e.id == idValue.Value);
+                else
+                    returnValue = ((dynamic)currentValue).id == idValue.Value ? currentValue as ExpandoObject : null;
+            }
+            else
+            {
+                returnValue = currentValue;
+            }
+
+            if (string.IsNullOrEmpty(tail))
+                return returnValue;
+
+            return GetNestedProperty(returnValue, tail);
         }
     }
 }
