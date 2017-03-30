@@ -3,7 +3,7 @@
 namespace FakeServer
 {
     // For running e.g. integration tests
-    public static class TestRunner
+    public static class TestServer
     {
         private static IWebHost _host;
 
@@ -21,7 +21,7 @@ namespace FakeServer
 
         public static void Stop()
         {
-            _host.Dispose();
+            _host?.Dispose();
         }
     }
 }

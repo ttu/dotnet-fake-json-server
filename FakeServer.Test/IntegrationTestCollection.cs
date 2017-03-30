@@ -18,16 +18,23 @@ namespace FakeServer.Test
 
             _serverTask = Task.Run(() =>
             {
-                TestRunner.Run(BaseUrl, dir);
+                TestServer.Run(BaseUrl, dir);
             });
 
+            var delayVariable = Environment.GetEnvironmentVariable("START_DELAY");
+
+            if (!int.TryParse(delayVariable, out int startDelay))
+            {
+                startDelay = 2000;
+            }
+
             // Give some time to server to start
-            Task.Delay(2000);
+            Task.Delay(startDelay);
         }
 
         public void Dispose()
         {
-            TestRunner.Stop();
+            TestServer.Stop();
         }
 
         public string BaseUrl { get; private set; }
