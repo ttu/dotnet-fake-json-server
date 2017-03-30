@@ -44,7 +44,7 @@ namespace FakeServer.Controllers
         /// Get items
         /// </summary>
         /// <remarks>
-        /// Add filtering with query parameters. E.q. /api/user?age=22 (not possilbe with Swagger)
+        /// Add filtering with query parameters. E.q. /api/user?age=22&name=Phil (not possible with Swagger)
         /// </remarks>
         /// <param name="collectionId">Collection id</param>
         /// <param name="skip">Items to skip</param>
@@ -54,7 +54,7 @@ namespace FakeServer.Controllers
         [HttpGet("{collectionId}")]
         public IActionResult GetItems(string collectionId, int skip = 0, int take = 10)
         {
-            var data = _ds.GetCollection(collectionId).AsQueryable();
+            var datas = _ds.GetCollection(collectionId).AsQueryable();
 
             var queryParams = Request.Query.Keys.ToList();
             queryParams.Remove("skip");
@@ -62,17 +62,17 @@ namespace FakeServer.Controllers
 
             if (queryParams.Count == 0)
             {
-                return Ok(data.Skip(skip).Take(take));
+                return Ok(datas.Skip(skip).Take(take));
             }
 
             // TODO: How to build Expressions with dynamics? Expressions.Dynamic?
 
             foreach (var key in queryParams)
             {
-                data = data.Where(d => Equals(d as ExpandoObject, key, Request.Query[key]));
+                datas = datas.Where(d => Equals(d as ExpandoObject, key, Request.Query[key]));
             }
 
-            return Ok(data.Skip(skip).Take(take));
+            return Ok(datas.Skip(skip).Take(take));
         }
 
         /// <summary>
@@ -141,7 +141,7 @@ namespace FakeServer.Controllers
         /// </summary>
         /// <remarks>
         /// Patch data contains fields to be updated.
-        /// 
+        ///
         ///     {
         ///        "stringField": "some value",
         ///        "intField": 22,
@@ -190,20 +190,25 @@ namespace FakeServer.Controllers
                 return NotFound();
         }
 
-        private dynamic GetDynamicObject(Dictionary<string, object> properties)
+        private bool Equals(ExpandoObject current, string propertyName, string valueToCompare)
         {
-            var dynamicObject = new ExpandoObject() as IDictionary<string, object>;
-            foreach (var property in properties)
-            {
-                dynamicObject.Add(property.Key, property.Value);
-            }
-            return dynamicObject;
+            return GetPropertyAndCompare(current, propertyName, valueToCompare);
         }
 
-        private bool Equals(dynamic x, string propName, dynamic value)
+        private bool GetPropertyAndCompare(ExpandoObject current, string propertyName, string valueToCompare)
         {
-            var val = ((IDictionary<string, object>)x)[propName];
-            return ((dynamic)val).ToString() == value.ToString();
+            var currentProperty = propertyName.Contains('.') ? propertyName.Split('.').First() : propertyName;
+            var tail = propertyName.Contains('.') ? propertyName.Substring(propertyName.IndexOf('.') + 1) : string.Empty;
+
+            var currentValue = ((IDictionary<string, object>)current)[currentProperty];
+
+            if (string.IsNullOrEmpty(tail))
+                return ((dynamic)currentValue).ToString() == valueToCompare;
+
+            if (currentValue is IEnumerable<dynamic> valueEnumerable)
+                return valueEnumerable.Any(e => GetPropertyAndCompare(e, tail, valueToCompare));
+            else
+                return GetPropertyAndCompare(currentValue as ExpandoObject, tail, valueToCompare);
         }
     }
 }

@@ -103,6 +103,45 @@ $ curl http://localhost:57602/api/user?age=40
 ]
 ```
 
+Query can have path to child properties. Property names are separated by periods.
+
+`GET api/user?parent.child.grandchild.field=value`
+
+Example JSON:
+```json
+[
+  {
+    "companyName": "ACME",
+    "employees": [ 
+      { "id": 1, "name": "Thomas", "address": { "city": "London" } }
+    ]
+  },
+  {
+    "companyName": "Box Company",
+    "employees": [ 
+      { "id": 1, "name": "Phil", "address": { "city": "NY" } }
+    ]
+  }
+]
+```
+
+Query would return ACME from the example JSON.
+
+```sh
+$ curl http://localhost:57602/api/user?employees.address.city=London
+```
+
+```json
+[
+  {
+    "companyName": "ACME",
+    "employees": [ 
+      { "id": 1, "name": "Thomas", "address": { "city": "London" } }
+    ]
+  }
+]
+```
+
 ##### Get item with id 
 
 `GET /api/{item}/{id}`
