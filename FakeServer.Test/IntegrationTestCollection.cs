@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
+using System.Net.Http;
 using System.Reflection;
 using System.Threading.Tasks;
 using Xunit;
@@ -21,15 +23,7 @@ namespace FakeServer.Test
                 TestServer.Run(BaseUrl, dir);
             });
 
-            var delayVariable = Environment.GetEnvironmentVariable("START_DELAY");
-
-            if (!int.TryParse(delayVariable, out int startDelay))
-            {
-                startDelay = 2000;
-            }
-
-            // Give some time to server to start
-            Task.Delay(startDelay);
+            var success = WaitForServer().Result;
         }
 
         public void Dispose()
@@ -38,6 +32,28 @@ namespace FakeServer.Test
         }
 
         public string BaseUrl { get; private set; }
+
+        private async Task<bool> WaitForServer()
+        {
+            var sw = Stopwatch.StartNew();
+
+            while (sw.ElapsedMilliseconds < 10000)
+            {
+                try
+                {
+                    using (var client = new HttpClient())
+                    {
+                        var result = await client.GetAsync($"{BaseUrl}/status");
+                        return true;
+                    }
+                }
+                catch (Exception)
+                {
+                }
+            }
+
+            throw new Exception("Server not started");
+        }
     }
 
     [CollectionDefinition("Integration collection")]
