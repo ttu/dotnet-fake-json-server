@@ -69,7 +69,7 @@ namespace FakeServer.Controllers
 
             foreach (var key in queryParams)
             {
-                datas = datas.Where(d => Equals(d as ExpandoObject, key, Request.Query[key]));
+                datas = datas.Where(d => ObjectHelper.GetPropertyAndCompare(d as ExpandoObject, key, Request.Query[key]));
             }
 
             return Ok(datas.Skip(skip).Take(take));
@@ -117,7 +117,7 @@ namespace FakeServer.Controllers
             if (item == null)
                 return BadRequest();
 
-            var nested = GetNestedProperty(item, path);
+            var nested = ObjectHelper.GetNestedProperty(item, path);
 
             if (nested == null)
                 return NotFound();
@@ -219,62 +219,6 @@ namespace FakeServer.Controllers
                 return Ok();
             else
                 return NotFound();
-        }
-
-        private bool Equals(ExpandoObject current, string propertyName, string valueToCompare)
-        {
-            return GetPropertyAndCompare(current, propertyName, valueToCompare);
-        }
-
-        private bool GetPropertyAndCompare(ExpandoObject current, string propertyName, string valueToCompare)
-        {
-            var currentProperty = propertyName.Contains('.') ? propertyName.Split('.').First() : propertyName;
-            var tail = propertyName.Contains('.') ? propertyName.Substring(propertyName.IndexOf('.') + 1) : string.Empty;
-
-            var currentValue = ((IDictionary<string, object>)current)[currentProperty];
-
-            if (string.IsNullOrEmpty(tail))
-                return ((dynamic)currentValue).ToString() == valueToCompare;
-
-            if (currentValue is IEnumerable<dynamic> valueEnumerable)
-                return valueEnumerable.Any(e => GetPropertyAndCompare(e, tail, valueToCompare));
-            else
-                return GetPropertyAndCompare(currentValue as ExpandoObject, tail, valueToCompare);
-        }
-
-        private ExpandoObject GetNestedProperty(ExpandoObject current, string propertyName)
-        {
-            var propertyNameCurrent = propertyName.Contains('/') ? propertyName.Split('/').First() : propertyName;
-            var tail = propertyName.Contains('/') ? propertyName.Substring(propertyName.IndexOf('/') + 1) : string.Empty;
-            var peekProperty = tail.Contains('/') ? tail.Split('/').FirstOrDefault() : string.Empty;
-
-            var currentValue = ((IDictionary<string, object>)current)[propertyNameCurrent];
-
-            dynamic returnValue;
-
-            int? idValue = null;
-            if (int.TryParse(peekProperty, out int parsedInteger))
-            {
-                idValue = parsedInteger;
-                tail = tail.Contains('/') ? tail.Substring(tail.IndexOf('/') + 1) : string.Empty;
-            }
-
-            if (idValue.HasValue)
-            {
-                if (currentValue is IEnumerable<dynamic> valueEnumerable)
-                    returnValue = valueEnumerable.FirstOrDefault(e => e.id == idValue.Value);
-                else
-                    returnValue = ((dynamic)currentValue).id == idValue.Value ? currentValue as ExpandoObject : null;
-            }
-            else
-            {
-                returnValue = currentValue;
-            }
-
-            if (string.IsNullOrEmpty(tail))
-                return returnValue;
-
-            return GetNestedProperty(returnValue, tail);
-        }
+        }        
     }
 }
