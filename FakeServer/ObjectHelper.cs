@@ -1,13 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace FakeServer
 {
     public static class ObjectHelper
     {
+        /// <summary>
+        /// Find property from ExpandoObject and compare it to provided value
+        /// </summary>
+        /// <param name="current"></param>
+        /// <param name="propertyName"></param>
+        /// <param name="valueToCompare"></param>
+        /// <returns>True is object matches valueToCompare</returns>
         public static bool GetPropertyAndCompare(ExpandoObject current, string propertyName, string valueToCompare)
         {
             var currentProperty = propertyName.Contains('.') ? propertyName.Split('.').First() : propertyName;
@@ -24,6 +29,16 @@ namespace FakeServer
                 return GetPropertyAndCompare(currentValue as ExpandoObject, tail, valueToCompare);
         }
 
+        /// <summary>
+        /// Find property from ExpandoObject
+        /// 
+        /// Split nested properties with backslash, e.g. child/grandchild/grandgrandchild
+        /// 
+        /// If path contains integers, those are used as id field comparisons
+        /// </summary>
+        /// <param name="current"></param>
+        /// <param name="propertyName"></param>
+        /// <returns></returns>
         public static ExpandoObject GetNestedProperty(ExpandoObject current, string propertyName)
         {
             var propertyNameCurrent = propertyName.Contains('/') ? propertyName.Split('/').First() : propertyName;

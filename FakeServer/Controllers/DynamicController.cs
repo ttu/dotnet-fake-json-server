@@ -65,8 +65,6 @@ namespace FakeServer.Controllers
                 return Ok(datas.Skip(skip).Take(take));
             }
 
-            // TODO: How to build Expressions with dynamics? Expressions.Dynamic?
-
             foreach (var key in queryParams)
             {
                 datas = datas.Where(d => ObjectHelper.GetPropertyAndCompare(d as ExpandoObject, key, Request.Query[key]));

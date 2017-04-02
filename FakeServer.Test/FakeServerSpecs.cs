@@ -102,6 +102,8 @@ namespace FakeServer.Test
                 var result = await client.GetAsync($"{_fixture.BaseUrl}/api/user?name=Phil&age=25&take=5");
                 var allUsers = JsonConvert.DeserializeObject<JArray>(await result.Content.ReadAsStringAsync());
                 Assert.Equal("Phil", allUsers[0]["name"].Value<string>());
+                Assert.Equal("Box Company", allUsers[0]["work"]["name"].Value<string>());
+
             }
         }
 
@@ -132,8 +134,8 @@ namespace FakeServer.Test
         {
             using (var client = new HttpClient())
             {
-                // Original { "id": 1, "name": "James", "age": 40, "location": "NY" },
-                var patchData = new { name = "Albert", age = 12 };
+                // Original { "id": 1, "name": "James", "age": 40, "location": "NY", "work": { "name": "ACME", "location": "NY" } },
+                var patchData = new { name = "Albert", age = 12, work = new { name = "EMACS" } };
 
                 var content = new StringContent(JsonConvert.SerializeObject(patchData), Encoding.UTF8, "application/json");
                 var request = new HttpRequestMessage(new HttpMethod("PATCH"), $"{_fixture.BaseUrl}/api/user/1") { Content = content };
@@ -146,13 +148,15 @@ namespace FakeServer.Test
                 Assert.Equal(patchData.name, item["name"].Value<string>());
                 Assert.Equal(patchData.age, item["age"].Value<int>());
                 Assert.Equal("NY", item["location"].Value<string>());
+                Assert.Equal("EMACS", item["work"]["name"].Value<string>());
+                Assert.Equal("NY", item["work"]["location"].Value<string>());
 
                 result = await client.GetAsync($"{_fixture.BaseUrl}/api/user");
                 result.EnsureSuccessStatusCode();
                 var items = JsonConvert.DeserializeObject<IEnumerable<JObject>>(await result.Content.ReadAsStringAsync());
                 Assert.Equal(4, items.Count());
 
-                content = new StringContent(JsonConvert.SerializeObject(new { name = "James", age = 40 }), Encoding.UTF8, "application/json");
+                content = new StringContent(JsonConvert.SerializeObject(new { name = "James", age = 40, work = new { name = "ACME" } }), Encoding.UTF8, "application/json");
                 request = new HttpRequestMessage(new HttpMethod("PATCH"), $"{_fixture.BaseUrl}/api/user/1") { Content = content };
                 result = await client.SendAsync(request);
                 result.EnsureSuccessStatusCode();
