@@ -38,12 +38,12 @@ namespace FakeServer
         /// </summary>
         /// <param name="current"></param>
         /// <param name="propertyName"></param>
-        /// <returns></returns>
-        public static ExpandoObject GetNestedProperty(ExpandoObject current, string propertyName)
+        /// <returns>Dynamic is return value can be a single item or a list</returns>
+        public static dynamic GetNestedProperty(ExpandoObject current, string propertyName)
         {
             var propertyNameCurrent = propertyName.Contains('/') ? propertyName.Split('/').First() : propertyName;
             var tail = propertyName.Contains('/') ? propertyName.Substring(propertyName.IndexOf('/') + 1) : string.Empty;
-            var peekProperty = tail.Contains('/') ? tail.Split('/').FirstOrDefault() : string.Empty;
+            var peekProperty = tail.Contains('/') ? tail.Split('/').FirstOrDefault() : tail;
 
             var currentValue = ((IDictionary<string, object>)current)[propertyNameCurrent];
 
