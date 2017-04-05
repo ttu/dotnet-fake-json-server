@@ -77,7 +77,8 @@ $ curl http://localhost:57602/api
 
 `GET /api/{item}`
 
-Returns list of items. Amount of items can be defined with `skip` and `take` parameters. By default request returns first 10 items. 
+Returns 200 OK when collection is found or 404 if collection is not found or it is empty. Amount of items can be defined with `skip` and `take` parameters. By default request returns first 10 items.
+
 ```sh
 $ curl http://localhost:57602/api/user
 ```
@@ -146,7 +147,7 @@ $ curl http://localhost:57602/api/user?employees.address.city=London
 
 `GET /api/{item}/{id}`
 
-Returns 200 OK or 404 Not Found if item is not found
+Returns 200 OK when item is found or 404 Not Found if item is not found
 
 ```sh
 $ curl http://localhost:57602/api/user/1

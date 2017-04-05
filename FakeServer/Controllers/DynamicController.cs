@@ -50,11 +50,16 @@ namespace FakeServer.Controllers
         /// <param name="skip">Items to skip</param>
         /// <param name="take">Items to take</param>
         /// <returns>List of items</returns>
-        /// <response code="200">List</response>
+        /// <response code="200">Collection item array</response>
+        /// <response code="404">Collection not found</response>
         [HttpGet("{collectionId}")]
         public IActionResult GetItems(string collectionId, int skip = 0, int take = 10)
         {
             var datas = _ds.GetCollection(collectionId).AsQueryable();
+
+            // Collection can actually just be empty, but in this case we handle it as it is not found
+            if (!datas.Any())
+                return NotFound();
 
             var queryParams = Request.Query.Keys.ToList();
             queryParams.Remove("skip");

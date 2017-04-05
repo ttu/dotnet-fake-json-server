@@ -2,6 +2,7 @@
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -103,7 +104,6 @@ namespace FakeServer.Test
                 var allUsers = JsonConvert.DeserializeObject<JArray>(await result.Content.ReadAsStringAsync());
                 Assert.Equal("Phil", allUsers[0]["name"].Value<string>());
                 Assert.Equal("Box Company", allUsers[0]["work"]["name"].Value<string>());
-
             }
         }
 
@@ -229,9 +229,7 @@ namespace FakeServer.Test
                 result.EnsureSuccessStatusCode();
 
                 result = await client.GetAsync($"{_fixture.BaseUrl}/api/hello");
-                result.EnsureSuccessStatusCode();
-                items = JsonConvert.DeserializeObject<IEnumerable<JObject>>(await result.Content.ReadAsStringAsync());
-                Assert.Equal(0, items.Count());
+                Assert.Equal(HttpStatusCode.NotFound, result.StatusCode);
             }
         }
     }
