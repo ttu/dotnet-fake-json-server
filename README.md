@@ -8,11 +8,17 @@ Fake REST API for developers for prototyping
 * .NET Core Web API
 * Uses [JSON Flat File DataStore](https://github.com/ttu/json-flatfile-datastore)
   * All changes are automatically saved to `datastore.json`
+* CORS
+* Static files
+* Swagger
+* Token authentication
+  * Add allowed usernames/passwords to `authentication.json`
 
 ## Routes
 
 ```
 GET    /
+POST   /token
 GET    /status
 GET    /api
 GET    /api/{item}
@@ -23,13 +29,52 @@ PATCH  /api/{item}/{id}
 DELETE /api/{item}/{id}
 ```
 
-For now supports only id as key field and integer as it's value type.
+Dynamic routes are defined by the name of item's collection and id: `api/{item}/{id}`. All examples below use `user` as a collection name.
 
-Dyanamic routes are defined by the name of item's collection and id: `api/{item}/{id}`. All eamples below use user as collection name.
+For now API supports only id as the key field and integer as it's value type.
 
-### Swagger
+#### Swagger
 
 Swagger is configured to endpoint `/swagger` and Swagger UI opens when project is started.
+
+#### Static Files
+
+`GET /`
+
+Returns static files from wwwroot. Default file is `index.html`.
+
+#### CORS
+
+CORS is enabled and it allows everything.
+
+#### Authentication
+
+Fake REST API supports token authentication. API has a token provider middleware which provides an endpoint for token generation `/token`.
+
+Authentiation can be disabled from `authentiation.json` by setting Enabled to `false`.
+
+```json
+{
+  "Authentication": {
+    "Enabled": true,
+    "Users": [
+        { "Username": "admin", "Password": "root" }
+    ]
+  }
+}
+```
+
+Check SimpleTokenProvider from [GitHub](https://github.com/nbarbettini/SimpleTokenProvider) and [StormPath's blog post](https://stormpath.com/blog/token-authentication-asp-net-core).
+
+Get token:
+```sh
+$ curl -X POST -H 'content-type: multipart/form-data' -F username=admin -F password=root http://localhost:57602/token
+```
+
+Add token to Authorization header:
+```sh
+$ curl -H 'Authorization: Bearer [TOKEN]' http://localhost:57602/api
+```
 
 ##### Example JSON Data
 
@@ -43,12 +88,6 @@ Swagger is configured to endpoint `/swagger` and Swagger UI opens when project i
   "movie": []
 }
 ```
-
-##### Root
-
-`GET /`
-
-Returns static files from wwwroot. Default file is `index.html`.
 
 ##### Status
 
@@ -229,11 +268,6 @@ Returns 200 OK or 404 Not Found if item is not found
 ```sh
 $ curl -X DELETE http://localhost:57602/api/user/1
 ```
-
-
-#### CORS
-
-CORS is enabled and it allows everything.
 
 ### License
 

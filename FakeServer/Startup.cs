@@ -1,4 +1,7 @@
-﻿using JsonFlatFileDataStore;
+﻿using FakeServer.Authentication.Custom;
+using FakeServer.Authentication.Jwt;
+using FakeServer.Authentication;
+using JsonFlatFileDataStore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -26,6 +29,7 @@ namespace FakeServer
             var builder = new ConfigurationBuilder()
                 .SetBasePath(_path)
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile("authentication.json", optional: true, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
@@ -43,6 +47,8 @@ namespace FakeServer
         {
             var path = Path.Combine(_path, _jsonFileName);
             services.AddSingleton(typeof(DataStore), new DataStore(path));
+
+            services.Configure<AuthenticationSettings>(Configuration.GetSection("Authentication"));
 
             services.AddCors(options =>
             {
@@ -63,6 +69,12 @@ namespace FakeServer
                 var xmlPath = Path.Combine(basePath, "FakeServer.xml");
                 c.IncludeXmlComments(xmlPath);
             });
+
+            services.AddAuthorization(options => options.AddPolicy("TEST", policy =>
+            {
+                policy.RequireAuthenticatedUser();
+                policy.RequireClaim("ManageStore", "Allowed");
+            }));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -78,6 +90,15 @@ namespace FakeServer
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+            }
+
+            if (Configuration.GetValue<bool>("Authentication:Enabled"))
+            {
+                TokenConfiguration.Configure(app);
+            }
+            else
+            {
+                app.UseMiddleware<AllowAllAuthenticationMiddleware>();
             }
 
             app.UseDefaultFiles();

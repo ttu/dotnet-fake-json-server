@@ -1,0 +1,15 @@
+﻿{
+  "Authentication": {
+    "Enabled": false,
+    "Users": [
+      {
+        "Username": "admin",
+        "Password": "root"
+      },
+      {
+        "Username": "miranda",
+        "Password": "fireff"
+      }
+    ]
+  }
+}
