@@ -1,6 +1,7 @@
-﻿using FakeServer.Authentication.Custom;
+﻿using FakeServer.Authentication;
+using FakeServer.Authentication.Custom;
 using FakeServer.Authentication.Jwt;
-using FakeServer.Authentication;
+using FakeServer.WebSockets;
 using JsonFlatFileDataStore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -12,6 +13,7 @@ using Microsoft.Extensions.PlatformAbstractions;
 using Serilog;
 using Swashbuckle.AspNetCore.Swagger;
 using System.IO;
+using System.Linq;
 
 namespace FakeServer
 {
@@ -46,8 +48,8 @@ namespace FakeServer
         public void ConfigureServices(IServiceCollection services)
         {
             var path = Path.Combine(_path, _jsonFileName);
-            services.AddSingleton(typeof(DataStore), new DataStore(path));
-
+            services.AddSingleton<IDataStore>(new DataStore(path));
+            services.AddSingleton<IMessageBus, MessageBus>();
             services.Configure<AuthenticationSettings>(Configuration.GetSection("Authentication"));
 
             services.AddCors(options =>
@@ -91,6 +93,11 @@ namespace FakeServer
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseWebSockets();
+
+            app.UseMiddleware<NotifyWebSocketMiddlerware>();
+            app.UseMiddleware<WebSocketMiddleware>();
 
             if (Configuration.GetValue<bool>("Authentication:Enabled"))
             {

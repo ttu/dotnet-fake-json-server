@@ -13,6 +13,7 @@ Fake REST API for developers for prototyping
 * Swagger
 * Token authentication
   * Add allowed usernames/passwords to `authentication.json`
+* WebSockets
 
 ## Routes
 
@@ -86,6 +87,12 @@ $ curl http://localhost:57602/status
 ```json
 {"status": "Ok"}
 ```
+
+##### WebSockets
+
+API will send latest update's method (`POST, PUT, PATCH, DELETE`) and endpoint with WebSocket. E.g. `DELETE /api/user/1`
+
+`index.html`has a WebSocket example.
 
 ##### Example JSON Data
 

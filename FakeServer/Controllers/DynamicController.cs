@@ -15,9 +15,9 @@ namespace FakeServer.Controllers
     [Route("api")]
     public class DynamicController : Controller
     {
-        private readonly DataStore _ds;
+        private readonly IDataStore _ds;
 
-        public DynamicController(DataStore ds)
+        public DynamicController(IDataStore ds)
         {
             _ds = ds;
         }

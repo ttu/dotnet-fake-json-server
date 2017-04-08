@@ -7,12 +7,13 @@
 <body>
     <div>Collections found:</div>
     <div id="collections"></div>
+    <div>Last update:</div>
+    <div id="update"></div>
 </body>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/superagent/3.5.2/superagent.min.js"></script>
 
 <script>
-
     const request = window.superagent;
 
     request
@@ -20,5 +21,15 @@
         .end((err, resp) => {
             document.getElementById("collections").textContent = resp.body;
         });
+
+    const webSocket = new WebSocket("ws://localhost:57602/ws");
+
+    webSocket.onmessage = (evt) => {
+        document.getElementById("update").textContent = evt.data;
+    };
+
+    webSocket.onopen = () => { console.log('open'); };
+    webSocket.onclose = () => { console.log('closed'); };
+    webSocket.onerror = (evt) => { console.log(evt.data); };
 </script>
 </html>
