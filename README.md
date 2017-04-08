@@ -76,7 +76,20 @@ Add token to Authorization header:
 $ curl -H 'Authorization: Bearer [TOKEN]' http://localhost:57602/api
 ```
 
+##### Status
+
+Status endpoint, which returns current status of the service.
+
+```sh
+$ curl http://localhost:57602/status
+```
+```json
+{"status": "Ok"}
+```
+
 ##### Example JSON Data
+
+Data used in examples
 
 ```json
 {
@@ -89,20 +102,13 @@ $ curl -H 'Authorization: Bearer [TOKEN]' http://localhost:57602/api
 }
 ```
 
-##### Status
-
-Status endpoint, which returns current status of the service.
-
-```sh
-$ curl http://localhost:57602/status
-```
-```json
-{"status": "Ok"}
-```
-
 #####  List collections 
 
-`GET /api`
+```
+GET /api
+
+200 OK : List of collections
+```
 
 ```sh
 $ curl http://localhost:57602/api
@@ -114,9 +120,14 @@ $ curl http://localhost:57602/api
 
 ##### Get items
 
-`GET /api/{item}`
+```
+GET /api/{item}
 
-Returns 200 OK when collection is found or 404 if collection is not found or it is empty. Amount of items can be defined with `skip` and `take` parameters. By default request returns first 10 items.
+200 OK        : Collection is found
+404 Not Found : Collection is not found or it is empty
+```
+
+Amount of items can be defined with `skip` and `take` parameters. By default request returns first 10 items.
 
 ```sh
 $ curl http://localhost:57602/api/user
@@ -131,7 +142,12 @@ $ curl http://localhost:57602/api/user?skip=5&take=20
 
 ##### Get items with query 
 
-`GET api/user?field=value&otherField=value`
+```
+GET api/user?field=value&otherField=value
+
+200 OK        : Collection is found
+404 Not Found : Collection is not found or it is empty
+```
 
 ```sh
 $ curl http://localhost:57602/api/user?age=40
@@ -184,9 +200,12 @@ $ curl http://localhost:57602/api/user?employees.address.city=London
 
 ##### Get item with id 
 
-`GET /api/{item}/{id}`
+``` 
+GET /api/{item}/{id}
 
-Returns 200 OK when item is found or 404 Not Found if item is not found
+200 OK        : Item is found
+404 Not Found : Item is not found
+```
 
 ```sh
 $ curl http://localhost:57602/api/user/1
@@ -198,7 +217,13 @@ $ curl http://localhost:57602/api/user/1
 
 ##### Get nested items
 
-`GET /api/{item}/{id}/{restOfThePath}`
+```
+GET /api/{item}/{id}/{restOfThePath}
+
+200 OK          : Nested item is found
+400 Bad Request : Parent item is not found
+404 Not Found   : Nested item is not found
+```
 
 It is possible to request only child objects instead of full item. Path to nested item can contain id field integers and property names.
 
@@ -226,9 +251,11 @@ $ curl http://localhost:57602/api/company/0/employees/1/address
 
 ##### Add item 
 
-`POST /api/{item}`
+```
+POST /api/{item}
 
-Returns 200 OK or 404 Not Found if item is not found
+200 OK : New item is created
+```
 
 ```sh
 $ curl -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{ "name": "Phil", "age": 40, "location": "NY" }' http://localhost:57602/api/user/
@@ -241,9 +268,12 @@ Response has new item's id
 
 ##### Replace item 
 
-`PUT /api/{item}/{id}`
+``` 
+PUT /api/{item}/{id}
 
-Returns 200 OK or 404 Not Found if item is not found
+200 OK        : Item is replaced
+404 Not Found : Item is not found
+```
 
 ```sh
 $ curl -H "Accept: application/json" -H "Content-type: application/json" -X PUT -d '{ "name": "Roger", "age": 28, "location": "SF" }' http://localhost:57602/api/user/1
@@ -251,9 +281,13 @@ $ curl -H "Accept: application/json" -H "Content-type: application/json" -X PUT 
 
 ##### Update item 
 
-`PATCH /api/{item}/{id}`
+```
+PATCH /api/{item}/{id}
 
-Returns 200 OK, 400 Bad Request if PATCH is empty or 404 Not Found if item is not found
+200 OK          : Item updated
+400 Bad Request : PATCH is empty
+404 Not Found   : Item is not found
+```
 
 ```sh
 $ curl -H "Accept: application/json" -H "Content-type: application/json" -X PATCH -d '{ "name": "Timmy" }' http://localhost:57602/api/user/1
@@ -261,9 +295,12 @@ $ curl -H "Accept: application/json" -H "Content-type: application/json" -X PATC
 
 ##### Delete item 
 
-`DELETE /api/{item}/{id}`
+``` 
+DELETE /api/{item}/{id}
 
-Returns 200 OK or 404 Not Found if item is not found
+200 OK        : Item deleted
+404 Not Found : Item is not found
+```
 
 ```sh
 $ curl -X DELETE http://localhost:57602/api/user/1
