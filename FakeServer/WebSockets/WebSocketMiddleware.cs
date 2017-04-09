@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Concurrent;
 using System.Linq;
@@ -13,20 +15,25 @@ namespace FakeServer.WebSockets
     {
         private readonly ConcurrentDictionary<string, WebSocket> _sockets = new ConcurrentDictionary<string, WebSocket>();
 
+        private readonly JsonSerializerSettings _camelCaseSettings = new JsonSerializerSettings
+        {
+            ContractResolver = new CamelCasePropertyNamesContractResolver()
+        };
+
         private readonly RequestDelegate _next;
         private readonly CancellationToken _token = CancellationToken.None;
 
         public WebSocketMiddleware(RequestDelegate next, IMessageBus bus)
         {
             _next = next;
-            bus.Subscribe<string>("updated", (message) =>
+            bus.Subscribe<dynamic>("updated", (message) =>
             {
                 _sockets.Values
                     .Where(socket => socket.State == WebSocketState.Open)
                     .ToList()
                     .ForEach(async socket =>
                     {
-                        var text = Encoding.UTF8.GetBytes(message);
+                        var text = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(message, _camelCaseSettings));
                         var buffer = new ArraySegment<byte>(text);
                         await socket.SendAsync(buffer, WebSocketMessageType.Text, true, _token);
                     });

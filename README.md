@@ -90,7 +90,11 @@ $ curl http://localhost:57602/status
 
 ##### WebSockets
 
-API will send latest update's method (`POST, PUT, PATCH, DELETE`) and endpoint with WebSocket. E.g. `DELETE /api/user/1`
+API will send latest update's method (`POST, PUT, PATCH, DELETE`) and path with WebSocket.
+
+```json
+{ "method": "PATCH", "path": "/api/user/2" }
+```
 
 `index.html`has a WebSocket example.
 

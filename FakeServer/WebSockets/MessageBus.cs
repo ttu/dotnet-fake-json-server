@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace FakeServer.WebSockets
 {
@@ -18,7 +19,10 @@ namespace FakeServer.WebSockets
         public void Publish<T>(string topic, T message)
         {
             if (_subscriptions.ContainsKey(topic))
-                _subscriptions[topic].ForEach(a => a(message));
+            {
+                foreach (var action in _subscriptions[topic].AsParallel())
+                    action(message);
+            }
         }
 
         public void Subscribe<T>(string topic, Action<T> handler)

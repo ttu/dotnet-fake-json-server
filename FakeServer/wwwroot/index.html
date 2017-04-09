@@ -5,10 +5,16 @@
     <title>JSON Fake REST API</title>
 </head>
 <body>
-    <div>Collections found:</div>
-    <div id="collections"></div>
-    <div>Last update:</div>
-    <div id="update"></div>
+    <div>
+        <h3>Collections found:</h3>
+        <div id="collections"></div>
+    </div>
+    <br/>
+    <div>
+        <h3>Last update:</h3>
+        <div>Method: <label id="updateMethod"></label></div>
+        <div>Path: <label id="updatePath"></label></div>
+    </div>
 </body>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/superagent/3.5.2/superagent.min.js"></script>
@@ -25,7 +31,9 @@
     const webSocket = new WebSocket("ws://localhost:57602/ws");
 
     webSocket.onmessage = (evt) => {
-        document.getElementById("update").textContent = evt.data;
+        const data = JSON.parse(evt.data);
+        document.getElementById("updateMethod").textContent = data.method;
+        document.getElementById("updatePath").textContent = data.path;
     };
 
     webSocket.onopen = () => { console.log('open'); };

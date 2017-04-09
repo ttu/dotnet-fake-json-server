@@ -5,12 +5,15 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using WebSocket4Net;
 using Xunit;
 
 namespace FakeServer.Test
 {
     // Tests in the same collection are not run in parallel
+    // After each test data should be in the same state as in the beginning of the test or future tests might fail
     [Collection("Integration collection")]
     public class FakeServerSpecs
     {
@@ -231,6 +234,54 @@ namespace FakeServer.Test
                 result = await client.GetAsync($"{_fixture.BaseUrl}/api/hello");
                 Assert.Equal(HttpStatusCode.NotFound, result.StatusCode);
             }
+        }
+
+        [Fact]
+        public async Task WebSockets_CalledTwice()
+        {
+            var are = new AutoResetEvent(false);
+
+            var webSoketMessages = new List<dynamic>();
+
+            var websocket = new WebSocket($"ws://localhost:{_fixture.Port}/ws");
+
+            websocket.MessageReceived += (s, e) =>
+            {
+                webSoketMessages.Add(JsonConvert.DeserializeObject<dynamic>(e.Message));
+                are.Set();
+            };
+
+
+            websocket.Opened += (s, e) => {
+                are.Set();
+            };
+
+            websocket.Open();
+
+            are.WaitOne();
+
+            using (var client = new HttpClient())
+            {
+                var patchData = new { name = "Albert", age = 12, work = new { name = "EMACS" } };
+
+                var content = new StringContent(JsonConvert.SerializeObject(patchData), Encoding.UTF8, "application/json");
+                var request = new HttpRequestMessage(new HttpMethod("PATCH"), $"{_fixture.BaseUrl}/api/user/1") { Content = content };
+                var result = await client.SendAsync(request);
+                result.EnsureSuccessStatusCode();
+
+                are.WaitOne();
+
+                content = new StringContent(JsonConvert.SerializeObject(new { name = "James", age = 40, work = new { name = "ACME" } }), Encoding.UTF8, "application/json");
+                request = new HttpRequestMessage(new HttpMethod("PATCH"), $"{_fixture.BaseUrl}/api/user/1") { Content = content };
+                result = await client.SendAsync(request);
+                result.EnsureSuccessStatusCode();
+
+                are.WaitOne();
+            }
+
+            Assert.Equal(2, webSoketMessages.Count);
+            Assert.Equal("PATCH", webSoketMessages[0].method.ToString());
+            Assert.Equal("/api/user/1", webSoketMessages[0].path.ToString());
         }
     }
 }

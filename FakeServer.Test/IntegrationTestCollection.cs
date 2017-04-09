@@ -15,8 +15,8 @@ namespace FakeServer.Test
         public IntegrationFixture()
         {
             var dir = Path.GetDirectoryName(typeof(IntegrationFixture).GetTypeInfo().Assembly.Location);
-            int port = 5001;
-            BaseUrl = $"http://localhost:{port}";
+            Port = 5001;
+            BaseUrl = $"http://localhost:{Port}";
 
             _serverTask = Task.Run(() =>
             {
@@ -30,6 +30,8 @@ namespace FakeServer.Test
         {
             TestServer.Stop();
         }
+
+        public int Port { get; private set; }
 
         public string BaseUrl { get; private set; }
 
