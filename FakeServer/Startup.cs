@@ -37,7 +37,7 @@ namespace FakeServer
             Configuration = builder.Build();
 
             Log.Logger = new LoggerConfiguration()
-                           .MinimumLevel.Information()
+                           .MinimumLevel.Debug()
                            .WriteTo.RollingFile(Path.Combine(PlatformServices.Default.Application.ApplicationBasePath, "log-{Date}.txt"))
                            .CreateLogger();
         }
