@@ -15,6 +15,18 @@ Fake REST API for developers for prototyping
   * Add allowed usernames/passwords to `authentication.json`
 * WebSockets
 
+## Get started
+
+```sh
+$ git clone https://github.com/ttu/dotnet-fake-json-server.git
+$ cd dotnet-fake-json-server/FakeServer
+$ dotnet run [--filename] [--url]
+
+Optional arguments:
+  --filename        Datastore's JSON file (default datastore.json)
+  --url             Server url (default http://localhost:5000)      
+```
+
 ## Routes
 
 ```

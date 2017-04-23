@@ -76,12 +76,6 @@ namespace FakeServer
                 var xmlPath = Path.Combine(basePath, "FakeServer.xml");
                 c.IncludeXmlComments(xmlPath);
             });
-
-            services.AddAuthorization(options => options.AddPolicy("TEST", policy =>
-            {
-                policy.RequireAuthenticatedUser();
-                policy.RequireClaim("ManageStore", "Allowed");
-            }));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
