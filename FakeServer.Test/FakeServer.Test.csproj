@@ -7,7 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="JsonFlatFileDataStore" Version="1.3.0" />
+    <Content Include="..\FakeServer\datastore.json" Link="datastore.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="JsonFlatFileDataStore" Version="1.3.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0" />
     <PackageReference Include="WebSocket4Net" Version="0.15.0-beta6" />
     <PackageReference Include="xunit" Version="2.2.0" />

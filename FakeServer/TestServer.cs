@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using System.Collections.Generic;
 
 namespace FakeServer
 {
@@ -7,8 +9,10 @@ namespace FakeServer
     {
         private static IWebHost _host;
 
-        public static void Run(string url, string path)
+        public static void Run(string url, string path, string fileName)
         {
+            Startup.MainConfiguration.Add("filename", fileName);
+
             _host = new WebHostBuilder()
                 .UseUrls(url)
                 .UseKestrel()

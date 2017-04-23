@@ -11,16 +11,21 @@ namespace FakeServer.Test
     public class IntegrationFixture : IDisposable
     {
         private readonly Task _serverTask;
+        private readonly string _newFilePath;
 
         public IntegrationFixture()
         {
             var dir = Path.GetDirectoryName(typeof(IntegrationFixture).GetTypeInfo().Assembly.Location);
+
+            var fileName = Guid.NewGuid().ToString();
+            _newFilePath = UTHelpers.Up(fileName);
+
             Port = 5001;
             BaseUrl = $"http://localhost:{Port}";
 
             _serverTask = Task.Run(() =>
             {
-                TestServer.Run(BaseUrl, dir);
+                TestServer.Run(BaseUrl, dir, $"{fileName}.json");
             });
 
             var success = WaitForServer().Result;
@@ -29,6 +34,7 @@ namespace FakeServer.Test
         public void Dispose()
         {
             TestServer.Stop();
+            UTHelpers.Down(_newFilePath);
         }
 
         public int Port { get; private set; }

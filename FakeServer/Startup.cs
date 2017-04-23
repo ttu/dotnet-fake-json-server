@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.PlatformAbstractions;
 using Serilog;
 using Swashbuckle.AspNetCore.Swagger;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -19,21 +20,25 @@ namespace FakeServer
 {
     public class Startup
     {
-        // TODO: Add to Configuration
-        private readonly string _jsonFileName = "datastore.json";
+        // TODO: How to pass configuration from Main to Startup?
+        public static Dictionary<string, string> MainConfiguration = new Dictionary<string, string>();
 
+        private readonly string _jsonFileName;
         private readonly string _path;
 
         public Startup(IHostingEnvironment env)
         {
             _path = env.ContentRootPath;
+            _jsonFileName = MainConfiguration.ContainsKey("filename") ? MainConfiguration["filename"] : "datastore.json";
 
             var builder = new ConfigurationBuilder()
                 .SetBasePath(_path)
+                .AddInMemoryCollection(MainConfiguration)
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile("authentication.json", optional: true, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
+            
             Configuration = builder.Build();
 
             Log.Logger = new LoggerConfiguration()
