@@ -46,7 +46,7 @@ namespace FakeServer.Controllers
         /// Get items
         /// </summary>
         /// <remarks>
-        /// Add filtering with query parameters. E.q. /api/user?age=22&name=Phil (not possible with Swagger)
+        /// Add filtering with query parameters. E.q. /api/user?age=22&amp;name=Phil (not possible with Swagger)
         /// </remarks>
         /// <param name="collectionId">Collection id</param>
         /// <param name="skip">Items to skip</param>
