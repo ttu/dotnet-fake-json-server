@@ -141,12 +141,10 @@ namespace FakeServer.Controllers
         public async Task<IActionResult> AddNewItem(string collectionId, [FromBody]JToken item)
         {
             var collection = _ds.GetCollection(collectionId);
+            
+            await collection.InsertOneAsync(item);
 
-            dynamic itemToInsert = JsonConvert.DeserializeObject<ExpandoObject>(item.ToString());
-            itemToInsert.id = collection.GetNextIdValue();
-
-            await collection.InsertOneAsync(itemToInsert);
-            return Ok(new { id = itemToInsert.id });
+            return Ok(new { id = item["id"] });
         }
 
         /// <summary>

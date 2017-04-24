@@ -171,13 +171,15 @@ namespace FakeServer.Test
         {
             using (var client = new HttpClient())
             {
-                var newUser = new { id = 5, name = "Newton" };
+                // Try with "wrong" id
+                var newUser = new { id = 8, name = "Newton" };
 
                 var content = new StringContent(JsonConvert.SerializeObject(newUser), Encoding.UTF8, "application/json");
                 var result = await client.PostAsync($"{_fixture.BaseUrl}/api/user", content);
                 result.EnsureSuccessStatusCode();
+                var postResponse = JsonConvert.DeserializeObject<JObject>(await result.Content.ReadAsStringAsync());
 
-                result = await client.GetAsync($"{_fixture.BaseUrl}/api/user/5"); ;
+                result = await client.GetAsync($"{_fixture.BaseUrl}/api/user/{postResponse["id"]}");
                 result.EnsureSuccessStatusCode();
                 var item = JsonConvert.DeserializeObject<JObject>(await result.Content.ReadAsStringAsync());
                 Assert.Equal(newUser.name, item["name"].Value<string>());
@@ -187,7 +189,7 @@ namespace FakeServer.Test
                 var items = JsonConvert.DeserializeObject<IEnumerable<JObject>>(await result.Content.ReadAsStringAsync());
                 Assert.Equal(5, items.Count());
 
-                result = await client.DeleteAsync($"{_fixture.BaseUrl}/api/user/5");
+                result = await client.DeleteAsync($"{_fixture.BaseUrl}/api/user/{postResponse["id"]}");
                 result.EnsureSuccessStatusCode();
 
                 result = await client.GetAsync($"{_fixture.BaseUrl}/api/user");
