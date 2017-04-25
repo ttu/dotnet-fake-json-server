@@ -7,13 +7,13 @@ Fake REST API for developers for prototyping
  
 * .NET Core Web API
 * Uses [JSON Flat File DataStore](https://github.com/ttu/json-flatfile-datastore)
-  * All changes are automatically saved to `datastore.json`
-* CORS
-* Static files
-* Swagger
+  * All changes are automatically saved to defined JSON file
 * Token authentication
   * Add allowed usernames/passwords to `authentication.json`
 * WebSockets
+* Static files
+* Swagger
+* CORS
 
 ## Get started
 
@@ -24,7 +24,32 @@ $ dotnet run [--filename] [--url]
 
 Optional arguments:
   --filename        Datastore's JSON file (default datastore.json)
-  --url             Server url (default http://localhost:5000)      
+  --url             Server url (default http://localhost:57602)      
+
+e.g.
+$ dotnet run --filename data.json --url http://localhost:57602
+
+# List collections (should be empty, if data.json didn't exist before)
+$ curl http://localhost:57602/api
+
+# Insert new user
+$ curl -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{ "name": "Phil", "age": 20, "location": "NY" }' http://localhost:57602/api/user/
+
+# Insert another user
+$ curl -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{ "name": "James", "age": 40, "location": "SF" }' http://localhost:57602/api/user/
+
+# List users
+$ curl http://localhost:57602/api/user
+
+# List users from NY
+$ curl http://localhost:57602/api/user?location=NY
+
+# Get User with Id 1
+$ curl http://localhost:57602/api/user/1
+
+...
+
+# Or open url http://localhost:57602/swagger/ with browser and use Swagger
 ```
 
 ## Routes
@@ -108,7 +133,7 @@ API will send latest update's method (`POST, PUT, PATCH, DELETE`) and path with 
 { "method": "PATCH", "path": "/api/user/2" }
 ```
 
-`index.html`has a WebSocket example.
+`index.html` has a WebSocket example.
 
 ##### Example JSON Data
 
@@ -166,7 +191,7 @@ $ curl http://localhost:57602/api/user?skip=5&take=20
 ##### Get items with query 
 
 ```
-GET api/user?field=value&otherField=value
+GET api/{item}?field=value&otherField=value
 
 200 OK        : Collection is found
 404 Not Found : Collection is not found or it is empty
@@ -184,7 +209,7 @@ $ curl http://localhost:57602/api/user?age=40
 
 Query can have path to child properties. Property names are separated by periods.
 
-`GET api/user?parent.child.grandchild.field=value`
+`GET api/{item}?parent.child.grandchild.field=value`
 
 Example JSON:
 ```json
@@ -327,6 +352,28 @@ DELETE /api/{item}/{id}
 
 ```sh
 $ curl -X DELETE http://localhost:57602/api/user/1
+```
+
+### Benchmark
+
+Install ApacheBench
+```sh
+$ sudo apt-get install apache2-utils
+```
+
+Do benchmark against status endpoint, as it doesn't use any middlewares and it doesn't do any processing.
+```sh
+$ ab -c 10 -n 2000 http://localhost:57602/status
+```
+
+Create a POST data JSON file (e.g. user.json)
+```json
+{ "name": "Benchmark User", "age": 50, "location": "NY" }
+```
+
+Execute POST 2000 times with 10 concurrent connections
+```sh
+$ ab -p user.json -T application/json -c 10 -n 2000 http://localhost:57602/api/user
 ```
 
 ### License

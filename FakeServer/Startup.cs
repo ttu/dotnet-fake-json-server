@@ -14,7 +14,6 @@ using Serilog;
 using Swashbuckle.AspNetCore.Swagger;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 namespace FakeServer
 {
@@ -38,7 +37,7 @@ namespace FakeServer
                 .AddJsonFile("authentication.json", optional: true, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
-            
+
             Configuration = builder.Build();
 
             Log.Logger = new LoggerConfiguration()
@@ -93,6 +92,18 @@ namespace FakeServer
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseCors("AllowAnyPolicy");
+
+            // Status map should be before all middlewares as we don't want to use any of those with status
+            app.Map("/status", rootApp =>
+            {
+                rootApp.Run(context =>
+                {
+                    context.Response.StatusCode = 200;
+                    return context.Response.WriteAsync("{\"status\": \"Ok\"}");
+                });
+            });
+
             app.UseWebSockets();
 
             app.UseMiddleware<NotifyWebSocketMiddlerware>();
@@ -110,8 +121,6 @@ namespace FakeServer
             app.UseDefaultFiles();
             app.UseStaticFiles();
 
-            app.UseCors("AllowAnyPolicy");
-
             app.UseMvc();
 
             app.UseSwagger();
@@ -119,15 +128,6 @@ namespace FakeServer
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Fake JSON API V1");
-            });
-
-            app.Map("/status", rootApp =>
-            {
-                rootApp.Run(context =>
-                {
-                    context.Response.StatusCode = 200;
-                    return context.Response.WriteAsync("{\"status\": \"Ok\"}");
-                });
             });
         }
     }
