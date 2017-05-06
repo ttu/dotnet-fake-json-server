@@ -3,7 +3,13 @@
 
 [![Build Status](https://travis-ci.org/ttu/dotnet-fake-json-server.svg?branch=master)](https://travis-ci.org/ttu/dotnet-fake-json-server) [![Build status](https://ci.appveyor.com/api/projects/status/hacg7qupp5oxbct8?svg=true)](https://ci.appveyor.com/project/ttu/dotnet-fake-json-server)
 
-Fake REST API for developers for prototyping
+Fake REST API for prototyping or as a CRUD backend.
+
+* No need to define types for resources. Types are handled dynamically
+* No database. Data is stored to a flat JSON file
+* Start server and API is ready to be used with any data
+
+## Features
  
 * .NET Core Web API
 * Uses [JSON Flat File DataStore](https://github.com/ttu/json-flatfile-datastore)
@@ -22,11 +28,11 @@ $ git clone https://github.com/ttu/dotnet-fake-json-server.git
 $ cd dotnet-fake-json-server/FakeServer
 $ dotnet run [--filename] [--url]
 
-Optional arguments:
-  --filename        Datastore's JSON file (default datastore.json)
-  --url             Server url (default http://localhost:57602)      
+# Optional arguments:
+#   --filename        Datastore's JSON file (default datastore.json)
+#   --url             Server url (default http://localhost:57602)      
 
-e.g.
+# Example: Start server
 $ dotnet run --filename data.json --url http://localhost:57602
 
 # List collections (should be empty, if data.json didn't exist before)
@@ -49,6 +55,15 @@ $ curl http://localhost:57602/api/user/1
 
 ...
 
+# Add users to data.json manually
+
+# Command DataStore to reload data from the file (normally refreshes only on initialization or on data writes)
+$ curl -X POST http://localhost:57602/api/reload/
+
+# Get all users
+$ curl http://localhost:57602/api/user/
+...
+
 # Or open url http://localhost:57602/swagger/ with browser and use Swagger
 ```
 
@@ -58,6 +73,7 @@ $ curl http://localhost:57602/api/user/1
 GET    /
 POST   /token
 GET    /status
+POST   /admin/reload
 GET    /api
 GET    /api/{item}
 POST   /api/{item}
@@ -123,6 +139,14 @@ $ curl http://localhost:57602/status
 ```
 ```json
 {"status": "Ok"}
+```
+
+##### Reload
+
+Reload endpoint, which reloads JSON data from the file to DataStore. DataStore updates internal data from the file only when initialized and when data is updated, so in case that JSON file is updated manually and new data is requested immediately before any updates, this must be called before request. Endoint is in Admin controller, so it is usable also through Swagger.
+
+```sh
+$ curl -X POST http://localhost:57602/admin/reload --data ""
 ```
 
 ##### WebSockets
