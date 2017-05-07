@@ -7,6 +7,7 @@ Fake REST API for prototyping or as a CRUD backend.
 
 * No need to define types for resources. Types are handled dynamically
 * No database. Data is stored to a flat JSON file
+* CRUD operations (GET, PUT, POST, PATCH, DELETE)
 * Start server and API is ready to be used with any data
 
 ## Features
@@ -65,6 +66,13 @@ $ curl http://localhost:57602/api/user/
 ...
 
 # Or open url http://localhost:57602/swagger/ with browser and use Swagger
+```
+
+#### Docker
+
+```sh
+$ docker build -t fakeapi .
+$ docker run -it -p 5000:5000 fakeapi
 ```
 
 ## Routes
