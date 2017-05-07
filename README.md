@@ -335,6 +335,7 @@ $ curl http://localhost:57602/api/company/0/employees/1/address
 POST /api/{item}
 
 200 OK : New item is created
+400 BadRequest : New item is null
 ```
 
 ```sh
@@ -351,8 +352,9 @@ Response has new item's id
 ``` 
 PUT /api/{item}/{id}
 
-200 OK        : Item is replaced
-404 Not Found : Item is not found
+200 OK         : Item is replaced
+400 BadRequest : Item is null
+404 Not Found  : Item is not found
 ```
 
 ```sh

@@ -137,9 +137,13 @@ namespace FakeServer.Controllers
         /// <param name="item">Item to add</param>
         /// <returns>Created item id</returns>
         /// <response code="200">Item created</response>
+        /// <response code="400">Item is null</response>
         [HttpPost("{collectionId}")]
         public async Task<IActionResult> AddNewItem(string collectionId, [FromBody]JToken item)
         {
+            if (item == null)
+                return BadRequest();
+
             var collection = _ds.GetCollection(collectionId);
             
             await collection.InsertOneAsync(item);
@@ -155,10 +159,14 @@ namespace FakeServer.Controllers
         /// <param name="item">Item's new content</param>
         /// <returns></returns>
         /// <response code="200">Item found and replaced</response>
+        /// <response code="400">Item is null</response>
         /// <response code="404">Item not found</response>
         [HttpPut("{collectionId}/{id}")]
         public async Task<IActionResult> ReplaceItem(string collectionId, int id, [FromBody]dynamic item)
         {
+            if (item == null)
+                return BadRequest();
+
             // Make sure that new data has id field correctly
             item.id = id;
 
