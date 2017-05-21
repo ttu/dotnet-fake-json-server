@@ -1,6 +1,7 @@
 ﻿using FakeServer.Authentication;
 using FakeServer.Authentication.Custom;
 using FakeServer.Authentication.Jwt;
+using FakeServer.Jobs;
 using FakeServer.WebSockets;
 using JsonFlatFileDataStore;
 using Microsoft.AspNetCore.Builder;
@@ -54,6 +55,8 @@ namespace FakeServer
             var path = Path.Combine(_path, _jsonFileName);
             services.AddSingleton<IDataStore>(new DataStore(path));
             services.AddSingleton<IMessageBus, MessageBus>();
+            services.AddSingleton(typeof(JobsService));
+
             services.Configure<AuthenticationSettings>(Configuration.GetSection("Authentication"));
 
             services.AddCors(options =>

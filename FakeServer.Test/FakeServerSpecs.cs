@@ -44,7 +44,7 @@ namespace FakeServer.Test
                 result.EnsureSuccessStatusCode();
 
                 var collections = JsonConvert.DeserializeObject<IEnumerable<string>>(await result.Content.ReadAsStringAsync());
-                Assert.Equal(3, collections.Count());
+                Assert.True(collections.Count() > 0);
             }
         }
 
@@ -209,7 +209,7 @@ namespace FakeServer.Test
                 var result = await client.GetAsync($"{_fixture.BaseUrl}/api/");
                 result.EnsureSuccessStatusCode();
                 var collections = JsonConvert.DeserializeObject<IEnumerable<string>>(await result.Content.ReadAsStringAsync());
-                Assert.Equal(3, collections.Count());
+                var originalAmount = collections.Count();
 
                 var content = new StringContent(JsonConvert.SerializeObject(newUser), Encoding.UTF8, "application/json");
                 result = await client.PostAsync($"{_fixture.BaseUrl}/api/hello", content);
@@ -218,7 +218,7 @@ namespace FakeServer.Test
                 result = await client.GetAsync($"{_fixture.BaseUrl}/api");
                 result.EnsureSuccessStatusCode();
                 collections = JsonConvert.DeserializeObject<IEnumerable<string>>(await result.Content.ReadAsStringAsync());
-                Assert.Equal(4, collections.Count());
+                Assert.Equal(originalAmount + 1, collections.Count());
 
                 result = await client.GetAsync($"{_fixture.BaseUrl}/api/hello/0");
                 result.EnsureSuccessStatusCode();
@@ -253,8 +253,8 @@ namespace FakeServer.Test
                 are.Set();
             };
 
-
-            websocket.Opened += (s, e) => {
+            websocket.Opened += (s, e) =>
+            {
                 are.Set();
             };
 
@@ -284,6 +284,112 @@ namespace FakeServer.Test
             Assert.Equal(2, webSoketMessages.Count);
             Assert.Equal("PATCH", webSoketMessages[0].method.ToString());
             Assert.Equal("/api/user/1", webSoketMessages[0].path.ToString());
+        }
+
+        [Fact]
+        public async Task Async_PostPutPathDelete()
+        {
+            async Task<HttpResponseMessage> GetWhenStatusNotOk(System.Uri queueUrl)
+            {
+                var handler = new HttpClientHandler { AllowAutoRedirect = false };
+
+                using (var c = new HttpClient(handler))
+                {
+                    while (true)
+                    {
+                        var response = await c.GetAsync(queueUrl);
+
+                        if (response.StatusCode != HttpStatusCode.OK)
+                            return response;
+
+                        Thread.Sleep(100);
+                    }
+                }
+            }
+
+            using (var client = new HttpClient())
+            {
+                var newBook = new { title = "Adventures of Robin Hood" };
+
+                // POST
+
+                var content = new StringContent(JsonConvert.SerializeObject(newBook), Encoding.UTF8, "application/json");
+                var result = await client.PostAsync($"{_fixture.BaseUrl}/async/book", content);
+                result.EnsureSuccessStatusCode();
+
+                var queueUrl = result.Headers.Location;
+
+                result = await client.GetAsync($"{queueUrl}NOTFOUND");
+                Assert.Equal(HttpStatusCode.NotFound, result.StatusCode);
+
+                HttpResponseMessage resultForAction = await GetWhenStatusNotOk(queueUrl);
+
+                Assert.Equal(HttpStatusCode.SeeOther, resultForAction.StatusCode);
+                Assert.Equal("http://localhost:5001/api/book/0", resultForAction.Headers.Location.ToString());
+
+                result = await client.GetAsync(resultForAction.Headers.Location);
+                result.EnsureSuccessStatusCode();
+                var item = JsonConvert.DeserializeObject<JObject>(await result.Content.ReadAsStringAsync());
+                Assert.Equal(newBook.title, item["title"].Value<string>());
+
+                // PUT
+
+                var updateBook = new { title = "Adventures of Sherlock Holmes" };
+
+                content = new StringContent(JsonConvert.SerializeObject(updateBook), Encoding.UTF8, "application/json");
+                result = await client.PutAsync($"{_fixture.BaseUrl}/async/book/0", content);
+                result.EnsureSuccessStatusCode();
+
+                queueUrl = result.Headers.Location;
+
+                resultForAction = await GetWhenStatusNotOk(queueUrl);
+                Assert.Equal(HttpStatusCode.SeeOther, resultForAction.StatusCode);
+
+                result = await client.GetAsync(resultForAction.Headers.Location);
+                result.EnsureSuccessStatusCode();
+                item = JsonConvert.DeserializeObject<JObject>(await result.Content.ReadAsStringAsync());
+                Assert.Equal(updateBook.title, item["title"].Value<string>());
+
+                // PATCH
+
+                var patchBook = new { author = "Edgar Allen Poe" };
+
+                content = new StringContent(JsonConvert.SerializeObject(patchBook), Encoding.UTF8, "application/json");
+                var request = new HttpRequestMessage(new HttpMethod("PATCH"), $"{_fixture.BaseUrl}/async/book/0") { Content = content };
+                result = await client.SendAsync(request);
+                result.EnsureSuccessStatusCode();
+
+                queueUrl = result.Headers.Location;
+
+                resultForAction = await GetWhenStatusNotOk(queueUrl);
+                Assert.Equal(HttpStatusCode.SeeOther, resultForAction.StatusCode);
+
+                result = await client.GetAsync(resultForAction.Headers.Location);
+                result.EnsureSuccessStatusCode();
+                item = JsonConvert.DeserializeObject<JObject>(await result.Content.ReadAsStringAsync());
+                Assert.Equal(patchBook.author, item["author"].Value<string>());
+                Assert.Equal(updateBook.title, item["title"].Value<string>());
+
+                // DELETE
+
+                result = await client.DeleteAsync($"{_fixture.BaseUrl}/async/book/0");
+                result.EnsureSuccessStatusCode();
+
+                queueUrl = result.Headers.Location;
+
+                resultForAction = await GetWhenStatusNotOk(queueUrl);
+
+                Assert.Equal(HttpStatusCode.SeeOther, resultForAction.StatusCode);
+                Assert.Equal("http://localhost:5001/api/book/0", resultForAction.Headers.Location.ToString());
+
+                // DELETE JOB
+
+                result = await client.DeleteAsync(queueUrl);
+                result.EnsureSuccessStatusCode();
+
+                result = await client.GetAsync(queueUrl);
+                Assert.Equal(HttpStatusCode.NotFound, result.StatusCode);
+            }
         }
     }
 }

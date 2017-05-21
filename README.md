@@ -6,8 +6,9 @@
 Fake REST API for prototyping or as a CRUD backend.
 
 * No need to define types for resources. Types are handled dynamically
-* No database. Data is stored to a flat JSON file
+* No database. Data is stored to a JSON file
 * CRUD operations (GET, PUT, POST, PATCH, DELETE)
+* Async versions of CRUD operations with long running jobs
 * Start server and API is ready to be used with any data
 
 ## Features
@@ -82,6 +83,7 @@ GET    /
 POST   /token
 GET    /status
 POST   /admin/reload
+
 GET    /api
 GET    /api/{item}
 POST   /api/{item}
@@ -89,9 +91,18 @@ GET    /api/{item}/{id}
 PUT    /api/{item}/{id}
 PATCH  /api/{item}/{id}
 DELETE /api/{item}/{id}
+
+GET    /async/queue/{id}
+DELETE /async/queue/{id}
+POST   /async/{item}
+PUT    /async/{item}/{id}
+PATCH  /async/{item}/{id}
+DELETE /async/{item}/{id}
 ```
 
 Dynamic routes are defined by the name of item's collection and id: `api/{item}/{id}`. All examples below use `user` as a collection name.
+
+Asynchoronous operations follow [REST CookBook guide](http://restcookbook.com/Resources/asynchroneous-operations/). Updates will return `202` with location header to queue item. Queue will return `200` while job is processing and `303` when job is ready with location header to changed or new item.
 
 For now API supports only id as the key field and integer as it's value type.
 
@@ -375,7 +386,7 @@ PATCH /api/{item}/{id}
 $ curl -H "Accept: application/json" -H "Content-type: application/json" -X PATCH -d '{ "name": "Timmy" }' http://localhost:57602/api/user/1
 ```
 
-##### Delete item 
+##### Delete item
 
 ``` 
 DELETE /api/{item}/{id}
@@ -387,6 +398,10 @@ DELETE /api/{item}/{id}
 ```sh
 $ curl -X DELETE http://localhost:57602/api/user/1
 ```
+
+### Async Operations
+
+TODO
 
 ### Benchmark
 
