@@ -76,7 +76,60 @@ $ docker build -t fakeapi .
 $ docker run -it -p 5000:5000 fakeapi
 ```
 
-## Routes
+### Authentication
+
+Fake REST API supports token authentication. API has a token provider middleware which provides an endpoint for token generation `/token`.
+
+Authentiation can be disabled from `authentiation.json` by setting Enabled to `false`.
+
+```json
+{
+  "Authentication": {
+    "Enabled": true,
+    "Users": [
+        { "Username": "admin", "Password": "root" }
+    ]
+  }
+}
+```
+
+Check SimpleTokenProvider from [GitHub](https://github.com/nbarbettini/SimpleTokenProvider) and [StormPath's blog post](https://stormpath.com/blog/token-authentication-asp-net-core).
+
+Get token:
+```sh
+$ curl -X POST -H 'content-type: multipart/form-data' -F username=admin -F password=root http://localhost:57602/token
+```
+
+Add token to Authorization header:
+```sh
+$ curl -H 'Authorization: Bearer [TOKEN]' http://localhost:57602/api
+```
+
+### WebSockets
+
+API will send latest update's method (`POST, PUT, PATCH, DELETE`) and path with WebSocket.
+
+```json
+{ "method": "PATCH", "path": "/api/user/2" }
+```
+
+`index.html` has a WebSocket example.
+
+### CORS
+
+CORS is enabled and it allows everything.
+
+### Static Files
+
+`GET /`
+
+Returns static files from wwwroot. Default file is `index.html`.
+
+### Swagger
+
+Swagger is configured to endpoint `/swagger` and Swagger UI opens when project is started.
+
+## Routes, Functionalities and Examples
 
 ```
 GET    /
@@ -106,50 +159,8 @@ Asynchoronous operations follow [REST CookBook guide](http://restcookbook.com/Re
 
 For now API supports only id as the key field and integer as it's value type.
 
-#### Swagger
 
-Swagger is configured to endpoint `/swagger` and Swagger UI opens when project is started.
-
-#### Static Files
-
-`GET /`
-
-Returns static files from wwwroot. Default file is `index.html`.
-
-#### CORS
-
-CORS is enabled and it allows everything.
-
-#### Authentication
-
-Fake REST API supports token authentication. API has a token provider middleware which provides an endpoint for token generation `/token`.
-
-Authentiation can be disabled from `authentiation.json` by setting Enabled to `false`.
-
-```json
-{
-  "Authentication": {
-    "Enabled": true,
-    "Users": [
-        { "Username": "admin", "Password": "root" }
-    ]
-  }
-}
-```
-
-Check SimpleTokenProvider from [GitHub](https://github.com/nbarbettini/SimpleTokenProvider) and [StormPath's blog post](https://stormpath.com/blog/token-authentication-asp-net-core).
-
-Get token:
-```sh
-$ curl -X POST -H 'content-type: multipart/form-data' -F username=admin -F password=root http://localhost:57602/token
-```
-
-Add token to Authorization header:
-```sh
-$ curl -H 'Authorization: Bearer [TOKEN]' http://localhost:57602/api
-```
-
-##### Status
+### Status
 
 Status endpoint, which returns current status of the service.
 
@@ -160,23 +171,13 @@ $ curl http://localhost:57602/status
 {"status": "Ok"}
 ```
 
-##### Reload
+### Reload
 
 Reload endpoint, which reloads JSON data from the file to DataStore. DataStore updates internal data from the file only when initialized and when data is updated, so in case that JSON file is updated manually and new data is requested immediately before any updates, this must be called before request. Endoint is in Admin controller, so it is usable also through Swagger.
 
 ```sh
 $ curl -X POST http://localhost:57602/admin/reload --data ""
 ```
-
-##### WebSockets
-
-API will send latest update's method (`POST, PUT, PATCH, DELETE`) and path with WebSocket.
-
-```json
-{ "method": "PATCH", "path": "/api/user/2" }
-```
-
-`index.html` has a WebSocket example.
 
 ##### Example JSON Data
 
@@ -193,7 +194,8 @@ Data used in examples
 }
 ```
 
-#####  List collections 
+Example JSON generation guide used in unit tests [CreateJSON.md](CreateJson.md)
+####  List collections 
 
 ```
 GET /api
@@ -209,7 +211,7 @@ $ curl http://localhost:57602/api
 [ "user", "movie" ]
 ```
 
-##### Get items
+#### Get items
 
 ```
 GET /api/{item}
@@ -231,7 +233,7 @@ $ curl http://localhost:57602/api/user?skip=5&take=20
 ```
 
 
-##### Get items with query 
+#### Get items with query 
 
 ```
 GET api/{item}?field=value&otherField=value
@@ -289,7 +291,7 @@ $ curl http://localhost:57602/api/user?employees.address.city=London
 ]
 ```
 
-##### Get item with id 
+#### Get item with id 
 
 ``` 
 GET /api/{item}/{id}
@@ -306,7 +308,7 @@ $ curl http://localhost:57602/api/user/1
 { "id": 1, "name": "Phil", "age": 40, "location": "NY" }
 ```
 
-##### Get nested items
+#### Get nested items
 
 ```
 GET /api/{item}/{id}/{restOfThePath}
@@ -340,7 +342,7 @@ $ curl http://localhost:57602/api/company/0/employees/1/address
 { "address": { "city": "London" } }
 ```
 
-##### Add item 
+#### Add item 
 
 ```
 POST /api/{item}
@@ -358,7 +360,7 @@ Response has new item's id
 { "id": 6 }
 ```
 
-##### Replace item 
+#### Replace item 
 
 ``` 
 PUT /api/{item}/{id}
@@ -372,7 +374,7 @@ PUT /api/{item}/{id}
 $ curl -H "Accept: application/json" -H "Content-type: application/json" -X PUT -d '{ "name": "Roger", "age": 28, "location": "SF" }' http://localhost:57602/api/user/1
 ```
 
-##### Update item 
+#### Update item 
 
 ```
 PATCH /api/{item}/{id}
@@ -386,7 +388,7 @@ PATCH /api/{item}/{id}
 $ curl -H "Accept: application/json" -H "Content-type: application/json" -X PATCH -d '{ "name": "Timmy" }' http://localhost:57602/api/user/1
 ```
 
-##### Delete item
+#### Delete item
 
 ``` 
 DELETE /api/{item}/{id}
