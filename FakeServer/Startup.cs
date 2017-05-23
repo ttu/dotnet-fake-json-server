@@ -58,6 +58,7 @@ namespace FakeServer
             services.AddSingleton(typeof(JobsService));
 
             services.Configure<AuthenticationSettings>(Configuration.GetSection("Authentication"));
+            services.Configure<JobsSettings>(Configuration.GetSection("Jobs"));
 
             services.AddCors(options =>
             {

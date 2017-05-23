@@ -8,7 +8,7 @@ Fake REST API for prototyping or as a CRUD backend.
 * No need to define types for resources. Types are handled dynamically
 * No database. Data is stored to a JSON file
 * CRUD operations (GET, PUT, POST, PATCH, DELETE)
-* Async versions of CRUD operations with long running jobs
+* Async versions of update operations with long running jobs
 * Start server and API is ready to be used with any data
 
 ## Features
@@ -162,7 +162,7 @@ For now API supports only id as the key field and integer as it's value type.
 
 ### Status
 
-Status endpoint, which returns current status of the service.
+Status endpoint returns current status of the service. 
 
 ```sh
 $ curl http://localhost:57602/status
@@ -173,11 +173,14 @@ $ curl http://localhost:57602/status
 
 ### Reload
 
-Reload endpoint, which reloads JSON data from the file to DataStore. DataStore updates internal data from the file only when initialized and when data is updated, so in case that JSON file is updated manually and new data is requested immediately before any updates, this must be called before request. Endoint is in Admin controller, so it is usable also through Swagger.
+Reload endpoint can be used to reload JSON data from the file to DataStore.
 
 ```sh
 $ curl -X POST http://localhost:57602/admin/reload --data ""
 ```
+DataStore updates internal data from the file only when initialized and when data is updated. If JSON file is updated manually and new data is requested immediately before any updates, this must be called before new data can be fetched. 
+
+Endoint is in Admin controller, so it is usable also with Swagger.
 
 ##### Example JSON Data
 
@@ -195,6 +198,7 @@ Data used in examples
 ```
 
 Example JSON generation guide used in unit tests [CreateJSON.md](CreateJson.md)
+
 ####  List collections 
 
 ```
@@ -403,7 +407,53 @@ $ curl -X DELETE http://localhost:57602/api/user/1
 
 ### Async Operations
 
-TODO
+`/async` endoint has long running jobs for each update operation.
+
+```
+POST/PUT/PATCH/DELETE /async/{item}/{id}
+
+202 Accepted    : New job started
+400 Bad Request : Job not started
+
+Headers:
+Location=http://{url}:{port}/async/queue/{id}
+```
+
+Update operations will return location to job queue in headers.
+
+```
+GET /async/queue/{id}
+
+200 OK        : Job running
+303 See Other : Job ready
+404 Not Found : Job not found
+
+Headers:
+Location=http://{url}:{port}/api/{collectionId}/{id}
+```
+
+When Job is ready, status code will be redirect See Other. Location header will have modified item's url.
+
+After job is finished, it must be deleted manually
+
+```
+DELETE /async/queue/{id}
+
+200 OK        : Job deleted
+404 Not Found : Job not found
+```
+
+##### Job delay
+
+Delay for operations can be set from `appsettings.json`. With long delay it is easier to simulate long running jobs.
+
+```json
+  "Jobs": {
+    "DelayMs": 2000
+  }
+ ```
+
+ Delay value is milliseconds. Default value is 2000ms.
 
 ### Benchmark
 

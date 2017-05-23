@@ -1,4 +1,5 @@
 ﻿using FakeServer.WebSockets;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -12,11 +13,15 @@ namespace FakeServer.Jobs
         private readonly IMessageBus _bus;
         private readonly Action _delay;
 
-        public JobsService(IMessageBus bus)
+        public JobsService(IMessageBus bus, IOptions<JobsSettings> jobsSettings)
         {
             _bus = bus;
-            // TODO: Add optional delay to configuration
-            _delay = new Action(() => { Thread.Sleep(500); });
+
+            _delay = new Action(() => 
+            {
+                if (jobsSettings.Value.DelayMs > 0)
+                    Thread.Sleep(jobsSettings.Value.DelayMs);
+            });
         }
 
         public string StartNewJob(string itemType, string method, Func<dynamic> func)

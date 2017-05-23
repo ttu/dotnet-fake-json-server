@@ -8,4 +8,9 @@ namespace FakeServer.Jobs
 
         public Task<dynamic> Action { get; set; }
     }
+
+    public class JobsSettings
+    {
+        public int DelayMs { get; set; }
+    }
 }
