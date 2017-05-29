@@ -35,7 +35,7 @@ namespace FakeServer.Jobs
 
                 var itemId = func();
 
-                var data = new { Method = method, Path = $"{itemType}/{itemId}" };
+                var data = new { Method = method, Path = $"{itemType}/{itemId}", ItemType = itemType, ItemId = itemId };
                 _bus.Publish("updated", data);
 
                 return itemId;

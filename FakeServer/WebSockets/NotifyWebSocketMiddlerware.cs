@@ -25,7 +25,7 @@ namespace FakeServer.WebSockets
                 _udpateMethods.Contains(context.Request.Method) &&
                 context.Response.StatusCode == 200)
             {
-                var data = new { Method = context.Request.Method, Path = context.Request.Path.Value };
+                var data = ObjectHelper.GetWebSocketMessage(context.Request.Method, context.Request.Path.Value);
                 _bus.Publish("updated", data);
             }
         }

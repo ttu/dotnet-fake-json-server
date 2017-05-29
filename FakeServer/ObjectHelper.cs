@@ -31,9 +31,9 @@ namespace FakeServer
 
         /// <summary>
         /// Find property from ExpandoObject
-        /// 
+        ///
         /// Split nested properties with backslash, e.g. child/grandchild/grandgrandchild
-        /// 
+        ///
         /// If path contains integers, those are used as id field comparisons
         /// </summary>
         /// <param name="current"></param>
@@ -67,6 +67,21 @@ namespace FakeServer
                 return returnValue;
             else
                 return GetNestedProperty(returnValue, tail);
+        }
+
+        public static dynamic GetWebSocketMessage(string method, string path)
+        {
+            var cleaned = path.StartsWith("/") ? path.Substring(1) : path;
+            cleaned = cleaned.EndsWith("/") ? cleaned.Substring(0, cleaned.Length - 1) : cleaned;
+            cleaned = cleaned.Replace("api/", "");
+
+            return new
+            {
+                Method = method,
+                Path = path,
+                ItemType = cleaned.IndexOf("/") != -1 ? cleaned.Substring(0, cleaned.IndexOf("/")) : cleaned,
+                ItemId = cleaned.LastIndexOf("/") != -1 ? cleaned.Substring(cleaned.LastIndexOf("/") + 1) : null
+            };
         }
     }
 }

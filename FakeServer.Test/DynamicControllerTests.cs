@@ -2,6 +2,7 @@ using FakeServer.Controllers;
 using JsonFlatFileDataStore;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
@@ -99,6 +100,39 @@ namespace FakeServer.Test
             Assert.Equal(2, ((IEnumerable<dynamic>)result.Value).Count());
 
             UTHelpers.Down(filePath);
+        }
+
+        [Fact]
+        public void WebSocketMessage()
+        {
+            // Anonymous type is generated as internal so we cant test it withou new serialize/deserialize
+            // Should add InternalsVisibleTo or just crate a Typed class
+            dynamic original = ObjectHelper.GetWebSocketMessage("POST", "/api/human/2");
+
+            var msg = JsonConvert.DeserializeObject<dynamic>(JsonConvert.SerializeObject(original));
+
+            Assert.Equal("/api/human/2", msg.Path.Value);
+            Assert.Equal("human", msg.ItemType.Value);
+            Assert.Equal("2", msg.ItemId.Value);
+            Assert.Equal("POST", msg.Method.Value);
+
+            original = ObjectHelper.GetWebSocketMessage("PUT", "api/human/2/");
+
+            msg = JsonConvert.DeserializeObject<dynamic>(JsonConvert.SerializeObject(original));
+
+            Assert.Equal("api/human/2/", msg.Path.Value);
+            Assert.Equal("human", msg.ItemType.Value);
+            Assert.Equal("2", msg.ItemId.Value);
+            Assert.Equal("PUT", msg.Method.Value);
+
+            original = ObjectHelper.GetWebSocketMessage("POST", "/api/human");
+
+            msg = JsonConvert.DeserializeObject<dynamic>(JsonConvert.SerializeObject(original));
+
+            Assert.Equal("/api/human", msg.Path.Value);
+            Assert.Equal("human", msg.ItemType.Value);
+            Assert.Equal(null, msg.ItemId.Value);
+            Assert.Equal("POST", msg.Method.Value);
         }
     }
 }

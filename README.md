@@ -27,6 +27,11 @@ Fake REST API for prototyping or as a CRUD backend.
 
 ```sh
 $ git clone https://github.com/ttu/dotnet-fake-json-server.git
+```
+
+#### Start with .NET CLI
+
+```sh
 $ cd dotnet-fake-json-server/FakeServer
 $ dotnet run [--filename] [--url]
 
@@ -36,7 +41,21 @@ $ dotnet run [--filename] [--url]
 
 # Example: Start server
 $ dotnet run --filename data.json --url http://localhost:57602
+```
 
+#### Docker
+
+If you don't have .NET installed, you can run server with Docker.
+
+```sh
+$ cd dotnet-fake-json-server/FakeServer
+$ docker build -t fakeapi .
+$ docker run -it -p 5000:5000 fakeapi
+```
+
+#### Quick example
+
+```sh
 # List collections (should be empty, if data.json didn't exist before)
 $ curl http://localhost:57602/api
 
@@ -69,12 +88,7 @@ $ curl http://localhost:57602/api/user/
 # Or open url http://localhost:57602/swagger/ with browser and use Swagger
 ```
 
-#### Docker
-
-```sh
-$ docker build -t fakeapi .
-$ docker run -it -p 5000:5000 fakeapi
-```
+## Features
 
 ### Authentication
 
@@ -107,13 +121,13 @@ $ curl -H 'Authorization: Bearer [TOKEN]' http://localhost:57602/api
 
 ### WebSockets
 
-API will send latest update's method (`POST, PUT, PATCH, DELETE`) and path with WebSocket.
+API will send latest update's method (`POST, PUT, PATCH, DELETE`), path, item type and optional item id with WebSocket.
 
 ```json
-{ "method": "PATCH", "path": "/api/user/2" }
+{ "method": "PATCH", "path": "/api/user/2", "itemType" "user", "itemId": 2 }
 ```
 
-`index.html` has a WebSocket example.
+[wwwroot\index.html](FakeServer\wwwroot\index.html) has a WebSocket example.
 
 ### CORS
 

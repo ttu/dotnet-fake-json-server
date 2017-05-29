@@ -14,6 +14,8 @@
         <h3>Last update:</h3>
         <div>Method: <label id="updateMethod"></label></div>
         <div>Path: <label id="updatePath"></label></div>
+        <div>Item type: <label id="updateType"></label></div>
+        <div>Item Id: <label id="updateId"></label></div>
     </div>
 </body>
 
@@ -34,6 +36,8 @@
         const data = JSON.parse(evt.data);
         document.getElementById("updateMethod").textContent = data.method;
         document.getElementById("updatePath").textContent = data.path;
+        document.getElementById("updateType").textContent = data.itemType;
+        document.getElementById("updateId").textContent = data.itemId;
     };
 
     webSocket.onopen = () => { console.log('open'); };
