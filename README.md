@@ -53,7 +53,12 @@ If you don't have .NET installed, you can run server with Docker.
 ```sh
 $ cd dotnet-fake-json-server
 $ docker build -t fakeapi .
+
+# Run in foreground
 $ docker run -it -p 57602:57602 fakeapi
+
+# Run in detached mode (run in the background)
+$ docker run -d -p 57602:57602 fakeapi
 ```
 
 Copy JSON-file to container. Filename is `db.json`

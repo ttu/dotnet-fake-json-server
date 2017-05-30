@@ -41,10 +41,15 @@ namespace FakeServer
 
             Configuration = builder.Build();
 
-            Log.Logger = new LoggerConfiguration()
-                           .MinimumLevel.Debug()
-                           .WriteTo.RollingFile(Path.Combine(PlatformServices.Default.Application.ApplicationBasePath, "log-{Date}.txt"))
-                           .CreateLogger();
+            var logConfig = new LoggerConfiguration()
+                           .WriteTo.RollingFile(Path.Combine(PlatformServices.Default.Application.ApplicationBasePath, "log-{Date}.txt"));
+
+            if (env.IsDevelopment())
+                logConfig = logConfig.MinimumLevel.Information();
+            else
+                logConfig = logConfig.MinimumLevel.Error();
+
+            Log.Logger = logConfig.CreateLogger();
         }
 
         public IConfigurationRoot Configuration { get; }
