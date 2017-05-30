@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using System.Collections.Generic;
 using System.IO;
 using System;
+using Microsoft.Extensions.Configuration;
 
 namespace FakeServer
 {
@@ -18,27 +19,25 @@ namespace FakeServer
             }
 
             dictionary.TryGetValue("--filename", out string filename);
-            dictionary.TryGetValue("--url", out string url);
 
             Console.WriteLine($"FileName: {filename ?? "use default"}");
-            Console.WriteLine($"Url: {url ?? "use default"}");
 
             foreach (var kvp in dictionary)
             {
                 Startup.MainConfiguration.Add(kvp.Key.Replace("-", ""), kvp.Value);
             }
 
+            var config = new ConfigurationBuilder()
+               .AddCommandLine(args)
+               .Build();
+
             var builder = new WebHostBuilder()
                 .UseKestrel()
                 .UseContentRoot(Directory.GetCurrentDirectory())
+                .UseConfiguration(config)
                 .UseIISIntegration()
                 .UseStartup<Startup>()
                 .UseApplicationInsights();
-
-            if (!string.IsNullOrEmpty(url))
-            {
-                builder.UseUrls(url);
-            }
 
             var host = builder.Build();
             host.Run();

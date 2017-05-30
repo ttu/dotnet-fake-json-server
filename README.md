@@ -14,6 +14,7 @@ Fake REST API for prototyping or as a CRUD backend.
 ## Features
  
 * .NET Core Web API
+* Can be used without .NET with Docker
 * Uses [JSON Flat File DataStore](https://github.com/ttu/json-flatfile-datastore)
   * All changes are automatically saved to defined JSON file
 * Token authentication
@@ -25,6 +26,8 @@ Fake REST API for prototyping or as a CRUD backend.
 
 ## Get started
 
+Get source code from GitHub
+
 ```sh
 $ git clone https://github.com/ttu/dotnet-fake-json-server.git
 ```
@@ -33,14 +36,14 @@ $ git clone https://github.com/ttu/dotnet-fake-json-server.git
 
 ```sh
 $ cd dotnet-fake-json-server/FakeServer
-$ dotnet run [--filename] [--url]
+$ dotnet run [--filename] [--server.urls]
 
 # Optional arguments:
 #   --filename        Datastore's JSON file (default datastore.json)
-#   --url             Server url (default http://localhost:57602)      
+#   --server.urls     Server url (default http://localhost:57602)      
 
 # Example: Start server
-$ dotnet run --filename data.json --url http://localhost:57602
+$ dotnet run --filename data.json --server.urls http://localhost:57602
 ```
 
 #### Docker
@@ -48,10 +51,27 @@ $ dotnet run --filename data.json --url http://localhost:57602
 If you don't have .NET installed, you can run server with Docker.
 
 ```sh
-$ cd dotnet-fake-json-server/FakeServer
+$ cd dotnet-fake-json-server
 $ docker build -t fakeapi .
-$ docker run -it -p 5000:5000 fakeapi
+$ docker run -it -p 57602:57602 fakeapi
 ```
+
+Copy JSON-file to container. Filename is `db.json`
+
+```sh
+# Check Container Id (image name is fakeapi)
+$ docker ps
+
+# Copy file from host to container
+$ docker cp db.json [ContainerId]:/app/db.json
+
+# Copy file from container to host
+$ docker cp [ContainerId]:/app/db.json db.json
+```
+
+After copying the file from host to container, Reload data by opening Swagger UI in url `http://localhost:57602/swagger/#!/Admin/AdminReloadPost` and press Try It Out.
+
+`docker run` will reset JSON-file, so copy it before closing the server.
 
 #### Quick example
 
