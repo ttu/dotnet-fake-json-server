@@ -57,14 +57,14 @@ $ docker build -t fakeapi .
 # Run in foreground
 $ docker run -it -p 57602:57602 fakeapi
 
-# Run in detached mode (run in the background)
-$ docker run -d -p 57602:57602 fakeapi
+# Run in detached mode (run in background)
+$ docker run -it -d -p 57602:57602 fakeapi
 ```
 
 Copy JSON-file to container. Filename is `db.json`
 
 ```sh
-# Check Container Id (image name is fakeapi)
+# Check container id (image name is fakeapi)
 $ docker ps
 
 # Copy file from host to container
@@ -390,17 +390,21 @@ $ curl http://localhost:57602/api/company/0/employees/1/address
 ```
 POST /api/{item}
 
-200 OK : New item is created
+201 Created : New item is created
 400 BadRequest : New item is null
 ```
 
 ```sh
 $ curl -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{ "name": "Phil", "age": 40, "location": "NY" }' http://localhost:57602/api/user/
 ```
-Response has new item's id
+
+Response has new item's id and Location header to new item
 
 ```json
 { "id": 6 }
+
+Headers:
+Location=/api/user/6
 ```
 
 #### Replace item 

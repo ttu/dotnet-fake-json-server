@@ -136,7 +136,7 @@ namespace FakeServer.Controllers
         /// <param name="collectionId">Collection id</param>
         /// <param name="item">Item to add</param>
         /// <returns>Created item id</returns>
-        /// <response code="200">Item created</response>
+        /// <response code="201">Item created</response>
         /// <response code="400">Item is null</response>
         [HttpPost("{collectionId}")]
         public async Task<IActionResult> AddNewItem(string collectionId, [FromBody]JToken item)
@@ -148,7 +148,7 @@ namespace FakeServer.Controllers
             
             await collection.InsertOneAsync(item);
 
-            return Ok(new { id = item["id"] });
+            return Created($"/api/{collectionId}/{item["id"]}", new { id = item["id"] });
         }
 
         /// <summary>
