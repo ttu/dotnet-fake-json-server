@@ -198,6 +198,7 @@ Asynchoronous operations follow [REST CookBook guide](http://restcookbook.com/Re
 
 For now API supports only id as the key field and integer as it's value type.
 
+Method return values are specified [REST API Tutorial](http://www.restapitutorial.com/lessons/httpmethods.html).
 
 ### Status
 
@@ -390,8 +391,8 @@ $ curl http://localhost:57602/api/company/0/employees/1/address
 ```
 POST /api/{item}
 
-201 Created : New item is created
-400 BadRequest : New item is null
+201 Created     : New item is created
+400 Bad Request : New item is null
 ```
 
 ```sh
@@ -412,9 +413,9 @@ Location=/api/user/6
 ``` 
 PUT /api/{item}/{id}
 
-200 OK         : Item is replaced
-400 BadRequest : Item is null
-404 Not Found  : Item is not found
+204 No Content  : Item is replaced
+400 Bad Request : Item is null
+404 Not Found   : Item is not found
 ```
 
 ```sh
@@ -426,7 +427,7 @@ $ curl -H "Accept: application/json" -H "Content-type: application/json" -X PUT 
 ```
 PATCH /api/{item}/{id}
 
-200 OK          : Item updated
+204 No Content  : Item updated
 400 Bad Request : PATCH is empty
 404 Not Found   : Item is not found
 ```
@@ -440,8 +441,8 @@ $ curl -H "Accept: application/json" -H "Content-type: application/json" -X PATC
 ``` 
 DELETE /api/{item}/{id}
 
-200 OK        : Item deleted
-404 Not Found : Item is not found
+204 No Content : Item deleted
+404 Not Found  : Item is not found
 ```
 
 ```sh

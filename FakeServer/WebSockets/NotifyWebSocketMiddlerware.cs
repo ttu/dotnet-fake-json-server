@@ -23,7 +23,7 @@ namespace FakeServer.WebSockets
 
             if (context.Request.Path.Value.StartsWith("/api") &&
                 _udpateMethods.Contains(context.Request.Method) &&
-                context.Response.StatusCode == 200)
+                (context.Response.StatusCode >= 200 && context.Response.StatusCode < 300))
             {
                 var data = ObjectHelper.GetWebSocketMessage(context.Request.Method, context.Request.Path.Value);
                 _bus.Publish("updated", data);

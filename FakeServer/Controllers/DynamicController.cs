@@ -158,7 +158,7 @@ namespace FakeServer.Controllers
         /// <param name="id">Id of the item to be replaced</param>
         /// <param name="item">Item's new content</param>
         /// <returns></returns>
-        /// <response code="200">Item found and replaced</response>
+        /// <response code="204">Item found and replaced</response>
         /// <response code="400">Item is null</response>
         /// <response code="404">Item not found</response>
         [HttpPut("{collectionId}/{id}")]
@@ -173,7 +173,7 @@ namespace FakeServer.Controllers
             var success = await _ds.GetCollection(collectionId).ReplaceOneAsync((Predicate<dynamic>)(e => e.id == id), item);
 
             if (success)
-                return Ok();
+                return NoContent();
             else
                 return NotFound();
         }
@@ -194,7 +194,7 @@ namespace FakeServer.Controllers
         /// <param name="id">Id of the item to be updated</param>
         /// <param name="patchData">Patch data</param>
         /// <returns></returns>
-        /// <response code="200">Item found and updated</response>
+        /// <response code="204">Item found and updated</response>
         /// <response code="400">Patch data is empty</response>
         /// <response code="404">Item not found</response>
         [HttpPatch("{collectionId}/{id}")]
@@ -208,7 +208,7 @@ namespace FakeServer.Controllers
             var success = await _ds.GetCollection(collectionId).UpdateOneAsync((Predicate<dynamic>)(e => e.id == id), sourceData);
 
             if (success)
-                return Ok();
+                return NoContent();
             else
                 return NotFound();
         }
@@ -219,7 +219,7 @@ namespace FakeServer.Controllers
         /// <param name="collectionId">Collection id</param>
         /// <param name="id">Id of the item to be removed</param>
         /// <returns></returns>
-        /// <response code="200">Item found and removed</response>
+        /// <response code="204">Item found and removed</response>
         /// <response code="404">Item not found</response>
         [HttpDelete("{collectionId}/{id}")]
         public async Task<IActionResult> DeleteItem(string collectionId, int id)
@@ -227,7 +227,7 @@ namespace FakeServer.Controllers
             var success = await _ds.GetCollection(collectionId).DeleteOneAsync(e => e.id == id);
 
             if (success)
-                return Ok();
+                return NoContent();
             else
                 return NotFound();
         }        
