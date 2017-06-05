@@ -113,6 +113,10 @@ $ curl http://localhost:57602/api/user/
 # Or open url http://localhost:57602/swagger/ with browser and use Swagger
 ```
 
+#### Redux TodoMVC Example
+
+[Redux TodoMVC](https://github.com/ttu/todomvc-fake-server) example modified to use Fake JSON Server as a Back End.
+
 ## Features
 
 ### Authentication
@@ -149,10 +153,10 @@ $ curl -H 'Authorization: Bearer [TOKEN]' http://localhost:57602/api
 API will send latest update's method (`POST, PUT, PATCH, DELETE`), path, item type and optional item id with WebSocket.
 
 ```json
-{ "method": "PATCH", "path": "/api/user/2", "itemType" "user", "itemId": 2 }
+{ "method": "PATCH", "path": "/api/user/2", "itemType": "user", "itemId": 2 }
 ```
 
-[wwwroot\index.html](FakeServer\wwwroot\index.html) has a WebSocket example.
+[wwwroot\index.html](https://github.com/ttu/dotnet-fake-json-server/blob/master/FakeServer/wwwroot/index.html) has a WebSocket example.
 
 ### CORS
 
