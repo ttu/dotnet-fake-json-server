@@ -9,7 +9,7 @@ Fake REST API for prototyping or as a CRUD backend.
 * No database. Data is stored to a JSON file
 * CRUD operations (GET, PUT, POST, PATCH, DELETE)
 * Async versions of update operations with long running jobs
-* Simulate delay for requests
+* Simulate delay and errors for requests
 * Start the Server and API is ready to be used with any data
 
 ## Features
@@ -454,21 +454,6 @@ DELETE /api/{item}/{id}
 $ curl -X DELETE http://localhost:57602/api/user/1
 ```
 
-### Simulate Delay
-
-Delay for requests can be configured. Delay length is randomly chosen between `MinMs`and `MaxMs`. Delay happens when request is going in. Delay can be configured for only certain HTTP Methods, e.g. only POST updates have delay and all GET requests happen fast.
-
-```json
-"Simulate": {
-    "Delay": {
-      "Enabled": true,
-      "Methods": [ "GET", "POST", "PUT", "PATCH", "DELETE" ],
-      "MinMs": 2000,
-      "MaxMs": 5000
-    }
-}
-```
-
 ### Async Operations
 
 `/async` endoint has long running jobs for each update operation.
@@ -517,7 +502,36 @@ Delay for operations can be set from `appsettings.json`. With long delay it is e
   }
  ```
 
- Delay value is milliseconds. Default value is 2000ms.
+Delay value is milliseconds. Default value is 2000ms.
+
+### Simulate Delay and Random Errors
+
+Delay and errors can be configured from `appsettings.json`.
+
+Delay can be simulated by setting `Simulate.Delay.Enabled` to __true__. The inbound request is delayed. The length of the delay is randomly chosen between `MinMs`and `MaxMs`. Delay can be configured for only certain HTTP Methods, e.g. only POST updates have delay and all GET requests are handled normally.
+
+```json
+"Simulate": {
+    "Delay": {
+      "Enabled": true,
+      "Methods": [ "GET", "POST", "PUT", "PATCH", "DELETE" ],
+      "MinMs": 2000,
+      "MaxMs": 5000
+    }
+}
+```
+
+Random errors can be simulated by setting `Simulate.Error.Enabled` to __true__. Error is thrown if set `Probability` is greater or equal to randomly chosen value between 1 and 100. Error can be configured for only certain HTTP Methods.
+
+```json
+"Simulate": {
+    "Error": {
+      "Enabled": true,
+      "Methods": [ "POST", "PUT", "PATCH", "DELETE" ],
+      "Probability": 50
+    }
+}
+```
 
 ### Benchmark
 

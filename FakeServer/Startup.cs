@@ -120,6 +120,11 @@ namespace FakeServer
                 app.UseMiddleware<DelayMiddleware>();
             }
 
+            if (Configuration.GetValue<bool>("Simulate:Error:Enabled"))
+            {
+                app.UseMiddleware<ErrorMiddleware>();
+            }
+
             app.UseWebSockets();
 
             app.UseMiddleware<NotifyWebSocketMiddlerware>();
