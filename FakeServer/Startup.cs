@@ -2,6 +2,7 @@
 using FakeServer.Authentication.Custom;
 using FakeServer.Authentication.Jwt;
 using FakeServer.Jobs;
+using FakeServer.Simulate;
 using FakeServer.WebSockets;
 using JsonFlatFileDataStore;
 using Microsoft.AspNetCore.Builder;
@@ -64,6 +65,7 @@ namespace FakeServer
 
             services.Configure<AuthenticationSettings>(Configuration.GetSection("Authentication"));
             services.Configure<JobsSettings>(Configuration.GetSection("Jobs"));
+            services.Configure<SimulateSettings>(Configuration.GetSection("Simulate"));
 
             services.AddCors(options =>
             {
@@ -112,6 +114,11 @@ namespace FakeServer
                     return context.Response.WriteAsync("{\"status\": \"Ok\"}");
                 });
             });
+
+            if (Configuration.GetValue<bool>("Simulate:Delay:Enabled"))
+            {
+                app.UseMiddleware<DelayMiddleware>();
+            }
 
             app.UseWebSockets();
 

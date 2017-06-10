@@ -9,7 +9,8 @@ Fake REST API for prototyping or as a CRUD backend.
 * No database. Data is stored to a JSON file
 * CRUD operations (GET, PUT, POST, PATCH, DELETE)
 * Async versions of update operations with long running jobs
-* Start server and API is ready to be used with any data
+* Simulate delay for requests
+* Start the Server and API is ready to be used with any data
 
 ## Features
  
@@ -451,6 +452,21 @@ DELETE /api/{item}/{id}
 
 ```sh
 $ curl -X DELETE http://localhost:57602/api/user/1
+```
+
+### Simulate Delay
+
+Delay for requests can be configured. Delay length is randomly chosen between `MinMs`and `MaxMs`. Delay happens when request is going in. Delay can be configured for only certain HTTP Methods, e.g. only POST updates have delay and all GET requests happen fast.
+
+```json
+"Simulate": {
+    "Delay": {
+      "Enabled": true,
+      "Methods": [ "GET", "POST", "PUT", "PATCH", "DELETE" ],
+      "MinMs": 2000,
+      "MaxMs": 5000
+    }
+}
 ```
 
 ### Async Operations
