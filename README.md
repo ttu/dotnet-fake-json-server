@@ -10,7 +10,7 @@ Fake REST API for prototyping or as a CRUD backend.
 * CRUD operations (GET, PUT, POST, PATCH, DELETE)
 * Async versions of update operations with long running jobs
 * Simulate delay and errors for requests
-* Start the Server and API is ready to be used with any data
+* No configuration needed, start the Server and API is ready to be used with any data
 
 ## Features
  
@@ -470,6 +470,12 @@ Location=http://{url}:{port}/async/queue/{id}
 
 Update operations will return location to job queue in headers.
 
+Create new item. Curl has a verbose flag so it will print response headers among other things.
+
+```sh
+$ curl -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{ "name": "Phil", "age": 40, "location": "NY" }' -v http://localhost:57602/async/user/
+```
+
 ```
 GET /async/queue/{id}
 
@@ -558,3 +564,4 @@ $ ab -p user.json -T application/json -c 10 -n 2000 http://localhost:57602/api/u
 ### License
 
 Licensed under the [MIT](LICENSE) License.
+
