@@ -75,8 +75,6 @@ $ docker cp db.json [ContainerId]:/app/db.json
 $ docker cp [ContainerId]:/app/db.json db.json
 ```
 
-After copying the file from host to container, Reload data by opening Swagger UI in url `http://localhost:57602/swagger/#!/Admin/AdminReloadPost` and press Try It Out.
-
 `docker run` will reset JSON-file, so copy it before closing the server.
 
 #### Quick example
@@ -103,9 +101,6 @@ $ curl http://localhost:57602/api/user/1
 ...
 
 # Add users to data.json manually
-
-# Command DataStore to reload data from the file (normally refreshes only on initialization or on data writes)
-$ curl -X POST http://localhost:57602/api/reload/
 
 # Get all users
 $ curl http://localhost:57602/api/user/
@@ -218,14 +213,21 @@ $ curl http://localhost:57602/status
 
 ### Reload
 
-Reload endpoint can be used to reload JSON data from the file to DataStore.
+By default DataStore updates internal data eagerly on every query. For performance reasons this can be changed to mode where data is reloaded from the file only when DataStore is initialized and when data is updated. Then if data is updated manually, reload endpoint must be called if new data will be queried before any updates. 
+
+Behaviour can be changed from `appsettings.json` by setting `EagerDataReload`.
+
+```json
+  "Common": {
+    "EagerDataReload": true
+  }
+```
+
+Reload endpoint can be used to reload JSON data from the file to DataStore. Endoint is in Admin controller, so it is usable also with Swagger.
 
 ```sh
 $ curl -X POST http://localhost:57602/admin/reload --data ""
 ```
-DataStore updates internal data from the file only when initialized and when data is updated. If JSON file is updated manually and new data is requested immediately before any updates, this must be called before new data can be fetched. 
-
-Endoint is in Admin controller, so it is usable also with Swagger.
 
 ##### Example JSON Data
 

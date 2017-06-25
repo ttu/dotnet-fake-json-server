@@ -58,8 +58,9 @@ namespace FakeServer
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
             var path = Path.Combine(_path, _jsonFileName);
-            services.AddSingleton<IDataStore>(new DataStore(path));
+            services.AddSingleton<IDataStore>(new DataStore(path, reloadBeforeGetCollection: Configuration.GetValue<bool>("Common:EagerDataReload")));
             services.AddSingleton<IMessageBus, MessageBus>();
             services.AddSingleton(typeof(JobsService));
 
