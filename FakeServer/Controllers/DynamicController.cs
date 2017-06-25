@@ -1,6 +1,8 @@
-﻿using JsonFlatFileDataStore;
+﻿using FakeServer.Common;
+using JsonFlatFileDataStore;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -16,10 +18,12 @@ namespace FakeServer.Controllers
     public class DynamicController : Controller
     {
         private readonly IDataStore _ds;
+        private readonly ApiSettings _settings;
 
-        public DynamicController(IDataStore ds)
+        public DynamicController(IDataStore ds, IOptions<ApiSettings> settings)
         {
             _ds = ds;
+            _settings = settings.Value;
         }
 
         /// <summary>
@@ -170,7 +174,7 @@ namespace FakeServer.Controllers
             // Make sure that new data has id field correctly
             item.id = id;
 
-            var success = await _ds.GetCollection(collectionId).ReplaceOneAsync((Predicate<dynamic>)(e => e.id == id), item);
+            var success = await _ds.GetCollection(collectionId).ReplaceOneAsync((Predicate<dynamic>)(e => e.id == id), item, _settings.UpsertOnPut);
 
             if (success)
                 return NoContent();
