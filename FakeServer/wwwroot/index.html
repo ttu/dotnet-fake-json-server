@@ -3,41 +3,59 @@
 <head>
     <meta charset="utf-8" />
     <title>JSON Fake REST API</title>
+
+    <style type="text/css">
+        [v-cloak] {
+            display: none;
+        }
+    </style>
 </head>
 <body>
-    <div>
-        <h3>Collections found:</h3>
-        <div id="collections"></div>
-    </div>
-    <br/>
-    <div>
-        <h3>Last update:</h3>
-        <div>Method: <label id="updateMethod"></label></div>
-        <div>Path: <label id="updatePath"></label></div>
-        <div>Item type: <label id="updateType"></label></div>
-        <div>Item Id: <label id="updateId"></label></div>
+    <div id="app" v-cloak>
+        <div>
+            <h3>Collections found:</h3>
+            {{ collections }}
+        </div>
+        <br />
+        <div>
+            <h3>Last update:</h3>
+            <div>Method: {{ lastUpdate.method }}</div>
+            <div>Path: {{ lastUpdate.path }}</div>
+            <div>Item type: {{ lastUpdate.collection }}</div>
+            <div>Item Id: {{ lastUpdate.itemId }}</div>
+        </div>
     </div>
 </body>
 
+<script src="https://unpkg.com/vue"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/superagent/3.5.2/superagent.min.js"></script>
 
 <script>
+    var app = new Vue({
+        el: '#app',
+        data: {
+            collections: '',
+            lastUpdate: {
+                method: '-',
+                path: '-',
+                collection: '-',
+                itemId: '-'
+            }
+        }
+    });
+
     const request = window.superagent;
 
     request
         .get('http://localhost:57602/api')
         .end((err, resp) => {
-            document.getElementById("collections").textContent = resp.body;
+            app.collections = resp.body;
         });
 
     const webSocket = new WebSocket("ws://localhost:57602/ws");
 
     webSocket.onmessage = (evt) => {
-        const data = JSON.parse(evt.data);
-        document.getElementById("updateMethod").textContent = data.method;
-        document.getElementById("updatePath").textContent = data.path;
-        document.getElementById("updateType").textContent = data.collection;
-        document.getElementById("updateId").textContent = data.itemId;
+        app.lastUpdate = JSON.parse(evt.data);
     };
 
     webSocket.onopen = () => { console.log('open'); };
