@@ -277,7 +277,7 @@ GET /api/{collection}
 404 Not Found : Collection is not found or it is empty
 ```
 
-Amount of items can be defined with `skip` and `take` parameters. By default request returns first 10 items.
+Amount of items can be defined with `skip` and `take` parameters. By default request returns first 512 items.
 
 ```sh
 $ curl http://localhost:57602/api/users

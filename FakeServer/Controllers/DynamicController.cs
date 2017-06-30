@@ -59,7 +59,7 @@ namespace FakeServer.Controllers
         /// <response code="200">Collection item array</response>
         /// <response code="404">Collection not found</response>
         [HttpGet("{collectionId}")]
-        public IActionResult GetItems(string collectionId, int skip = 0, int take = 10)
+        public IActionResult GetItems(string collectionId, int skip = 0, int take = 512)
         {
             var datas = _ds.GetCollection(collectionId).AsQueryable();
 
