@@ -1,5 +1,5 @@
 ﻿{
-  "user": [
+  "users": [
     {
       "id": 1,
       "name": "James",
@@ -49,7 +49,7 @@
       "name": "Predator"
     }
   ],
-  "family": [
+  "families": [
     {
       "id": 0,
       "familyName": "Parker",

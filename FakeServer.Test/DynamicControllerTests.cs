@@ -81,7 +81,7 @@ namespace FakeServer.Test
             controller.ControllerContext.HttpContext.Request.QueryString = new QueryString("?parents.favouriteMovie=Predator");
 
             // NOTE: Can't but skip and take to querystring with tests
-            var result = controller.GetItems("family", 0, 100) as OkObjectResult;
+            var result = controller.GetItems("families", 0, 100) as OkObjectResult;
             Assert.Equal(11, ((IEnumerable<dynamic>)result.Value).Count());
 
             UTHelpers.Down(filePath);
@@ -99,7 +99,7 @@ namespace FakeServer.Test
             controller.ControllerContext.HttpContext = new DefaultHttpContext();
             controller.ControllerContext.HttpContext.Request.QueryString = new QueryString("?children.friends.name=Castillo");
 
-            var result = controller.GetItems("family") as OkObjectResult;
+            var result = controller.GetItems("families") as OkObjectResult;
             Assert.Equal(2, ((IEnumerable<dynamic>)result.Value).Count());
 
             UTHelpers.Down(filePath);
@@ -114,7 +114,7 @@ namespace FakeServer.Test
 
             var controller = new DynamicController(ds, apiSettings);
 
-            var result = controller.GetNested("family", 1, "parents/1/work") as OkObjectResult;
+            var result = controller.GetNested("families", 1, "parents/1/work") as OkObjectResult;
             Assert.Equal("APEXTRI", ((dynamic)result.Value).companyName);
 
             UTHelpers.Down(filePath);
@@ -129,7 +129,7 @@ namespace FakeServer.Test
 
             var controller = new DynamicController(ds, apiSettings);
 
-            var result = controller.GetNested("family", 1, "parents/1") as OkObjectResult;
+            var result = controller.GetNested("families", 1, "parents/1") as OkObjectResult;
             Assert.Equal("Kim", ((dynamic)result.Value).name);
 
             UTHelpers.Down(filePath);
@@ -144,7 +144,7 @@ namespace FakeServer.Test
 
             var controller = new DynamicController(ds, apiSettings);
 
-            var result = controller.GetNested("family", 1, "parents") as OkObjectResult;
+            var result = controller.GetNested("families", 1, "parents") as OkObjectResult;
             Assert.Equal(2, ((IEnumerable<dynamic>)result.Value).Count());
 
             UTHelpers.Down(filePath);

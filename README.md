@@ -84,26 +84,26 @@ $ docker cp [ContainerId]:/app/db.json db.json
 $ curl http://localhost:57602/api
 
 # Insert new user
-$ curl -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{ "name": "Phil", "age": 20, "location": "NY" }' http://localhost:57602/api/user/
+$ curl -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{ "name": "Phil", "age": 20, "location": "NY" }' http://localhost:57602/api/users/
 
 # Insert another user
-$ curl -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{ "name": "James", "age": 40, "location": "SF" }' http://localhost:57602/api/user/
+$ curl -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{ "name": "James", "age": 40, "location": "SF" }' http://localhost:57602/api/users/
 
 # List users
-$ curl http://localhost:57602/api/user
+$ curl http://localhost:57602/api/users
 
 # List users from NY
-$ curl http://localhost:57602/api/user?location=NY
+$ curl http://localhost:57602/api/users?location=NY
 
 # Get User with Id 1
-$ curl http://localhost:57602/api/user/1
+$ curl http://localhost:57602/api/users/1
 
 ...
 
 # Add users to data.json manually
 
 # Get all users
-$ curl http://localhost:57602/api/user/
+$ curl http://localhost:57602/api/users/
 ...
 
 # Or open url http://localhost:57602/swagger/ with browser and use Swagger
@@ -149,7 +149,7 @@ $ curl -H 'Authorization: Bearer [TOKEN]' http://localhost:57602/api
 API will send latest update's method (`POST, PUT, PATCH, DELETE`), path, item type and optional item id with WebSocket.
 
 ```json
-{ "method": "PATCH", "path": "/api/user/2", "itemType": "user", "itemId": 2 }
+{ "method": "PATCH", "path": "/api/users/2", "itemType": "users", "itemId": 2 }
 ```
 
 [wwwroot\index.html](https://github.com/ttu/dotnet-fake-json-server/blob/master/FakeServer/wwwroot/index.html) has a WebSocket example.
@@ -192,7 +192,7 @@ PATCH  /async/{item}/{id}
 DELETE /async/{item}/{id}
 ```
 
-Dynamic routes are defined by the name of item's collection and id: `api/{item}/{id}`. All examples below use `user` as a collection name.
+Dynamic routes are defined by the name of item's collection and id: `api/{item}/{id}`. All examples below use `users` as a collection name.
 
 Asynchoronous operations follow [REST CookBook guide](http://restcookbook.com/Resources/asynchroneous-operations/). Updates will return `202` with location header to queue item. Queue will return `200` while job is processing and `303` when job is ready with location header to changed or new item.
 
@@ -235,12 +235,12 @@ Data used in examples
 
 ```json
 {
-  "user": [
+  "users": [
     { "id": 1, "name": "Phil", "age": 40, "location": "NY" },
     { "id": 2, "name": "Larry", "age": 37, "location": "London" },
     { "id": 3, "name": "Thomas", "age": 40, "location": "London" }
   ],
-  "movie": []
+  "movies": []
 }
 ```
 
@@ -259,7 +259,7 @@ $ curl http://localhost:57602/api
 ```
 
 ```json
-[ "user", "movie" ]
+[ "users", "movies" ]
 ```
 
 #### Get items
@@ -274,13 +274,13 @@ GET /api/{item}
 Amount of items can be defined with `skip` and `take` parameters. By default request returns first 10 items.
 
 ```sh
-$ curl http://localhost:57602/api/user
+$ curl http://localhost:57602/api/users
 ```
 
 Example request returns items from 6 to 26.
 
 ```sh
-$ curl http://localhost:57602/api/user?skip=5&take=20
+$ curl http://localhost:57602/api/users?skip=5&take=20
 ```
 
 
@@ -294,7 +294,7 @@ GET api/{item}?field=value&otherField=value
 ```
 
 ```sh
-$ curl http://localhost:57602/api/user?age=40
+$ curl http://localhost:57602/api/users?age=40
 ```
 ```json
 [ 
@@ -328,7 +328,7 @@ Example JSON:
 Query would return ACME from the example JSON.
 
 ```sh
-$ curl http://localhost:57602/api/user?employees.address.city=London
+$ curl http://localhost:57602/api/users?employees.address.city=London
 ```
 
 ```json
@@ -352,7 +352,7 @@ GET /api/{item}/{id}
 ```
 
 ```sh
-$ curl http://localhost:57602/api/user/1
+$ curl http://localhost:57602/api/users/1
 ```
 
 ```json
@@ -403,7 +403,7 @@ POST /api/{item}
 ```
 
 ```sh
-$ curl -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{ "name": "Phil", "age": 40, "location": "NY" }' http://localhost:57602/api/user/
+$ curl -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{ "name": "Phil", "age": 40, "location": "NY" }' http://localhost:57602/api/users/
 ```
 
 Response has new item's id and Location header to new item
@@ -412,7 +412,7 @@ Response has new item's id and Location header to new item
 { "id": 6 }
 
 Headers:
-Location=/api/user/6
+Location=/api/users/6
 ```
 
 #### Replace item 
@@ -426,7 +426,7 @@ PUT /api/{item}/{id}
 ```
 
 ```sh
-$ curl -H "Accept: application/json" -H "Content-type: application/json" -X PUT -d '{ "name": "Roger", "age": 28, "location": "SF" }' http://localhost:57602/api/user/1
+$ curl -H "Accept: application/json" -H "Content-type: application/json" -X PUT -d '{ "name": "Roger", "age": 28, "location": "SF" }' http://localhost:57602/api/users/1
 ```
 
 #### Update item 
@@ -440,7 +440,7 @@ PATCH /api/{item}/{id}
 ```
 
 ```sh
-$ curl -H "Accept: application/json" -H "Content-type: application/json" -X PATCH -d '{ "name": "Timmy" }' http://localhost:57602/api/user/1
+$ curl -H "Accept: application/json" -H "Content-type: application/json" -X PATCH -d '{ "name": "Timmy" }' http://localhost:57602/api/users/1
 ```
 
 #### Delete item
@@ -453,7 +453,7 @@ DELETE /api/{item}/{id}
 ```
 
 ```sh
-$ curl -X DELETE http://localhost:57602/api/user/1
+$ curl -X DELETE http://localhost:57602/api/users/1
 ```
 
 ### Async Operations
@@ -475,7 +475,7 @@ Update operations will return location to job queue in headers.
 Create new item. Curl has a verbose flag so it will print response headers among other things.
 
 ```sh
-$ curl -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{ "name": "Phil", "age": 40, "location": "NY" }' -v http://localhost:57602/async/user/
+$ curl -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{ "name": "Phil", "age": 40, "location": "NY" }' -v http://localhost:57602/async/users/
 ```
 
 ```
@@ -560,7 +560,7 @@ Create a POST data JSON file (e.g. user.json)
 
 Execute POST 2000 times with 10 concurrent connections
 ```sh
-$ ab -p user.json -T application/json -c 10 -n 2000 http://localhost:57602/api/user
+$ ab -p user.json -T application/json -c 10 -n 2000 http://localhost:57602/api/users
 ```
 
 ### License
