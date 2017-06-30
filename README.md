@@ -211,17 +211,23 @@ $ curl http://localhost:57602/status
 {"status": "Ok"}
 ```
 
-### Reload
+### Eager data reload
 
-By default DataStore updates internal data eagerly on every query. For performance reasons this can be changed to mode where data is reloaded from the file only when DataStore is initialized and when data is updated. Then if data is updated manually, reload endpoint must be called if new data will be queried before any updates. 
+By default DataStore updates internal data on every query by reading data from the JSON file. 
 
-Behaviour can be changed from `appsettings.json` by setting `EagerDataReload`.
+`EagerDataReload` can be configured from `appsettings.json`.
 
 ```json
-  "Common": {
-    "EagerDataReload": true
-  }
+"Common": {
+  "EagerDataReload": true
+}
 ```
+
+For performance reasons `EagerDataReload` can be changed to _false_. Then data is reloaded from the file only when DataStore is initialized and when data is updated. 
+
+If `EagerDataReload` is _false_ and JSON file is updated manually, reload endpoint must be called if new data will be queried before any updates. 
+
+### Reload
 
 Reload endpoint can be used to reload JSON data from the file to DataStore. Endoint is in Admin controller, so it is usable also with Swagger.
 
@@ -229,7 +235,7 @@ Reload endpoint can be used to reload JSON data from the file to DataStore. Endo
 $ curl -X POST http://localhost:57602/admin/reload --data ""
 ```
 
-##### Example JSON Data
+##### Example JSON data
 
 Data used in examples
 
