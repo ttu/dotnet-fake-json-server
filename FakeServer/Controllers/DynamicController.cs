@@ -50,7 +50,7 @@ namespace FakeServer.Controllers
         /// Get items
         /// </summary>
         /// <remarks>
-        /// Add filtering with query parameters. E.q. /api/user?age=22&amp;name=Phil (not possible with Swagger)
+        /// Add filtering with query parameters. E.q. /api/users?age=22&amp;name=Phil (not possible with Swagger)
         /// </remarks>
         /// <param name="collectionId">Collection id</param>
         /// <param name="skip">Items to skip</param>
@@ -107,7 +107,7 @@ namespace FakeServer.Controllers
         /// Get nested item
         /// </summary>
         /// <remarks>
-        /// Add full path separated with periods. E.q. /api/user/1/parents/0/work
+        /// Add full path separated with periods. E.q. /api/users/1/parents/0/work
         /// </remarks>
         /// <param name="collectionId">Collection id</param>
         /// <param name="id">Item id</param>
