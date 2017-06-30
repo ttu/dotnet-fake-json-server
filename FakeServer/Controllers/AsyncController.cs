@@ -146,7 +146,7 @@ namespace FakeServer.Controllers
                 return new OkResult();
 
             Response.StatusCode = (int)HttpStatusCode.SeeOther;
-            Response.Headers.Add("Location", new StringValues($"{Request.Scheme}://{Request.Host.Value}/api/{job.ItemType}/{job.Action.Result}"));
+            Response.Headers.Add("Location", new StringValues($"{Request.Scheme}://{Request.Host.Value}/api/{job.Collection}/{job.Action.Result}"));
             return new ContentResult();
         }
 

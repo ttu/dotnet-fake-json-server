@@ -79,7 +79,7 @@ namespace FakeServer
             {
                 Method = method,
                 Path = path,
-                ItemType = cleaned.IndexOf("/") != -1 ? cleaned.Substring(0, cleaned.IndexOf("/")) : cleaned,
+                Collection = cleaned.IndexOf("/") != -1 ? cleaned.Substring(0, cleaned.IndexOf("/")) : cleaned,
                 ItemId = cleaned.LastIndexOf("/") != -1 ? cleaned.Substring(cleaned.LastIndexOf("/") + 1) : null
             };
         }

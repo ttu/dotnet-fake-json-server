@@ -155,30 +155,30 @@ namespace FakeServer.Test
         {
             // Anonymous type is generated as internal so we cant test it withou new serialize/deserialize
             // Should add InternalsVisibleTo or just crate a Typed class
-            dynamic original = ObjectHelper.GetWebSocketMessage("POST", "/api/human/2");
+            dynamic original = ObjectHelper.GetWebSocketMessage("POST", "/api/humans/2");
 
             var msg = JsonConvert.DeserializeObject<dynamic>(JsonConvert.SerializeObject(original));
 
-            Assert.Equal("/api/human/2", msg.Path.Value);
-            Assert.Equal("human", msg.ItemType.Value);
+            Assert.Equal("/api/humans/2", msg.Path.Value);
+            Assert.Equal("humans", msg.Collection.Value);
             Assert.Equal("2", msg.ItemId.Value);
             Assert.Equal("POST", msg.Method.Value);
 
-            original = ObjectHelper.GetWebSocketMessage("PUT", "api/human/2/");
+            original = ObjectHelper.GetWebSocketMessage("PUT", "api/humans/2/");
 
             msg = JsonConvert.DeserializeObject<dynamic>(JsonConvert.SerializeObject(original));
 
-            Assert.Equal("api/human/2/", msg.Path.Value);
-            Assert.Equal("human", msg.ItemType.Value);
+            Assert.Equal("api/humans/2/", msg.Path.Value);
+            Assert.Equal("humans", msg.Collection.Value);
             Assert.Equal("2", msg.ItemId.Value);
             Assert.Equal("PUT", msg.Method.Value);
 
-            original = ObjectHelper.GetWebSocketMessage("POST", "/api/human");
+            original = ObjectHelper.GetWebSocketMessage("POST", "/api/humans");
 
             msg = JsonConvert.DeserializeObject<dynamic>(JsonConvert.SerializeObject(original));
 
-            Assert.Equal("/api/human", msg.Path.Value);
-            Assert.Equal("human", msg.ItemType.Value);
+            Assert.Equal("/api/humans", msg.Path.Value);
+            Assert.Equal("humans", msg.Collection.Value);
             Assert.Equal(null, msg.ItemId.Value);
             Assert.Equal("POST", msg.Method.Value);
         }

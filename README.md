@@ -146,10 +146,10 @@ $ curl -H 'Authorization: Bearer [TOKEN]' http://localhost:57602/api
 
 ### WebSockets
 
-API will send latest update's method (`POST, PUT, PATCH, DELETE`), path, item type and optional item id with WebSocket.
+API will send latest update's method (`POST, PUT, PATCH, DELETE`), path, collection and optional item id with WebSocket.
 
 ```json
-{ "method": "PATCH", "path": "/api/users/2", "itemType": "users", "itemId": 2 }
+{ "method": "PATCH", "path": "/api/users/2", "collection": "users", "itemId": 2 }
 ```
 
 [wwwroot\index.html](https://github.com/ttu/dotnet-fake-json-server/blob/master/FakeServer/wwwroot/index.html) has a WebSocket example.

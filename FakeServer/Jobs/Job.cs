@@ -4,7 +4,7 @@ namespace FakeServer.Jobs
 {
     public class Job
     {
-        public string ItemType { get; set; }
+        public string Collection { get; set; }
 
         public Task<dynamic> Action { get; set; }
     }
