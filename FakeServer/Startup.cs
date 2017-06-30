@@ -1,6 +1,7 @@
 ﻿using FakeServer.Authentication;
 using FakeServer.Authentication.Custom;
 using FakeServer.Authentication.Jwt;
+using FakeServer.Common;
 using FakeServer.Jobs;
 using FakeServer.Simulate;
 using FakeServer.WebSockets;
@@ -58,13 +59,13 @@ namespace FakeServer
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
             var path = Path.Combine(_path, _jsonFileName);
             services.AddSingleton<IDataStore>(new DataStore(path, reloadBeforeGetCollection: Configuration.GetValue<bool>("Common:EagerDataReload")));
             services.AddSingleton<IMessageBus, MessageBus>();
             services.AddSingleton(typeof(JobsService));
 
             services.Configure<AuthenticationSettings>(Configuration.GetSection("Authentication"));
+            services.Configure<ApiSettings>(Configuration.GetSection("Api"));
             services.Configure<JobsSettings>(Configuration.GetSection("Jobs"));
             services.Configure<SimulateSettings>(Configuration.GetSection("Simulate"));
 
