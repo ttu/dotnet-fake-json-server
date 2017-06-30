@@ -177,22 +177,22 @@ GET    /status
 POST   /admin/reload
 
 GET    /api
-GET    /api/{item}
-POST   /api/{item}
-GET    /api/{item}/{id}
-PUT    /api/{item}/{id}
-PATCH  /api/{item}/{id}
-DELETE /api/{item}/{id}
+GET    /api/{collection}
+POST   /api/{collection}
+GET    /api/{collection}/{id}
+PUT    /api/{collection}/{id}
+PATCH  /api/{collection}/{id}
+DELETE /api/{collection}/{id}
 
 GET    /async/queue/{id}
 DELETE /async/queue/{id}
-POST   /async/{item}
-PUT    /async/{item}/{id}
-PATCH  /async/{item}/{id}
-DELETE /async/{item}/{id}
+POST   /async/{collection}
+PUT    /async/{collection}/{id}
+PATCH  /async/{collection}/{id}
+DELETE /async/{collection}/{id}
 ```
 
-Dynamic routes are defined by the name of item's collection and id: `api/{item}/{id}`. All examples below use `users` as a collection name.
+Dynamic routes are defined by the name of item's collection and id: `api/{collection}/{id}`. All examples below use `users` as a collection name.
 
 Asynchoronous operations follow [REST CookBook guide](http://restcookbook.com/Resources/asynchroneous-operations/). Updates will return `202` with location header to queue item. Queue will return `200` while job is processing and `303` when job is ready with location header to changed or new item.
 
@@ -265,7 +265,7 @@ $ curl http://localhost:57602/api
 #### Get items
 
 ```
-GET /api/{item}
+GET /api/{collection}
 
 200 OK        : Collection is found
 404 Not Found : Collection is not found or it is empty
@@ -287,7 +287,7 @@ $ curl http://localhost:57602/api/users?skip=5&take=20
 #### Get items with query 
 
 ```
-GET api/{item}?field=value&otherField=value
+GET api/{collection}?field=value&otherField=value
 
 200 OK        : Collection is found
 404 Not Found : Collection is not found or it is empty
@@ -305,7 +305,7 @@ $ curl http://localhost:57602/api/users?age=40
 
 Query can have path to child properties. Property names are separated by periods.
 
-`GET api/{item}?parent.child.grandchild.field=value`
+`GET api/{collection}?parent.child.grandchild.field=value`
 
 Example JSON:
 ```json
@@ -345,10 +345,11 @@ $ curl http://localhost:57602/api/users?employees.address.city=London
 #### Get item with id 
 
 ``` 
-GET /api/{item}/{id}
+GET /api/{collection}/{id}
 
-200 OK        : Item is found
-404 Not Found : Item is not found
+200 OK          : Item is found
+400 Bad Request : Collection is not found
+404 Not Found   : Item is not found
 ```
 
 ```sh
@@ -362,7 +363,7 @@ $ curl http://localhost:57602/api/users/1
 #### Get nested items
 
 ```
-GET /api/{item}/{id}/{restOfThePath}
+GET /api/{collection}/{id}/{restOfThePath}
 
 200 OK          : Nested item is found
 400 Bad Request : Parent item is not found
@@ -396,7 +397,7 @@ $ curl http://localhost:57602/api/company/0/employees/1/address
 #### Add item 
 
 ```
-POST /api/{item}
+POST /api/{collection}
 
 201 Created     : New item is created
 400 Bad Request : New item is null
@@ -418,7 +419,7 @@ Location=/api/users/6
 #### Replace item 
 
 ``` 
-PUT /api/{item}/{id}
+PUT /api/{collection}/{id}
 
 204 No Content  : Item is replaced
 400 Bad Request : Item is null
@@ -432,7 +433,7 @@ $ curl -H "Accept: application/json" -H "Content-type: application/json" -X PUT 
 #### Update item 
 
 ```
-PATCH /api/{item}/{id}
+PATCH /api/{collection}/{id}
 
 204 No Content  : Item updated
 400 Bad Request : PATCH is empty
@@ -446,10 +447,10 @@ $ curl -H "Accept: application/json" -H "Content-type: application/json" -X PATC
 #### Delete item
 
 ``` 
-DELETE /api/{item}/{id}
+DELETE /api/{collection}/{id}
 
-204 No Content : Item deleted
-404 Not Found  : Item is not found
+204 No Content  : Item deleted
+404 Not Found   : Item is not found
 ```
 
 ```sh
@@ -461,7 +462,7 @@ $ curl -X DELETE http://localhost:57602/api/users/1
 `/async` endoint has long running jobs for each update operation.
 
 ```
-POST/PUT/PATCH/DELETE /async/{item}/{id}
+POST/PUT/PATCH/DELETE /async/{collection}/{id}
 
 202 Accepted    : New job started
 400 Bad Request : Job not started
