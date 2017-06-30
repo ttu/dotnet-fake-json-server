@@ -178,7 +178,7 @@ namespace FakeServer.Test
                 var result = await client.PostAsync($"{_fixture.BaseUrl}/api/users", content);
                 result.EnsureSuccessStatusCode();
                 var postResponse = JsonConvert.DeserializeObject<JObject>(await result.Content.ReadAsStringAsync());
-                Assert.Equal($"/api/users/{postResponse["id"]}", result.Headers.Location.OriginalString);
+                Assert.Equal($"http://localhost:5001/api/users/{postResponse["id"]}", result.Headers.Location.OriginalString);
 
                 result = await client.GetAsync($"{_fixture.BaseUrl}/api/users/{postResponse["id"]}");
                 result.EnsureSuccessStatusCode();

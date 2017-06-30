@@ -419,7 +419,7 @@ Response has new item's id and Location header to new item
 { "id": 6 }
 
 Headers:
-Location=/api/users/6
+Location=http://localhost:57602/api/users/6
 ```
 
 #### Replace item 

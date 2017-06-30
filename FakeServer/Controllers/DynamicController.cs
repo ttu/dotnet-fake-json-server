@@ -152,7 +152,7 @@ namespace FakeServer.Controllers
             
             await collection.InsertOneAsync(item);
 
-            return Created($"/api/{collectionId}/{item["id"]}", new { id = item["id"] });
+            return Created($"{Request.Scheme}://{Request.Host.Value}/api/{collectionId}/{item["id"]}", new { id = item["id"] });
         }
 
         /// <summary>
