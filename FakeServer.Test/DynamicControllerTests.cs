@@ -4,7 +4,6 @@ using JsonFlatFileDataStore;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Dynamic;
@@ -40,7 +39,7 @@ namespace FakeServer.Test
 
             var controller = new DynamicController(ds, apiSettings);
 
-            var result = await controller.ReplaceItem("my_test", 2, JToken.Parse("{ 'id': 2, 'name': 'Raymond', 'age': 32 }"));
+            var result = await controller.ReplaceItem("my_test", "2", JToken.Parse("{ 'id': 2, 'name': 'Raymond', 'age': 32 }"));
             Assert.IsType(typeof(NotFoundResult), result);
 
             UTHelpers.Down(filePath);
@@ -55,15 +54,36 @@ namespace FakeServer.Test
 
             var controller = new DynamicController(ds, apiSettings);
 
-            var result = await controller.ReplaceItem("my_test", 2, JToken.Parse("{ 'id': 2, 'name': 'Raymond', 'age': 32 }"));
+            var result = await controller.ReplaceItem("my_test", "2", JToken.Parse("{ 'id': 2, 'name': 'Raymond', 'age': 32 }"));
             Assert.IsType(typeof(NoContentResult), result);
 
-            var itemResult = controller.GetItem("my_test", 2);
+            var itemResult = controller.GetItem("my_test", "2");
             Assert.IsType(typeof(OkObjectResult), itemResult);
 
             var okObjectResult = itemResult as OkObjectResult;
             dynamic item = okObjectResult.Value as ExpandoObject;
             Assert.Equal("Raymond", item.name);
+
+            UTHelpers.Down(filePath);
+        }
+
+        [Fact]
+        public async Task PutItem_Upsert_Id_String()
+        {
+            var filePath = UTHelpers.Up();
+            var ds = new DataStore(filePath);
+            var apiSettings = Options.Create(new ApiSettings { UpsertOnPut = true });
+
+            var controller = new DynamicController(ds, apiSettings);
+
+            var result = await controller.ReplaceItem("my_test_string", "acdc", JToken.Parse("{ 'id': 2, 'text': 'Hello' }")) as NoContentResult;
+            Assert.Equal(204, result.StatusCode);
+
+            var itemResult = controller.GetItem("my_test_string", "acdc") as OkObjectResult;
+
+            dynamic item = itemResult.Value as ExpandoObject;
+            Assert.Equal("acdc", item.id);
+            Assert.Equal("Hello", item.text);
 
             UTHelpers.Down(filePath);
         }
@@ -114,7 +134,7 @@ namespace FakeServer.Test
 
             var controller = new DynamicController(ds, apiSettings);
 
-            var result = controller.GetNested("families", 1, "parents/1/work") as OkObjectResult;
+            var result = controller.GetNested("families", "1", "parents/1/work") as OkObjectResult;
             Assert.Equal("APEXTRI", ((dynamic)result.Value).companyName);
 
             UTHelpers.Down(filePath);
@@ -129,7 +149,7 @@ namespace FakeServer.Test
 
             var controller = new DynamicController(ds, apiSettings);
 
-            var result = controller.GetNested("families", 1, "parents/1") as OkObjectResult;
+            var result = controller.GetNested("families", "1", "parents/1") as OkObjectResult;
             Assert.Equal("Kim", ((dynamic)result.Value).name);
 
             UTHelpers.Down(filePath);
@@ -144,43 +164,10 @@ namespace FakeServer.Test
 
             var controller = new DynamicController(ds, apiSettings);
 
-            var result = controller.GetNested("families", 1, "parents") as OkObjectResult;
+            var result = controller.GetNested("families", "1", "parents") as OkObjectResult;
             Assert.Equal(2, ((IEnumerable<dynamic>)result.Value).Count());
 
             UTHelpers.Down(filePath);
-        }
-
-        [Fact]
-        public void WebSocketMessage()
-        {
-            // Anonymous type is generated as internal so we cant test it withou new serialize/deserialize
-            // Should add InternalsVisibleTo or just crate a Typed class
-            dynamic original = ObjectHelper.GetWebSocketMessage("POST", "/api/humans/2");
-
-            var msg = JsonConvert.DeserializeObject<dynamic>(JsonConvert.SerializeObject(original));
-
-            Assert.Equal("/api/humans/2", msg.Path.Value);
-            Assert.Equal("humans", msg.Collection.Value);
-            Assert.Equal("2", msg.ItemId.Value);
-            Assert.Equal("POST", msg.Method.Value);
-
-            original = ObjectHelper.GetWebSocketMessage("PUT", "api/humans/2/");
-
-            msg = JsonConvert.DeserializeObject<dynamic>(JsonConvert.SerializeObject(original));
-
-            Assert.Equal("api/humans/2/", msg.Path.Value);
-            Assert.Equal("humans", msg.Collection.Value);
-            Assert.Equal("2", msg.ItemId.Value);
-            Assert.Equal("PUT", msg.Method.Value);
-
-            original = ObjectHelper.GetWebSocketMessage("POST", "/api/humans");
-
-            msg = JsonConvert.DeserializeObject<dynamic>(JsonConvert.SerializeObject(original));
-
-            Assert.Equal("/api/humans", msg.Path.Value);
-            Assert.Equal("humans", msg.Collection.Value);
-            Assert.Equal(null, msg.ItemId.Value);
-            Assert.Equal("POST", msg.Method.Value);
         }
     }
 }

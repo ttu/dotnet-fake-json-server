@@ -93,9 +93,11 @@ namespace FakeServer.Controllers
         /// <response code="200">Item found</response>
         /// <response code="404">Item not found</response>
         [HttpGet("{collectionId}/{id}")]
-        public IActionResult GetItem(string collectionId, int id)
+        public IActionResult GetItem(string collectionId, string id)
         {
-            var result = _ds.GetCollection(collectionId).Find(e => e.id == id).FirstOrDefault();
+            dynamic convertedId = ObjectHelper.GetValueAsCorrectType(id);
+
+            var result = _ds.GetCollection(collectionId).Find(e => e.id == convertedId).FirstOrDefault();
 
             if (result == null)
                 return NotFound();
@@ -117,11 +119,11 @@ namespace FakeServer.Controllers
         /// <response code="400">Parent item not found</response>
         /// <response code="404">Nested item not found</response>
         [HttpGet("{collectionId}/{id}/{*path}")]
-        public IActionResult GetNested(string collectionId, int id, string path)
+        public IActionResult GetNested(string collectionId, string id, string path)
         {
-            var routes = path.Split('/');
+            dynamic convertedId = ObjectHelper.GetValueAsCorrectType(id);
 
-            var item = _ds.GetCollection(collectionId).AsQueryable().FirstOrDefault(e => e.id == id);
+            var item = _ds.GetCollection(collectionId).AsQueryable().FirstOrDefault(e => e.id == convertedId);
 
             if (item == null)
                 return BadRequest();
@@ -149,7 +151,7 @@ namespace FakeServer.Controllers
                 return BadRequest();
 
             var collection = _ds.GetCollection(collectionId);
-            
+
             await collection.InsertOneAsync(item);
 
             return Created($"{Request.Scheme}://{Request.Host.Value}/api/{collectionId}/{item["id"]}", new { id = item["id"] });
@@ -166,15 +168,17 @@ namespace FakeServer.Controllers
         /// <response code="400">Item is null</response>
         /// <response code="404">Item not found</response>
         [HttpPut("{collectionId}/{id}")]
-        public async Task<IActionResult> ReplaceItem(string collectionId, int id, [FromBody]dynamic item)
+        public async Task<IActionResult> ReplaceItem(string collectionId, string id, [FromBody]dynamic item)
         {
             if (item == null)
                 return BadRequest();
 
-            // Make sure that new data has id field correctly
-            item.id = id;
+            dynamic convertedId = ObjectHelper.GetValueAsCorrectType(id);
 
-            var success = await _ds.GetCollection(collectionId).ReplaceOneAsync((Predicate<dynamic>)(e => e.id == id), item, _settings.UpsertOnPut);
+            // Make sure that new data has id field correctly
+            item.id = convertedId;
+
+            var success = await _ds.GetCollection(collectionId).ReplaceOneAsync((Predicate<dynamic>)(e => e.id == convertedId), item, _settings.UpsertOnPut);
 
             if (success)
                 return NoContent();
@@ -202,14 +206,16 @@ namespace FakeServer.Controllers
         /// <response code="400">Patch data is empty</response>
         /// <response code="404">Item not found</response>
         [HttpPatch("{collectionId}/{id}")]
-        public async Task<IActionResult> UpdateItem(string collectionId, int id, [FromBody]JToken patchData)
+        public async Task<IActionResult> UpdateItem(string collectionId, string id, [FromBody]JToken patchData)
         {
             dynamic sourceData = JsonConvert.DeserializeObject<ExpandoObject>(patchData.ToString());
 
             if (!((IDictionary<string, Object>)sourceData).Any())
                 return BadRequest();
 
-            var success = await _ds.GetCollection(collectionId).UpdateOneAsync((Predicate<dynamic>)(e => e.id == id), sourceData);
+            dynamic convertedId = ObjectHelper.GetValueAsCorrectType(id);
+
+            var success = await _ds.GetCollection(collectionId).UpdateOneAsync((Predicate<dynamic>)(e => e.id == convertedId), sourceData);
 
             if (success)
                 return NoContent();
@@ -226,14 +232,16 @@ namespace FakeServer.Controllers
         /// <response code="204">Item found and removed</response>
         /// <response code="404">Item not found</response>
         [HttpDelete("{collectionId}/{id}")]
-        public async Task<IActionResult> DeleteItem(string collectionId, int id)
+        public async Task<IActionResult> DeleteItem(string collectionId, string id)
         {
-            var success = await _ds.GetCollection(collectionId).DeleteOneAsync(e => e.id == id);
+            dynamic convertedId = ObjectHelper.GetValueAsCorrectType(id);
+
+            var success = await _ds.GetCollection(collectionId).DeleteOneAsync(e => e.id == convertedId);
 
             if (success)
                 return NoContent();
             else
                 return NotFound();
-        }        
+        }
     }
 }

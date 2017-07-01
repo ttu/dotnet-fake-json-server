@@ -194,9 +194,20 @@ DELETE /async/{collection}/{id}
 
 Dynamic routes are defined by the name of item's collection and id: `api/{collection}/{id}`. All examples below use `users` as a collection name.
 
-Asynchoronous operations follow [REST CookBook guide](http://restcookbook.com/Resources/asynchroneous-operations/). Updates will return `202` with location header to queue item. Queue will return `200` while job is processing and `303` when job is ready with location header to changed or new item.
+`id` is used as the identifier field. By default Id field's type is _integer_. `POST` will always use integer as id field's type.
 
-For now API supports only id as the key field and integer as it's value type.
+```json
+"users":[
+  { "id": 1 }
+],
+"sensors": [
+  { "id": "E:52:F7:B3:65:CC" }
+]
+```
+
+If _string_ is used as the identifiers type, then items must be inserted with `PUT` and  `UpsertOnPut` must be set to _true_ from `appsettings.json`.
+
+Asynchoronous operations follow [REST CookBook guide](http://restcookbook.com/Resources/asynchroneous-operations/). Updates will return `202` with location header to queue item. Queue will return `200` while job is processing and `303` when job is ready with location header to changed or new item.
 
 Method return values are specified [REST API Tutorial](http://www.restapitutorial.com/lessons/httpmethods.html).
 

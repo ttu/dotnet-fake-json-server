@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 
@@ -82,6 +83,23 @@ namespace FakeServer
                 Collection = cleaned.IndexOf("/") != -1 ? cleaned.Substring(0, cleaned.IndexOf("/")) : cleaned,
                 ItemId = cleaned.LastIndexOf("/") != -1 ? cleaned.Substring(cleaned.LastIndexOf("/") + 1) : null
             };
+        }
+
+        /// <summary>
+        /// Convert input value to correct type
+        /// </summary>
+        /// <param name="value">input</param>
+        /// <returns>value as an integer or as a string</returns>
+        public static dynamic GetValueAsCorrectType(string value)
+        {
+            try
+            {
+                return Convert.ToInt32(value);
+            }
+            catch (Exception)
+            {
+                return value;
+            }
         }
     }
 }
