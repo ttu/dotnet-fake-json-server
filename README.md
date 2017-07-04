@@ -561,24 +561,25 @@ Random errors can be simulated by setting `Simulate.Error.Enabled` to __true__. 
 
 ### Benchmark
 
-Install ApacheBench
-```sh
-$ sudo apt-get install apache2-utils
-```
+[wrk installation guide](https://github.com/wg/wrk/wiki/Installing-Wrk-on-Linux)
 
 Do benchmark against status endpoint, as it doesn't use any middlewares and it doesn't do any processing.
 ```sh
-$ ab -c 10 -n 2000 http://localhost:57602/status
+$  wrk -c 256 -t 32 -d 10 http://localhost:57602/status
 ```
 
-Create a POST data JSON file (e.g. user.json)
-```json
-{ "name": "Benchmark User", "age": 50, "location": "NY" }
+Create a POST script file (e.g. post.lua).
+
+```lua
+wrk.method = "POST"
+wrk.body   = "{ \"name\": \"Benchmark User\", \"age\": 50, \"location\": \"NY\" }"
+wrk.headers["Content-Type"] = "application/json"
 ```
 
-Execute POST 2000 times with 10 concurrent connections
+Execute POST for 10 seconds.
+
 ```sh
-$ ab -p user.json -T application/json -c 10 -n 2000 http://localhost:57602/api/users
+$ wrk -c 256 -t 32 -d 10 -s post.lua http://localhost:57602/api/users
 ```
 
 ### License
