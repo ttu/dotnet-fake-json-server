@@ -37,14 +37,14 @@ $ git clone https://github.com/ttu/dotnet-fake-json-server.git
 
 ```sh
 $ cd dotnet-fake-json-server/FakeServer
-$ dotnet run [--filename] [--urls]
+$ dotnet run [--file] [--urls]
 
 # Optional arguments:
-#   --filename        Datastore's JSON file (default datastore.json)
+#   --file     Datastore's JSON file (default datastore.json)
 #   --urls     Server url (default http://localhost:57602)      
 
 # Example: Start server
-$ dotnet run --filename data.json --urls http://localhost:57602
+$ dotnet run --file data.json --urls http://localhost:57602
 ```
 
 #### Docker

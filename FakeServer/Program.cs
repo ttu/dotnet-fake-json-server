@@ -18,9 +18,9 @@ namespace FakeServer
                 dictionary.Add(args[idx], args[idx + 1]);
             }
 
-            dictionary.TryGetValue("--filename", out string filename);
+            dictionary.TryGetValue("--file", out string file);
 
-            Console.WriteLine($"FileName: {filename ?? "use default"}");
+            Console.WriteLine($"File: {file ?? "use default"}");
 
             foreach (var kvp in dictionary)
             {

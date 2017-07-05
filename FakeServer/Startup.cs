@@ -31,7 +31,7 @@ namespace FakeServer
         public Startup(IHostingEnvironment env)
         {
             _path = env.ContentRootPath;
-            _jsonFileName = MainConfiguration.ContainsKey("filename") ? MainConfiguration["filename"] : "datastore.json";
+            _jsonFileName = MainConfiguration.ContainsKey("file") ? MainConfiguration["file"] : "datastore.json";
 
             var builder = new ConfigurationBuilder()
                 .SetBasePath(_path)

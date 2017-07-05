@@ -9,9 +9,9 @@ namespace FakeServer
     {
         private static IWebHost _host;
 
-        public static void Run(string url, string path, string fileName)
+        public static void Run(string url, string path, string file)
         {
-            Startup.MainConfiguration.Add("filename", fileName);
+            Startup.MainConfiguration.Add("file", file);
 
             _host = new WebHostBuilder()
                 .UseUrls(url)
