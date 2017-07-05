@@ -225,7 +225,7 @@ If _string_ is used as the identifiers type, then items must be inserted with `P
 
 Asynchoronous operations follow [REST CookBook guide](http://restcookbook.com/Resources/asynchroneous-operations/). Updates will return `202` with location header to queue item. Queue will return `200` while job is processing and `303` when job is ready with location header to changed or new item.
 
-Method return values are specified [REST API Tutorial](http://www.restapitutorial.com/lessons/httpmethods.html).
+Method return codes are specified in [REST API Tutorial](http://www.restapitutorial.com/lessons/httpmethods.html).
 
 ### Status
 
@@ -262,9 +262,11 @@ Reload endpoint can be used to reload JSON data from the file to DataStore. Endo
 $ curl -X POST http://localhost:57602/admin/reload --data ""
 ```
 
+### Functionalities
+
 ##### Example JSON data
 
-Data used in examples
+Data used in example requests, unless otherwise stated:
 
 ```json
 {
@@ -277,7 +279,7 @@ Data used in examples
 }
 ```
 
-Example JSON generation guide used in unit tests [CreateJSON.md](CreateJson.md)
+Example JSON generation guide for data used in unit tests [CreateJSON.md](CreateJson.md).
 
 ####  List collections 
 
@@ -597,6 +599,10 @@ Execute POST for 10 seconds.
 ```sh
 $ wrk -c 256 -t 32 -d 10 -s post.lua http://localhost:57602/api/users
 ```
+
+## Changelog
+
+[Changelog](CHANGELOG.md)
 
 ### License
 
