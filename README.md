@@ -37,14 +37,14 @@ $ git clone https://github.com/ttu/dotnet-fake-json-server.git
 
 ```sh
 $ cd dotnet-fake-json-server/FakeServer
-$ dotnet run [--filename] [--server.urls]
+$ dotnet run [--filename] [--urls]
 
 # Optional arguments:
 #   --filename        Datastore's JSON file (default datastore.json)
-#   --server.urls     Server url (default http://localhost:57602)      
+#   --urls     Server url (default http://localhost:57602)      
 
 # Example: Start server
-$ dotnet run --filename data.json --server.urls http://localhost:57602
+$ dotnet run --filename data.json --urls http://localhost:57602
 ```
 
 #### Docker
@@ -563,12 +563,12 @@ Random errors can be simulated by setting `Simulate.Error.Enabled` to __true__. 
 
 [wrk installation guide](https://github.com/wg/wrk/wiki/Installing-Wrk-on-Linux)
 
-Do benchmark against status endpoint, as it doesn't use any middlewares and it doesn't do any processing.
+Do first benchmark against `/status` endpoint, as it doesn't use any middlewares and it doesn't do any processing.
 ```sh
 $  wrk -c 256 -t 32 -d 10 http://localhost:57602/status
 ```
 
-Create a POST script file (e.g. post.lua).
+Create a script file (e.g. post.lua) for `POST` request.
 
 ```lua
 wrk.method = "POST"
