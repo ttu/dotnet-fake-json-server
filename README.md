@@ -192,7 +192,21 @@ PATCH  /async/{collection}/{id}
 DELETE /async/{collection}/{id}
 ```
 
+##### Paths
+
 Dynamic routes are defined by the name of item's collection and id: `api/{collection}/{id}`. All examples below use `users` as a collection name.
+
+If `/api` or `/async` are needed to change to something different, change `Route` attribute's template-string in `DynamicController.cs` or in `AsyncController.cs`.
+
+```csharp
+[Route("api")]
+public class DynamicController : Controller
+
+[Route("async")]
+public class AsyncController : Controller
+```
+
+##### Identifiers
 
 `id` is used as the identifier field. By default Id field's type is _integer_. `POST` will always use integer as id field's type.
 
@@ -206,6 +220,8 @@ Dynamic routes are defined by the name of item's collection and id: `api/{collec
 ```
 
 If _string_ is used as the identifiers type, then items must be inserted with `PUT` and  `UpsertOnPut` must be set to _true_ from `appsettings.json`.
+
+##### Return codes
 
 Asynchoronous operations follow [REST CookBook guide](http://restcookbook.com/Resources/asynchroneous-operations/). Updates will return `202` with location header to queue item. Queue will return `200` while job is processing and `303` when job is ready with location header to changed or new item.
 
