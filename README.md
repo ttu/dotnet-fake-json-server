@@ -200,10 +200,10 @@ If `/api` or `/async` are needed to change to something different, change `Route
 
 ```csharp
 [Route("api")]
-public class DynamicController : Controller
+public class DynamicController : Controller { }
 
 [Route("async")]
-public class AsyncController : Controller
+public class AsyncController : Controller { }
 ```
 
 ##### Identifiers
@@ -576,6 +576,8 @@ Random errors can be simulated by setting `Simulate.Error.Enabled` to __true__. 
     }
 }
 ```
+
+Error simulation is always skipped for Swagger, WebSocket (ws) and for any html file.
 
 ### Benchmark
 
