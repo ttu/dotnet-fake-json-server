@@ -48,8 +48,10 @@
 
     request
         .get('http://localhost:57602/api')
-        .end((err, resp) => {
-            app.collections = resp.body;
+        .then(response => {
+            app.collections = response.body;
+        }).catch(error => {
+            console.log(error.message || error);
         });
 
     const webSocket = new WebSocket("ws://localhost:57602/ws");
