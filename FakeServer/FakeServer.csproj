@@ -6,6 +6,10 @@
     <Company />
     <Description>Fake JSON Server</Description>
     <Version>0.1.0</Version>
+    <PackageProjectUrl>https://github.com/ttu/dotnet-fake-json-server</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/ttu/dotnet-fake-json-server</RepositoryUrl>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/ttu/dotnet-fake-json-server/master/LICENSE</PackageLicenseUrl>
+    <PackageTags>fake json server rest api</PackageTags>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

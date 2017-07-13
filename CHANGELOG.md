@@ -1,6 +1,9 @@
 # Changelog
 
 ### [Unreleased]
+*
+
+### [0.1.0] - 2017-07-14
 Features in chronological order.
 * GET, POST, PUT, PATCH, DELETE
 * Static files and CORS
@@ -13,8 +16,5 @@ Features in chronological order.
 * Long running jobs
 * Simulate delay and errors
 * Upsert option for PUT
-* Eager data reload
+* Eager data reload option
 * Id field can be integer or string
-
-### [0.1.0] - 2017-xx-xx
-First version with version number. 
