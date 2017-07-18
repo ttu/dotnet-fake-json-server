@@ -192,7 +192,7 @@ PATCH  /async/{collection}/{id}
 DELETE /async/{collection}/{id}
 ```
 
-##### Paths
+##### Routes
 
 Dynamic routes are defined by the name of item's collection and id: `api/{collection}/{id}`. All examples below use `users` as a collection name.
 
@@ -200,10 +200,24 @@ If `/api` or `/async` are needed to change to something different, change `Route
 
 ```csharp
 [Route("api")]
-public class DynamicController : Controller { }
+public class DynamicController : Controller {
 
 [Route("async")]
-public class AsyncController : Controller { }
+public class AsyncController : Controller {
+```
+
+For example, if `api`-prefix is not wanted in the route, then remove `api` from template-string.
+
+```csharp
+[Route("")]
+public class DynamicController : Controller {
+```
+
+```sh
+# Query with default route
+$ curl http://localhost:57602/api/users?skip=5&take=20
+# Query with updated route
+$ curl http://localhost:57602/users?skip=5&take=20
 ```
 
 ##### Identifiers
@@ -338,7 +352,7 @@ $ curl http://localhost:57602/api/users?age=40
 ]
 ```
 
-Query can have path to child properties. Property names are separated by periods.
+Query can have a path to child properties. Property names are separated by periods.
 
 `GET api/{collection}?parent.child.grandchild.field=value`
 
