@@ -17,7 +17,7 @@ namespace FakeServer.Jobs
         {
             _bus = bus;
 
-            _delay = new Action(() => 
+            _delay = new Action(() =>
             {
                 if (jobsSettings.Value.DelayMs > 0)
                     Thread.Sleep(jobsSettings.Value.DelayMs);
@@ -29,7 +29,7 @@ namespace FakeServer.Jobs
             var queueId = Guid.NewGuid().ToString().Substring(0, 5);
             var queueUrl = $"async/queue/{queueId}";
 
-            var task = Task.Run(() => 
+            var task = Task.Run(() =>
             {
                 _delay();
 

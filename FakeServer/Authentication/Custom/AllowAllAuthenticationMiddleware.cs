@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System.Collections.Generic;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
@@ -44,7 +43,7 @@ namespace FakeServer.Authentication.Custom
             return await Task.FromResult(AuthenticateResult.Success(
                             new AuthenticationTicket(
                                 new ClaimsPrincipal(new ClaimsIdentity("Custom")),
-                                new AuthenticationProperties(), 
+                                new AuthenticationProperties(),
                                 Options.AuthenticationScheme)));
         }
     }
