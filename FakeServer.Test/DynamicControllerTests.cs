@@ -40,7 +40,7 @@ namespace FakeServer.Test
             var controller = new DynamicController(ds, apiSettings);
 
             var result = await controller.ReplaceItem("my_test", "2", JToken.Parse("{ 'id': 2, 'name': 'Raymond', 'age': 32 }"));
-            Assert.IsType(typeof(NotFoundResult), result);
+            Assert.IsType<NotFoundResult>(result);
 
             UTHelpers.Down(filePath);
         }
@@ -55,10 +55,10 @@ namespace FakeServer.Test
             var controller = new DynamicController(ds, apiSettings);
 
             var result = await controller.ReplaceItem("my_test", "2", JToken.Parse("{ 'id': 2, 'name': 'Raymond', 'age': 32 }"));
-            Assert.IsType(typeof(NoContentResult), result);
+            Assert.IsType<NoContentResult>(result);
 
             var itemResult = controller.GetItem("my_test", "2");
-            Assert.IsType(typeof(OkObjectResult), itemResult);
+            Assert.IsType<OkObjectResult>(itemResult);
 
             var okObjectResult = itemResult as OkObjectResult;
             dynamic item = okObjectResult.Value as ExpandoObject;

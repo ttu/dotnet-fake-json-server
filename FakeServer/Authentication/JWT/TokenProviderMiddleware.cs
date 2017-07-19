@@ -48,6 +48,7 @@ namespace FakeServer.Authentication.Jwt
             var authenticationSettings = context.RequestServices.GetService(typeof(IOptions<AuthenticationSettings>)) as IOptions<AuthenticationSettings>;
 
             var identity = await GetIdentity(username, password, authenticationSettings.Value);
+
             if (identity == null)
             {
                 context.Response.StatusCode = 400;
@@ -74,6 +75,7 @@ namespace FakeServer.Authentication.Jwt
                 notBefore: now,
                 expires: now.Add(_options.Expiration),
                 signingCredentials: _options.SigningCredentials);
+
             var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
 
             var response = new

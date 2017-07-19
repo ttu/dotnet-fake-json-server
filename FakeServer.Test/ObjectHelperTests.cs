@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using FakeServer.Common;
+using Newtonsoft.Json;
 using Xunit;
 
 namespace FakeServer.Test
@@ -43,7 +44,7 @@ namespace FakeServer.Test
         {
             string a = "2";
             var retVal = ObjectHelper.GetValueAsCorrectType(a);
-            Assert.IsType(typeof(int), retVal);
+            Assert.IsType<int>(retVal);
         }
 
         [Fact]
@@ -51,7 +52,7 @@ namespace FakeServer.Test
         {
             string a = "somevalue";
             var retVal = ObjectHelper.GetValueAsCorrectType(a);
-            Assert.IsType(typeof(string), retVal);
+            Assert.IsType<string>(retVal);
         }
     }
 }

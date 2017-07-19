@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 
-namespace FakeServer
+namespace FakeServer.Common
 {
     public static class ObjectHelper
     {
