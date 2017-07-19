@@ -196,21 +196,20 @@ DELETE /async/{collection}/{id}
 
 Dynamic routes are defined by the name of item's collection and id: `api/{collection}/{id}`. All examples below use `users` as a collection name.
 
-If `/api` or `/async` are needed to change to something different, change `Route` attribute's template-string in `DynamicController.cs` or in `AsyncController.cs`.
+If `/api` or `/async` are needed to change to something different, change `ApiRoute` or `AsyncRoute` from `Config.cs`.
 
 ```csharp
-[Route("api")]
-public class DynamicController : Controller {
-
-[Route("async")]
-public class AsyncController : Controller {
+public class Config
+{
+    public const string ApiRoute = "api";
+    public const string AsyncRoute = "async";
+}
 ```
 
-For example, if `api`-prefix is not wanted in the route, then remove `api` from template-string.
+For example, if `api`-prefix is not wanted in the route, then remove `api` from `ApiRoute`.
 
 ```csharp
-[Route("")]
-public class DynamicController : Controller {
+public const string ApiRoute = "";
 ```
 
 ```sh

@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 namespace FakeServer.Controllers
 {
     [Authorize]
-    [Route("api")]
+    [Route(Config.ApiRoute)]
     public class DynamicController : Controller
     {
         private readonly IDataStore _ds;

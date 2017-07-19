@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using FakeServer.Common;
+using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -21,7 +22,7 @@ namespace FakeServer.WebSockets
         {
             await _next(context);
 
-            if (context.Request.Path.Value.StartsWith("/api") &&
+            if (context.Request.Path.Value.StartsWith($"/{Config.ApiRoute}") &&
                 _udpateMethods.Contains(context.Request.Method) &&
                 (context.Response.StatusCode >= 200 && context.Response.StatusCode < 300))
             {

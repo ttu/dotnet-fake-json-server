@@ -1,4 +1,5 @@
-﻿using FakeServer.Jobs;
+﻿using FakeServer.Common;
+using FakeServer.Jobs;
 using JsonFlatFileDataStore;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,7 +15,7 @@ using System.Net;
 namespace FakeServer.Controllers
 {
     [Authorize]
-    [Route("async")]
+    [Route(Config.AsyncRoute)]
     public class AsyncController : Controller
     {
         private readonly IDataStore _ds;

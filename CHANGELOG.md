@@ -1,7 +1,7 @@
 # Changelog
 
 ### [Unreleased]
-*
+* Get Controller's route template from constant value
 
 ### [0.1.0] - 2017-07-14
 Features in chronological order.
