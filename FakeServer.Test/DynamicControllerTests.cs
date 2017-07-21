@@ -134,7 +134,7 @@ namespace FakeServer.Test
 
             var controller = new DynamicController(ds, apiSettings);
 
-            var result = controller.GetNested("families", "1", "parents/1/work") as OkObjectResult;
+            var result = controller.GetNested("families", 1, "parents/1/work") as OkObjectResult;
             Assert.Equal("APEXTRI", ((dynamic)result.Value).companyName);
 
             UTHelpers.Down(filePath);
@@ -149,7 +149,7 @@ namespace FakeServer.Test
 
             var controller = new DynamicController(ds, apiSettings);
 
-            var result = controller.GetNested("families", "1", "parents/1") as OkObjectResult;
+            var result = controller.GetNested("families", 1, "parents/1") as OkObjectResult;
             Assert.Equal("Kim", ((dynamic)result.Value).name);
 
             UTHelpers.Down(filePath);
@@ -164,7 +164,7 @@ namespace FakeServer.Test
 
             var controller = new DynamicController(ds, apiSettings);
 
-            var result = controller.GetNested("families", "1", "parents") as OkObjectResult;
+            var result = controller.GetNested("families", 1, "parents") as OkObjectResult;
             Assert.Equal(2, ((IEnumerable<dynamic>)result.Value).Count());
 
             UTHelpers.Down(filePath);

@@ -60,7 +60,7 @@ namespace FakeServer.Controllers
         /// <param name="item">Item's new content</param>
         /// <returns></returns>
         [HttpPut("{collectionId}/{id}")]
-        public IActionResult ReplaceItem(string collectionId, int id, [FromBody]dynamic item)
+        public IActionResult ReplaceItem(string collectionId, [FromRoute][DynamicBinder]dynamic id, [FromBody]dynamic item)
         {
             if (item == null)
                 return BadRequest();
@@ -94,7 +94,7 @@ namespace FakeServer.Controllers
         /// <param name="patchData">Patch data</param>
         /// <returns></returns>
         [HttpPatch("{collectionId}/{id}")]
-        public IActionResult UpdateItem(string collectionId, int id, [FromBody]JToken patchData)
+        public IActionResult UpdateItem(string collectionId, [FromRoute][DynamicBinder]dynamic id, [FromBody]JToken patchData)
         {
             dynamic sourceData = JsonConvert.DeserializeObject<ExpandoObject>(patchData.ToString());
 
@@ -118,7 +118,7 @@ namespace FakeServer.Controllers
         /// <param name="id">Id of the item to be removed</param>
         /// <returns></returns>
         [HttpDelete("{collectionId}/{id}")]
-        public IActionResult DeleteItem(string collectionId, int id)
+        public IActionResult DeleteItem(string collectionId, [FromRoute][DynamicBinder]dynamic id)
         {
             var action = new Func<dynamic>(() =>
             {
