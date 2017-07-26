@@ -108,15 +108,7 @@ namespace FakeServer
 
             app.UseCors("AllowAnyPolicy");
 
-            // Status map should be before all middlewares as we don't want to use any of those with status
-            app.Map("/status", rootApp =>
-            {
-                rootApp.Run(context =>
-                {
-                    context.Response.StatusCode = 200;
-                    return context.Response.WriteAsync("{\"status\": \"Ok\"}");
-                });
-            });
+            app.UseMiddleware<OptionsMiddleware>();
 
             if (Configuration.GetValue<bool>("Simulate:Delay:Enabled"))
             {

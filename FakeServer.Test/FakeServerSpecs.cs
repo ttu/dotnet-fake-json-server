@@ -17,22 +17,11 @@ namespace FakeServer.Test
     [Collection("Integration collection")]
     public class FakeServerSpecs
     {
-        private IntegrationFixture _fixture;
+        private readonly IntegrationFixture _fixture;
 
         public FakeServerSpecs(IntegrationFixture fixture)
         {
             _fixture = fixture;
-        }
-
-        [Fact]
-        public async Task Status()
-        {
-            using (var client = new HttpClient())
-            {
-                var result = await client.GetAsync($"{_fixture.BaseUrl}/status");
-                var status = JsonConvert.DeserializeObject<JObject>(await result.Content.ReadAsStringAsync());
-                Assert.Equal("Ok", status["status"].Value<string>());
-            }
         }
 
         [Fact]
@@ -390,6 +379,62 @@ namespace FakeServer.Test
 
                 result = await client.GetAsync(queueUrl);
                 Assert.Equal(HttpStatusCode.NotFound, result.StatusCode);
+            }
+        }
+
+        [Fact]
+        public async Task GetOptions()
+        {
+            using (var client = new HttpClient())
+            {
+                /*
+                NOTE: HttpClient adds Allow as an invalid header so it is not in the header collection but it is visible with ToString()
+                result.ToString()
+                StatusCode: 200, ReasonPhrase: 'OK', Version: 1.1, Content: System.Net.Http.StreamContent, Headers:
+                {
+                  Date: Wed, 26 Jul 2017 06:18:14 GMT
+                  Transfer-Encoding: chunked
+                  Server: Kestrel
+                  Allow: GET
+                  Allow: POST
+                  Allow: OPTIONS
+                }
+                */
+
+                string GetAllow(HttpResponseMessage message)
+                {
+                    var items = message.ToString().Replace("\r\n", " ").Split(' ');
+
+                    var words = items.Select((val, idx) => val == "Allow:" ? items[idx + 1] : null)
+                                     .Where(e => !string.IsNullOrEmpty(e))
+                                     .Select(e => e.Trim());
+
+                    return string.Join(", ", words);
+                }
+
+                var request = new HttpRequestMessage(new HttpMethod("OPTIONS"), $"{_fixture.BaseUrl}/api");
+                var result = await client.SendAsync(request);
+                Assert.Equal("GET, POST, OPTIONS", GetAllow(result));
+
+                request = new HttpRequestMessage(new HttpMethod("OPTIONS"), $"{_fixture.BaseUrl}/api/users");
+                result = await client.SendAsync(request);
+                Assert.Equal("GET, POST, OPTIONS", GetAllow(result));
+
+                request = new HttpRequestMessage(new HttpMethod("OPTIONS"), $"{_fixture.BaseUrl}/api/users/22");
+                result = await client.SendAsync(request);
+                Assert.Equal("GET, POST, PUT, PATCH, DELETE, OPTIONS", GetAllow(result));
+
+                request = new HttpRequestMessage(new HttpMethod("OPTIONS"), $"{_fixture.BaseUrl}/async/users");
+                result = await client.SendAsync(request);
+                Assert.Equal("POST, OPTIONS", GetAllow(result));
+
+                request = new HttpRequestMessage(new HttpMethod("OPTIONS"), $"{_fixture.BaseUrl}/async/users/22");
+                result = await client.SendAsync(request);
+                Assert.Equal("PUT, PATCH, DELETE, OPTIONS", GetAllow(result));
+
+                request = new HttpRequestMessage(new HttpMethod("OPTIONS"), $"{_fixture.BaseUrl}/async/queue/22");
+                result = await client.SendAsync(request);
+                Assert.Equal("GET, DELETE, OPTIONS", GetAllow(result));
             }
         }
     }

@@ -171,25 +171,26 @@ Swagger is configured to endpoint `/swagger` and Swagger UI opens when project i
 ## Routes, Functionalities and Examples
 
 ```
-GET    /
-POST   /token
-GET    /status
-POST   /admin/reload
+GET      /
+POST     /token
+POST     /admin/reload
 
-GET    /api
-GET    /api/{collection}
-POST   /api/{collection}
-GET    /api/{collection}/{id}
-PUT    /api/{collection}/{id}
-PATCH  /api/{collection}/{id}
-DELETE /api/{collection}/{id}
+GET      /api
+GET      /api/{collection}
+POST     /api/{collection}
+GET      /api/{collection}/{id}
+PUT      /api/{collection}/{id}
+PATCH    /api/{collection}/{id}
+DELETE   /api/{collection}/{id}
+OPTIONS  /api/*
 
-GET    /async/queue/{id}
-DELETE /async/queue/{id}
-POST   /async/{collection}
-PUT    /async/{collection}/{id}
-PATCH  /async/{collection}/{id}
-DELETE /async/{collection}/{id}
+GET      /async/queue/{id}
+DELETE   /async/queue/{id}
+POST     /async/{collection}
+PUT      /async/{collection}/{id}
+PATCH    /async/{collection}/{id}
+DELETE   /async/{collection}/{id}
+OPTIONS  /async/*
 ```
 
 ##### Routes
@@ -240,15 +241,19 @@ Asynchoronous operations follow [REST CookBook guide](http://restcookbook.com/Re
 
 Method return codes are specified in [REST API Tutorial](http://www.restapitutorial.com/lessons/httpmethods.html).
 
-### Status
+### OPTIONS method
 
-Status endpoint returns current status of the service. 
+OPTIONS method will return `Allow` header with a list of HTTP methods that may be used on the resource.
 
 ```sh
-$ curl http://localhost:57602/status
+$ curl -X OPTIONS -v http://localhost:57602/api/
 ```
+
 ```json
-{"status": "Ok"}
+200 OK
+
+Headers:
+Allow: GET, POST, OPTIONS
 ```
 
 ### Eager data reload
@@ -297,7 +302,7 @@ Example JSON generation guide for data used in unit tests [CreateJSON.md](Create
 ####  List collections 
 
 ```
-GET /api
+> GET /api
 
 200 OK : List of collections
 ```
@@ -313,7 +318,7 @@ $ curl http://localhost:57602/api
 #### Get items
 
 ```
-GET /api/{collection}
+> GET /api/{collection}
 
 200 OK        : Collection is found
 404 Not Found : Collection is not found or it is empty
@@ -335,7 +340,7 @@ $ curl http://localhost:57602/api/users?skip=5&take=20
 #### Get items with query 
 
 ```
-GET api/{collection}?field=value&otherField=value
+> GET api/{collection}?field=value&otherField=value
 
 200 OK        : Collection is found
 404 Not Found : Collection is not found or it is empty
@@ -353,7 +358,7 @@ $ curl http://localhost:57602/api/users?age=40
 
 Query can have a path to child properties. Property names are separated by periods.
 
-`GET api/{collection}?parent.child.grandchild.field=value`
+`> GET api/{collection}?parent.child.grandchild.field=value`
 
 Example JSON:
 ```json
@@ -393,7 +398,7 @@ $ curl http://localhost:57602/api/users?employees.address.city=London
 #### Get item with id 
 
 ``` 
-GET /api/{collection}/{id}
+> GET /api/{collection}/{id}
 
 200 OK          : Item is found
 400 Bad Request : Collection is not found
@@ -411,7 +416,7 @@ $ curl http://localhost:57602/api/users/1
 #### Get nested items
 
 ```
-GET /api/{collection}/{id}/{restOfThePath}
+> GET /api/{collection}/{id}/{restOfThePath}
 
 200 OK          : Nested item is found
 400 Bad Request : Parent item is not found
@@ -445,7 +450,7 @@ $ curl http://localhost:57602/api/company/0/employees/1/address
 #### Add item 
 
 ```
-POST /api/{collection}
+> POST /api/{collection}
 
 201 Created     : New item is created
 400 Bad Request : New item is null
@@ -467,7 +472,7 @@ Location=http://localhost:57602/api/users/6
 #### Replace item 
 
 ``` 
-PUT /api/{collection}/{id}
+> PUT /api/{collection}/{id}
 
 204 No Content  : Item is replaced
 400 Bad Request : Item is null
@@ -481,7 +486,7 @@ $ curl -H "Accept: application/json" -H "Content-type: application/json" -X PUT 
 #### Update item 
 
 ```
-PATCH /api/{collection}/{id}
+> PATCH /api/{collection}/{id}
 
 204 No Content  : Item updated
 400 Bad Request : PATCH is empty
@@ -495,7 +500,7 @@ $ curl -H "Accept: application/json" -H "Content-type: application/json" -X PATC
 #### Delete item
 
 ``` 
-DELETE /api/{collection}/{id}
+> DELETE /api/{collection}/{id}
 
 204 No Content  : Item deleted
 404 Not Found   : Item is not found
@@ -510,7 +515,7 @@ $ curl -X DELETE http://localhost:57602/api/users/1
 `/async` endoint has long running jobs for each update operation.
 
 ```
-POST/PUT/PATCH/DELETE /async/{collection}/{id}
+> POST/PUT/PATCH/DELETE /async/{collection}/{id}
 
 202 Accepted    : New job started
 400 Bad Request : Job not started
@@ -528,7 +533,7 @@ $ curl -H "Accept: application/json" -H "Content-type: application/json" -X POST
 ```
 
 ```
-GET /async/queue/{id}
+> GET /async/queue/{id}
 
 200 OK        : Job running
 303 See Other : Job ready
@@ -543,7 +548,7 @@ When Job is ready, status code will be redirect See Other. Location header will 
 After job is finished, it must be deleted manually
 
 ```
-DELETE /async/queue/{id}
+> DELETE /async/queue/{id}
 
 200 OK        : Job deleted
 404 Not Found : Job not found
@@ -596,9 +601,23 @@ Error simulation is always skipped for Swagger, WebSocket (ws) and for any html 
 
 [wrk installation guide](https://github.com/wg/wrk/wiki/Installing-Wrk-on-Linux)
 
-Do first benchmark against `/status` endpoint, as it doesn't use any middlewares and it doesn't do any processing.
+Start the server from the command line.
+
 ```sh
-$  wrk -c 256 -t 32 -d 10 http://localhost:57602/status
+$ dotnet run --urls http://localhost:57602
+```
+
+Do first benchmark against `/api/` endpoint using OPTIONS method, as it only uses OptionsMiddleware.
+
+Create a script file (e.g. options.lua) for `OPTIONS` request.
+```lua
+wrk.method = "OPTIONS"
+```
+
+Execute OPTIONS benchmark for 10 seconds.
+
+```sh
+$ wrk -c 256 -t 32 -d 10 -s options.lua http://localhost:57602/api
 ```
 
 Create a script file (e.g. post.lua) for `POST` request.
@@ -609,7 +628,7 @@ wrk.body   = "{ \"name\": \"Benchmark User\", \"age\": 50, \"location\": \"NY\" 
 wrk.headers["Content-Type"] = "application/json"
 ```
 
-Execute POST for 10 seconds.
+Execute POST benchmark for 10 seconds.
 
 ```sh
 $ wrk -c 256 -t 32 -d 10 -s post.lua http://localhost:57602/api/users
