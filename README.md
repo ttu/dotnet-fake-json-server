@@ -550,8 +550,8 @@ After job is finished, it must be deleted manually
 ```
 > DELETE /async/queue/{id}
 
-200 OK        : Job deleted
-404 Not Found : Job not found
+204 No Content : Job deleted
+404 Not Found  : Job not found
 ```
 
 ##### Job delay

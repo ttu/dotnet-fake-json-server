@@ -33,6 +33,7 @@ namespace FakeServer.Controllers
         /// <param name="collectionId">Collection id</param>
         /// <param name="item">Item to add</param>
         /// <returns></returns>
+        /// <response code="202">New async operation started</response>
         [HttpPost("{collectionId}")]
         public IActionResult AddNewItem(string collectionId, [FromBody] JToken item)
         {
@@ -59,6 +60,7 @@ namespace FakeServer.Controllers
         /// <param name="id">Id of the item to be replaced</param>
         /// <param name="item">Item's new content</param>
         /// <returns></returns>
+        /// <response code="202">New async operation started</response>
         [HttpPut("{collectionId}/{id}")]
         public IActionResult ReplaceItem(string collectionId, [FromRoute][DynamicBinder]dynamic id, [FromBody]dynamic item)
         {
@@ -93,6 +95,7 @@ namespace FakeServer.Controllers
         /// <param name="id">Id of the item to be updated</param>
         /// <param name="patchData">Patch data</param>
         /// <returns></returns>
+        /// <response code="202">New async operation started</response>
         [HttpPatch("{collectionId}/{id}")]
         public IActionResult UpdateItem(string collectionId, [FromRoute][DynamicBinder]dynamic id, [FromBody]JToken patchData)
         {
@@ -117,6 +120,7 @@ namespace FakeServer.Controllers
         /// <param name="collectionId">Collection id</param>
         /// <param name="id">Id of the item to be removed</param>
         /// <returns></returns>
+        /// <response code="202">New async operation started</response>
         [HttpDelete("{collectionId}/{id}")]
         public IActionResult DeleteItem(string collectionId, [FromRoute][DynamicBinder]dynamic id)
         {
@@ -131,10 +135,13 @@ namespace FakeServer.Controllers
         }
 
         /// <summary>
-        /// Get job from queue
+        /// Get the job status
         /// </summary>
         /// <param name="queueId">Job's queue Id</param>
         /// <returns></returns>
+        /// <response code="200">Job is not completed</response>
+        /// <response code="303">Job is completed</response>
+        /// <response code="404">Item not found</response>
         [HttpGet("queue/{queueId}")]
         public IActionResult GetQueueItem(string queueId)
         {
@@ -151,11 +158,18 @@ namespace FakeServer.Controllers
             return new ContentResult();
         }
 
+        /// <summary>
+        /// Delete the job item from the queue
+        /// </summary>
+        /// <param name="queueId">Job's queue Id</param>
+        /// <returns></returns>
+        /// <response code="204">Item found and deleted</response>
+        /// <response code="404">Item not found</response>
         [HttpDelete("queue/{queueId}")]
         public IActionResult DeleteQueueItem(string queueId)
         {
             if (_jobs.DeleteJob(queueId))
-                return Ok();
+                return NoContent();
             else
                 return NotFound();
         }
