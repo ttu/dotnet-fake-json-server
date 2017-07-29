@@ -7,7 +7,8 @@
       "location": "NY",
       "work": {
         "name": "ACME",
-        "location": "NY"
+        "location": "NY",
+        "rating": 2.3
       }
     },
     {
@@ -17,7 +18,8 @@
       "location": "London",
       "work": {
         "name": "Box Company",
-        "location": "London"
+        "location": "London",
+        "rating": 1.6
       }
     },
     {
@@ -27,7 +29,8 @@
       "location": "SF",
       "work": {
         "name": "Railways Co",
-        "location": "SF"
+        "location": "SF",
+        "rating": 1.8
       }
     },
     {
@@ -37,7 +40,8 @@
       "location": "SF",
       "work": {
         "name": "Autocar Company",
-        "location": "SF"
+        "location": "SF",
+        "rating": 0.9
       }
     }
   ],

@@ -7,14 +7,25 @@ namespace FakeServer.Common
 {
     public static class ObjectHelper
     {
+        public static Dictionary<string, Func<dynamic, dynamic, bool>> Funcs = new Dictionary<string, Func<dynamic, dynamic, bool>>
+        {
+            { "", (value, compare) => { return value == compare; } },
+            { "_ne", (value, compare) => { return value != compare; } },
+            { "_lt", (value, compare) => { return value < compare; }  },
+            { "_gt", (value, compare) => { return value > compare; }  },
+            { "_lte", (value, compare) => { return value <= compare; }  },
+            { "_gte", (value, compare) => { return value >= compare; }  }
+        };
+
         /// <summary>
         /// Find property from ExpandoObject and compare it to provided value
         /// </summary>
         /// <param name="current"></param>
         /// <param name="propertyName"></param>
         /// <param name="valueToCompare"></param>
+        /// <param name="compareFunc"></param>
         /// <returns>True is object matches valueToCompare</returns>
-        public static bool GetPropertyAndCompare(ExpandoObject current, string propertyName, string valueToCompare)
+        public static bool GetPropertyAndCompare(ExpandoObject current, string propertyName, string valueToCompare, Func<dynamic, dynamic, bool> compareFunc)
         {
             var currentProperty = propertyName.Contains('.') ? propertyName.Split('.').First() : propertyName;
             var tail = propertyName.Contains('.') ? propertyName.Substring(propertyName.IndexOf('.') + 1) : string.Empty;
@@ -27,12 +38,12 @@ namespace FakeServer.Common
             var currentValue = currentAsDict[currentProperty];
 
             if (string.IsNullOrEmpty(tail))
-                return ((dynamic)currentValue).ToString() == valueToCompare;
+                return compareFunc(((dynamic)currentValue), GetValueAsCorrectType(valueToCompare));
 
             if (currentValue is IEnumerable<dynamic> valueEnumerable)
-                return valueEnumerable.Any(e => GetPropertyAndCompare(e, tail, valueToCompare));
+                return valueEnumerable.Any(e => GetPropertyAndCompare(e, tail, valueToCompare, compareFunc));
             else
-                return GetPropertyAndCompare(currentValue as ExpandoObject, tail, valueToCompare);
+                return GetPropertyAndCompare(currentValue as ExpandoObject, tail, valueToCompare, compareFunc);
         }
 
         /// <summary>
@@ -94,7 +105,7 @@ namespace FakeServer.Common
         /// Convert input value to correct type
         /// </summary>
         /// <param name="value">input</param>
-        /// <returns>value as an integer or as a string</returns>
+        /// <returns>value as an integer, as a double or as a string</returns>
         public static dynamic GetValueAsCorrectType(string value)
         {
             try
@@ -103,8 +114,18 @@ namespace FakeServer.Common
             }
             catch (Exception)
             {
-                return value;
             }
+
+            try
+            {
+                return Convert.ToDouble(value);
+            }
+            catch (Exception)
+            {
+            }
+
+            return value;
+
         }
     }
 }

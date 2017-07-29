@@ -78,7 +78,19 @@ namespace FakeServer.Controllers
 
             foreach (var key in queryParams)
             {
-                datas = datas.Where(d => ObjectHelper.GetPropertyAndCompare(d as ExpandoObject, key, Request.Query[key]));
+                string propertyName = key;
+                Func<dynamic, dynamic, bool> compareFunc = ObjectHelper.Funcs[""];
+
+                var idx = key.LastIndexOf("_");
+
+                if (idx != -1)
+                {
+                    var op = key.Substring(idx);
+                    compareFunc = ObjectHelper.Funcs[op];
+                    propertyName = key.Replace(op, "");
+                }
+
+               datas = datas.Where(d => ObjectHelper.GetPropertyAndCompare(d as ExpandoObject, propertyName, Request.Query[key], compareFunc));
             }
 
             return Ok(datas.Skip(skip).Take(take));

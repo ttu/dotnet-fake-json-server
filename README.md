@@ -395,6 +395,30 @@ $ curl http://localhost:57602/api/users?employees.address.city=London
 ]
 ```
 
+Query filter can include operators. Operator identifier is added to the end of the field.
+
+```
+> GET api/{collection}?field{operator}=value
+
+=     : Equal to
+_ne=  : Not equal
+_lt=  : Less than
+_gt=  : Greater than
+_lte= : Less than or equal to
+_gte= : Greater than or equal to
+```
+
+Query users with age less than 40.
+
+```sh
+$ curl http://localhost:57602/api/users?age_lt=40
+```
+```json
+[ 
+  { "id": 2, "name": "Larry", "age": 37, "location": "London" }
+]
+```
+
 #### Get item with id 
 
 ``` 

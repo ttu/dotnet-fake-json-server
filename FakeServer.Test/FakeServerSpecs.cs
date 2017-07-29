@@ -111,6 +111,61 @@ namespace FakeServer.Test
         }
 
         [Fact]
+        public async Task GetItem_QueryFilters_NotEqual()
+        {
+            using (var client = new HttpClient())
+            {
+                var result = await client.GetAsync($"{_fixture.BaseUrl}/api/users?age_ne=25");
+                var allUsers = JsonConvert.DeserializeObject<JArray>(await result.Content.ReadAsStringAsync());
+                Assert.Equal(3, allUsers.Count());
+            }
+        }
+
+        [Fact]
+        public async Task GetItem_QueryFilters_LessThan()
+        {
+            using (var client = new HttpClient())
+            {
+                var result = await client.GetAsync($"{_fixture.BaseUrl}/api/users?age_lt=30");
+                var allUsers = JsonConvert.DeserializeObject<JArray>(await result.Content.ReadAsStringAsync());
+                Assert.Equal(1, allUsers.Count());
+            }
+        }
+
+        [Fact]
+        public async Task GetItem_QueryFilters_LessThanEquals()
+        {
+            using (var client = new HttpClient())
+            {
+                var result = await client.GetAsync($"{_fixture.BaseUrl}/api/users?age_lte=30");
+                var allUsers = JsonConvert.DeserializeObject<JArray>(await result.Content.ReadAsStringAsync());
+                Assert.Equal(2, allUsers.Count());
+            }
+        }
+
+        [Fact]
+        public async Task GetItem_QueryFilters_GreaterThan()
+        {
+            using (var client = new HttpClient())
+            {
+                var result = await client.GetAsync($"{_fixture.BaseUrl}/api/users?work.rating_gt=1.6");
+                var allUsers = JsonConvert.DeserializeObject<JArray>(await result.Content.ReadAsStringAsync());
+                Assert.Equal(2, allUsers.Count());
+            }
+        }
+
+        [Fact]
+        public async Task GetItem_QueryFilters_GetItem_QueryFilters_GreaterThanEquals()
+        {
+            using (var client = new HttpClient())
+            {
+                var result = await client.GetAsync($"{_fixture.BaseUrl}/api/users?work.rating_gte=1.6");
+                var allUsers = JsonConvert.DeserializeObject<JArray>(await result.Content.ReadAsStringAsync());
+                Assert.Equal(3, allUsers.Count());
+            }
+        }
+
+        [Fact]
         public async Task GetItem_Nested()
         {
             using (var client = new HttpClient())

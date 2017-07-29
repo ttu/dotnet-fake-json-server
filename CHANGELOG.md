@@ -2,8 +2,9 @@
 
 ### [Unreleased]
 * Get Controller's route template from constant value
-* Added HTTP OPTIONS method
+* HTTP OPTIONS method
 * Remove obsolete status endpoint
+* Query filter operators
 
 ### [0.1.0] - 2017-07-14
 Features in chronological order.
