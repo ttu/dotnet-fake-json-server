@@ -100,6 +100,17 @@ namespace FakeServer.Test
         }
 
         [Fact]
+        public async Task GetItem_PropertyNotFound()
+        {
+            using (var client = new HttpClient())
+            {
+                var result = await client.GetAsync($"{_fixture.BaseUrl}/api/users?notfound=AA");
+                var foundUsers = JsonConvert.DeserializeObject<JArray>(await result.Content.ReadAsStringAsync());
+                Assert.Equal(0, foundUsers.Count());
+            }
+        }
+
+        [Fact]
         public async Task GetItem_Nested()
         {
             using (var client = new HttpClient())

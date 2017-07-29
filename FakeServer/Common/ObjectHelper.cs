@@ -19,7 +19,12 @@ namespace FakeServer.Common
             var currentProperty = propertyName.Contains('.') ? propertyName.Split('.').First() : propertyName;
             var tail = propertyName.Contains('.') ? propertyName.Substring(propertyName.IndexOf('.') + 1) : string.Empty;
 
-            var currentValue = ((IDictionary<string, object>)current)[currentProperty];
+            var currentAsDict = ((IDictionary<string, object>)current);
+
+            if (!currentAsDict.ContainsKey(currentProperty))
+                return false;
+
+            var currentValue = currentAsDict[currentProperty];
 
             if (string.IsNullOrEmpty(tail))
                 return ((dynamic)currentValue).ToString() == valueToCompare;
