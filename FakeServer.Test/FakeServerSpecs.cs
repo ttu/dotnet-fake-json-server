@@ -503,5 +503,48 @@ namespace FakeServer.Test
                 Assert.Equal("GET, DELETE, OPTIONS", GetAllow(result));
             }
         }
+
+        [Fact]
+        public async Task GetPaginationHeaders()
+        {
+            using (var client = new HttpClient())
+            {
+                var result = await client.GetAsync($"{_fixture.BaseUrl}/api/families?skip=7&take=4");
+                result.EnsureSuccessStatusCode();
+
+                var countHeader = result.Headers.GetValues("X-Total-Count").First();
+                Assert.Equal("20", countHeader);
+
+                var linksHeaders = result.Headers.GetValues("Link").First();
+                Assert.Contains(@"<http://localhost:5001/api/families?skip=3&take=4>; rel=""prev""", linksHeaders);
+                Assert.Contains(@"<http://localhost:5001/api/families?skip=11&take=4>; rel=""next""", linksHeaders);
+                Assert.Contains(@"<http://localhost:5001/api/families?skip=0&take=4>; rel=""first""", linksHeaders);
+                Assert.Contains(@"<http://localhost:5001/api/families?skip=16&take=4>; rel=""last""", linksHeaders);
+
+                result = await client.GetAsync($"{_fixture.BaseUrl}/api/families?skip=0&take=21");
+
+                countHeader = result.Headers.GetValues("X-Total-Count").First();
+                Assert.Equal("20", countHeader);
+
+                linksHeaders = result.Headers.GetValues("Link").First();
+                Assert.True(string.IsNullOrEmpty(linksHeaders));
+
+                result = await client.GetAsync($"{_fixture.BaseUrl}/api/families?skip=0&take=10");
+
+                linksHeaders = result.Headers.GetValues("Link").First();
+                Assert.DoesNotContain("prev", linksHeaders);
+                Assert.DoesNotContain("first", linksHeaders);
+                Assert.Contains("next", linksHeaders);
+                Assert.Contains("last", linksHeaders);
+
+                result = await client.GetAsync($"{_fixture.BaseUrl}/api/families?skip=2&take=17");
+
+                linksHeaders = result.Headers.GetValues("Link").First();
+                Assert.Contains(@"<http://localhost:5001/api/families?skip=0&take=2>; rel=""prev""", linksHeaders);
+                Assert.Contains(@"<http://localhost:5001/api/families?skip=19&take=17>; rel=""next""", linksHeaders);
+                Assert.Contains(@"<http://localhost:5001/api/families?skip=0&take=17>; rel=""first""", linksHeaders);
+                Assert.Contains(@"<http://localhost:5001/api/families?skip=3&take=17>; rel=""last""", linksHeaders);
+            }
+        }
     }
 }

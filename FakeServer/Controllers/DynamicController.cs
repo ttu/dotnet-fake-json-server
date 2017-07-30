@@ -1,6 +1,7 @@
 ﻿using FakeServer.Common;
 using JsonFlatFileDataStore;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -9,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace FakeServer.Controllers
@@ -71,11 +73,6 @@ namespace FakeServer.Controllers
             queryParams.Remove("skip");
             queryParams.Remove("take");
 
-            if (queryParams.Count == 0)
-            {
-                return Ok(datas.Skip(skip).Take(take));
-            }
-
             foreach (var key in queryParams)
             {
                 string propertyName = key;
@@ -90,8 +87,10 @@ namespace FakeServer.Controllers
                     propertyName = key.Replace(op, "");
                 }
 
-               datas = datas.Where(d => ObjectHelper.GetPropertyAndCompare(d as ExpandoObject, propertyName, Request.Query[key], compareFunc));
+                datas = datas.Where(d => ObjectHelper.GetPropertyAndCompare(d as ExpandoObject, propertyName, Request.Query[key], compareFunc));
             }
+
+            AddPaginationHeaders(Response, skip, take, datas);
 
             return Ok(datas.Skip(skip).Take(take));
         }
@@ -244,6 +243,37 @@ namespace FakeServer.Controllers
                 return NoContent();
             else
                 return NotFound();
+        }
+
+        private void AddPaginationHeaders(HttpResponse response, int skip, int take, IEnumerable<dynamic> datas)
+        {
+            var totalCount = datas.Count();
+
+            var url = $"{Request.Scheme}://{Request.Host.Value}{Request.Path}";
+
+            var paginationHeader = new
+            {
+                Prev = skip > 0 ? $"{url}?skip={(skip - take > 0 ? skip - take : 0)}&take={(take - skip < 0 ? take : skip)}" : string.Empty,
+                Next = totalCount > (skip + take) ? $"{url}?skip={(skip + take)}&take={take}" : string.Empty,
+                First = skip > 0 ? $"{url}?skip=0&take={take}" : string.Empty,
+                Last = (totalCount - take) > 0 ? $"{url}?skip={(totalCount - take)}&take={take}" : string.Empty
+            };
+
+            var links = new List<string>();
+
+            if (!string.IsNullOrEmpty(paginationHeader.Prev))
+                links.Add($@"<{paginationHeader.Prev}>; rel=""prev""");
+            if (!string.IsNullOrEmpty(paginationHeader.Next))
+                links.Add($@"<{paginationHeader.Next}>; rel=""next""");
+            if (!string.IsNullOrEmpty(paginationHeader.First))
+                links.Add($@"<{paginationHeader.First}>; rel=""first""");
+            if (!string.IsNullOrEmpty(paginationHeader.Last))
+                links.Add($@"<{paginationHeader.Last}>; rel=""last""");
+
+            var linksHeader = string.Join(",", links);
+
+            response.Headers.Add("X-Total-Count", totalCount.ToString());
+            response.Headers.Add("Link", linksHeader);
         }
     }
 }

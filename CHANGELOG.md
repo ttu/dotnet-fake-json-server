@@ -5,6 +5,7 @@
 * HTTP OPTIONS method
 * Remove obsolete status endpoint
 * Query filter operators
+* Pagination headers
 
 ### [0.1.0] - 2017-07-14
 Features in chronological order.

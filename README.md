@@ -215,9 +215,9 @@ public const string ApiRoute = "";
 
 ```sh
 # Query with default route
-$ curl http://localhost:57602/api/users?skip=5&take=20
+$ curl 'http://localhost:57602/api/users?skip=5&take=20'
 # Query with updated route
-$ curl http://localhost:57602/users?skip=5&take=20
+$ curl 'http://localhost:57602/users?skip=5&take=20'
 ```
 
 ##### Identifiers
@@ -322,6 +322,14 @@ $ curl http://localhost:57602/api
 
 200 OK        : Collection is found
 404 Not Found : Collection is not found or it is empty
+
+Headers:
+X-Total-Count={total ccount of items in the collection}
+Link=
+<http://{url}:{port}/api/{collection}/{params}>; rel="next",
+<http://{url}:{port}/api/{collection}/{params}>; rel="last",
+<http://{url}:{port}/api/{collection}/{params}>; rel="first",
+<http://{url}:{port}/api/{collection}/{params}>; rel="prev"
 ```
 
 Amount of items can be defined with `skip` and `take` parameters. By default request returns first 512 items.
@@ -333,9 +341,10 @@ $ curl http://localhost:57602/api/users
 Example request returns items from 6 to 26.
 
 ```sh
-$ curl http://localhost:57602/api/users?skip=5&take=20
+$ curl 'http://localhost:57602/api/users?skip=5&take=20'
 ```
 
+Headers have the total item count and pagination links. Link items are optional, so e.g. if requested items are starting from index 0, then prev page and first page link won't be added to the Link header.
 
 #### Get items with query 
 
@@ -347,7 +356,7 @@ $ curl http://localhost:57602/api/users?skip=5&take=20
 ```
 
 ```sh
-$ curl http://localhost:57602/api/users?age=40
+$ curl 'http://localhost:57602/api/users?age=40'
 ```
 ```json
 [ 
@@ -355,6 +364,8 @@ $ curl http://localhost:57602/api/users?age=40
  { "id": 3, "name": "Thomas", "age": 40, "location": "London" }
 ]
 ```
+
+##### Child properties
 
 Query can have a path to child properties. Property names are separated by periods.
 
@@ -394,6 +405,8 @@ $ curl http://localhost:57602/api/users?employees.address.city=London
   }
 ]
 ```
+
+##### Filter operators
 
 Query filter can include operators. Operator identifier is added to the end of the field.
 
@@ -656,6 +669,17 @@ Execute POST benchmark for 10 seconds.
 
 ```sh
 $ wrk -c 256 -t 32 -d 10 -s post.lua http://localhost:57602/api/users
+```
+
+## Get specific version
+
+Releases are marked with Tag.
+
+```sh
+# List versions
+$ git tag -l
+# Checkout specific tag 
+$ git checkout tags/{version}
 ```
 
 ## Changelog
