@@ -1,6 +1,9 @@
 # Changelog
 
 ### [Unreleased]
+*
+
+### [0.2.0] - 2017-07-31
 * Get Controller's route template from constant value
 * HTTP OPTIONS method
 * Remove obsolete status endpoint
