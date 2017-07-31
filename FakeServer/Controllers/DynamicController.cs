@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace FakeServer.Controllers
@@ -53,10 +52,14 @@ namespace FakeServer.Controllers
         /// </summary>
         /// <remarks>
         /// Add filtering with query parameters. E.q. /api/users?age=22&amp;name=Phil (not possible with Swagger)
+        ///
+        /// Optional parameter names skip/take and offset/limit:
+        /// /api/users?skip=10&amp;take=20
+        /// /api/users?offset=10&amp;limit=20
         /// </remarks>
         /// <param name="collectionId">Collection id</param>
-        /// <param name="skip">Items to skip</param>
-        /// <param name="take">Items to take</param>
+        /// <param name="skip">Items to skip (optional name offset)</param>
+        /// <param name="take">Items to take (optional name limit)</param>
         /// <returns>List of items</returns>
         /// <response code="200">Collection item array</response>
         /// <response code="404">Collection not found</response>
@@ -69,11 +72,9 @@ namespace FakeServer.Controllers
             if (!datas.Any())
                 return NotFound();
 
-            var queryParams = Request.Query.Keys.ToList();
-            queryParams.Remove("skip");
-            queryParams.Remove("take");
+            var options = GetQueryOptions(Request.Query, skip, take);
 
-            foreach (var key in queryParams)
+            foreach (var key in options.QueryParams)
             {
                 string propertyName = key;
                 Func<dynamic, dynamic, bool> compareFunc = ObjectHelper.Funcs[""];
@@ -90,7 +91,7 @@ namespace FakeServer.Controllers
                 datas = datas.Where(d => ObjectHelper.GetPropertyAndCompare(d as ExpandoObject, propertyName, Request.Query[key], compareFunc));
             }
 
-            AddPaginationHeaders(Response, skip, take, datas);
+            AddPaginationHeaders(Response, options.Skip, options.Take, datas, options.SkipWord, options.TakeWord);
 
             return Ok(datas.Skip(skip).Take(take));
         }
@@ -245,7 +246,7 @@ namespace FakeServer.Controllers
                 return NotFound();
         }
 
-        private void AddPaginationHeaders(HttpResponse response, int skip, int take, IEnumerable<dynamic> datas)
+        private void AddPaginationHeaders(HttpResponse response, int skip, int take, IEnumerable<dynamic> datas, string skipWord, string takeWord)
         {
             var totalCount = datas.Count();
 
@@ -253,10 +254,10 @@ namespace FakeServer.Controllers
 
             var paginationHeader = new
             {
-                Prev = skip > 0 ? $"{url}?skip={(skip - take > 0 ? skip - take : 0)}&take={(take - skip < 0 ? take : skip)}" : string.Empty,
-                Next = totalCount > (skip + take) ? $"{url}?skip={(skip + take)}&take={take}" : string.Empty,
-                First = skip > 0 ? $"{url}?skip=0&take={take}" : string.Empty,
-                Last = (totalCount - take) > 0 ? $"{url}?skip={(totalCount - take)}&take={take}" : string.Empty
+                Prev = skip > 0 ? $"{url}?{skipWord}={(skip - take > 0 ? skip - take : 0)}&{takeWord}={(take - skip < 0 ? take : skip)}" : string.Empty,
+                Next = totalCount > (skip + take) ? $"{url}?{skipWord}={(skip + take)}&{takeWord}={take}" : string.Empty,
+                First = skip > 0 ? $"{url}?{skipWord}=0&{takeWord}={take}" : string.Empty,
+                Last = (totalCount - take) > 0 ? $"{url}?{skipWord}={(totalCount - take)}&{takeWord}={take}" : string.Empty
             };
 
             var links = new List<string>();
@@ -275,5 +276,45 @@ namespace FakeServer.Controllers
             response.Headers.Add("X-Total-Count", totalCount.ToString());
             response.Headers.Add("Link", linksHeader);
         }
+
+        private QueryOptions GetQueryOptions(IQueryCollection query, int skip, int take)
+        {
+            var skipWord = "skip";
+            var takeWord = "take";
+
+            var queryParams = Request.Query.Keys.ToList();
+
+            if (queryParams.Contains("offset"))
+            {
+                skip = Convert.ToInt32(Request.Query["offset"]);
+                queryParams.Remove("offset");
+                skipWord = "offset";
+            }
+
+            if (queryParams.Contains("limit"))
+            {
+                take = Convert.ToInt32(Request.Query["limit"]);
+                queryParams.Remove("limit");
+                takeWord = "limit";
+            }
+
+            queryParams.Remove("skip");
+            queryParams.Remove("take");
+
+            return new QueryOptions { Skip = skip, Take = take, SkipWord = skipWord, TakeWord = takeWord, QueryParams = queryParams };
+        }
+    }
+
+    public class QueryOptions
+    {
+        public int Skip { get; set; }
+
+        public int Take { get; set; }
+
+        public string SkipWord { get; set; }
+
+        public string TakeWord { get; set; }
+
+        public List<string> QueryParams { get; set; }
     }
 }

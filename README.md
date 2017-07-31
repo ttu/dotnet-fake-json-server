@@ -326,25 +326,43 @@ $ curl http://localhost:57602/api
 Headers:
 X-Total-Count={total ccount of items in the collection}
 Link=
-<http://{url}:{port}/api/{collection}/{params}>; rel="next",
-<http://{url}:{port}/api/{collection}/{params}>; rel="last",
-<http://{url}:{port}/api/{collection}/{params}>; rel="first",
-<http://{url}:{port}/api/{collection}/{params}>; rel="prev"
+<http://{url}:{port}/api/{collection}/{parameters}>; rel="next",
+<http://{url}:{port}/api/{collection}/{parameters}>; rel="last",
+<http://{url}:{port}/api/{collection}/{parameters}>; rel="first",
+<http://{url}:{port}/api/{collection}/{parameters}>; rel="prev"
 ```
-
-Amount of items can be defined with `skip` and `take` parameters. By default request returns first 512 items.
 
 ```sh
 $ curl http://localhost:57602/api/users
 ```
+```json
+[
+  { "id": 1, "name": "Phil", "age": 40, "location": "NY" },
+  { "id": 2, "name": "Larry", "age": 37, "location": "London" },
+  { "id": 3, "name": "Thomas", "age": 40, "location": "London" }
+]
+```
+
+##### Slice
+
+Slicing can be defined with `skip` and `take` or `offset` and `limit` parameters. By default request returns first 512 items.
 
 Example request returns items from 6 to 26.
 
 ```sh
+# skip and take
 $ curl 'http://localhost:57602/api/users?skip=5&take=20'
+# offset and limit
+$ curl 'http://localhost:57602/api/users?offset=5&limit=20'
 ```
 
-Headers have the total item count and pagination links. Link items are optional, so e.g. if requested items are starting from index 0, then prev page and first page link won't be added to the Link header.
+##### Pagination headers
+
+Headers have the collection total item count (`X-Total-Count`) and pagination links (`Link`).
+
+Link items are optional, so e.g. if requested items are starting from index 0, then prev page and first page link won't be added to the Link header.
+
+Headers follow [GitHub Developer](https://developer.github.com/v3/guides/traversing-with-pagination/) guide.
 
 #### Get items with query 
 
@@ -634,7 +652,7 @@ Random errors can be simulated by setting `Simulate.Error.Enabled` to __true__. 
 
 Error simulation is always skipped for Swagger, WebSocket (ws) and for any html file.
 
-### Benchmark
+## Benchmark with wrk
 
 [wrk installation guide](https://github.com/wg/wrk/wiki/Installing-Wrk-on-Linux)
 
@@ -673,7 +691,9 @@ $ wrk -c 256 -t 32 -d 10 -s post.lua http://localhost:57602/api/users
 
 ## Get specific version
 
-Releases are marked with Tag.
+Releases are marked with Tag. 
+
+At the moment there is no compiled versions of the releases available.
 
 ```sh
 # List versions

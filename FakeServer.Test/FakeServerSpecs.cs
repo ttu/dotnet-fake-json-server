@@ -536,14 +536,24 @@ namespace FakeServer.Test
                 Assert.DoesNotContain("first", linksHeaders);
                 Assert.Contains("next", linksHeaders);
                 Assert.Contains("last", linksHeaders);
+            }
+        }
 
-                result = await client.GetAsync($"{_fixture.BaseUrl}/api/families?skip=2&take=17");
+        [Fact]
+        public async Task GetPaginationHeaders_offset_limit()
+        {
+            using (var client = new HttpClient())
+            {
+                var result = await client.GetAsync($"{_fixture.BaseUrl}/api/families?offset=2&limit=17");
 
-                linksHeaders = result.Headers.GetValues("Link").First();
-                Assert.Contains(@"<http://localhost:5001/api/families?skip=0&take=2>; rel=""prev""", linksHeaders);
-                Assert.Contains(@"<http://localhost:5001/api/families?skip=19&take=17>; rel=""next""", linksHeaders);
-                Assert.Contains(@"<http://localhost:5001/api/families?skip=0&take=17>; rel=""first""", linksHeaders);
-                Assert.Contains(@"<http://localhost:5001/api/families?skip=3&take=17>; rel=""last""", linksHeaders);
+                var countHeader = result.Headers.GetValues("X-Total-Count").First();
+                Assert.Equal("20", countHeader);
+
+                var linksHeaders = result.Headers.GetValues("Link").First();
+                Assert.Contains(@"<http://localhost:5001/api/families?offset=0&limit=2>; rel=""prev""", linksHeaders);
+                Assert.Contains(@"<http://localhost:5001/api/families?offset=19&limit=17>; rel=""next""", linksHeaders);
+                Assert.Contains(@"<http://localhost:5001/api/families?offset=0&limit=17>; rel=""first""", linksHeaders);
+                Assert.Contains(@"<http://localhost:5001/api/families?offset=3&limit=17>; rel=""last""", linksHeaders);
             }
         }
     }

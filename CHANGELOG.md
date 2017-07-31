@@ -1,7 +1,7 @@
 # Changelog
 
 ### [Unreleased]
-*
+* offset and limit slice option
 
 ### [0.2.0] - 2017-07-31
 * Get Controller's route template from constant value
