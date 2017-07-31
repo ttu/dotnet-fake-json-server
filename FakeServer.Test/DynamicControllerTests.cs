@@ -4,6 +4,7 @@ using JsonFlatFileDataStore;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Dynamic;
@@ -166,6 +167,54 @@ namespace FakeServer.Test
 
             var result = controller.GetNested("families", 1, "parents") as OkObjectResult;
             Assert.Equal(2, ((IEnumerable<dynamic>)result.Value).Count());
+
+            UTHelpers.Down(filePath);
+        }
+
+        [Fact]
+        public void GetItems_UseResultObject()
+        {
+            var filePath = UTHelpers.Up();
+            var ds = new DataStore(filePath);
+            var apiSettings = Options.Create(new ApiSettings {  UseResultObject = true });
+
+            var controller = new DynamicController(ds, apiSettings);
+            controller.ControllerContext = new ControllerContext();
+            controller.ControllerContext.HttpContext = new DefaultHttpContext();
+            controller.ControllerContext.HttpContext.Request.QueryString = new QueryString("");
+
+            var result = controller.GetItems("families", 4, 10) as OkObjectResult;
+
+            dynamic resultObject = JsonConvert.DeserializeObject<dynamic>(JsonConvert.SerializeObject(result.Value));
+
+            Assert.Equal(10, resultObject.results.Count);
+            Assert.Equal(4, resultObject.skip.Value);
+            Assert.Equal(10, resultObject.take.Value);
+            Assert.Equal(20, resultObject.count.Value);
+
+            UTHelpers.Down(filePath);
+        }
+
+        [Fact]
+        public void GetItems_UseResultObject_offsetlimit()
+        {
+            var filePath = UTHelpers.Up();
+            var ds = new DataStore(filePath);
+            var apiSettings = Options.Create(new ApiSettings { UseResultObject = true });
+
+            var controller = new DynamicController(ds, apiSettings);
+            controller.ControllerContext = new ControllerContext();
+            controller.ControllerContext.HttpContext = new DefaultHttpContext();
+            controller.ControllerContext.HttpContext.Request.QueryString = new QueryString("?offset=5&limit=12");
+
+            var result = controller.GetItems("families") as OkObjectResult;
+
+            var resultObject = JsonConvert.DeserializeObject<dynamic>(JsonConvert.SerializeObject(result.Value));
+
+            Assert.Equal(12, resultObject.results.Count);
+            Assert.Equal(5, resultObject.offset.Value);
+            Assert.Equal(12, resultObject.limit.Value);
+            Assert.Equal(20, resultObject.count.Value);
 
             UTHelpers.Down(filePath);
         }

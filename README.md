@@ -315,22 +315,16 @@ $ curl http://localhost:57602/api
 [ "users", "movies" ]
 ```
 
-#### Get items
+#### Query
 
 ```
 > GET /api/{collection}
 
 200 OK        : Collection is found
 404 Not Found : Collection is not found or it is empty
-
-Headers:
-X-Total-Count={total ccount of items in the collection}
-Link=
-<http://{url}:{port}/api/{collection}/{parameters}>; rel="next",
-<http://{url}:{port}/api/{collection}/{parameters}>; rel="last",
-<http://{url}:{port}/api/{collection}/{parameters}>; rel="first",
-<http://{url}:{port}/api/{collection}/{parameters}>; rel="prev"
 ```
+
+By default request returns results in and array. Headers have the collection's total item count (`X-Total-Count`) and pagination links (`Link`).
 
 ```sh
 $ curl http://localhost:57602/api/users
@@ -341,6 +335,41 @@ $ curl http://localhost:57602/api/users
   { "id": 2, "name": "Larry", "age": 37, "location": "London" },
   { "id": 3, "name": "Thomas", "age": 40, "location": "London" }
 ]
+
+Headers:
+X-Total-Count={total ccount of items in the collection}
+Link=
+<http://{url}:{port}/api/{collection}/{parameters}>; rel="next",
+<http://{url}:{port}/api/{collection}/{parameters}>; rel="last",
+<http://{url}:{port}/api/{collection}/{parameters}>; rel="first",
+<http://{url}:{port}/api/{collection}/{parameters}>; rel="prev"
+```
+
+The return value can also be a JSON object. Set `UseResultObject` to _true_ from `appsettings.json`.
+
+```json
+"Api": {
+  "UseResultObject": true
+}
+```
+
+JSON object has items in results array in result field, link object has the pagination info, skip, take and total count fields.
+
+```json
+{
+  "results": [
+    ...
+  ],
+  "link": {
+    "Prev": "http://localhost:57602/api/users?offset=5&limit=5",
+    "Next": "http://localhost:57602/api/users?offset=15&limit=5",
+    "First": "http://localhost:57602/api/users?offset=0&limit=5",
+    "Last": "http://localhost:57602/api/users?offset=15&limit=5"
+  },
+  "offset": 10,
+  "limit": 5,
+  "count": 20
+}
 ```
 
 ##### Slice
@@ -358,13 +387,11 @@ $ curl 'http://localhost:57602/api/users?offset=5&limit=20'
 
 ##### Pagination headers
 
-Headers have the collection total item count (`X-Total-Count`) and pagination links (`Link`).
-
 Link items are optional, so e.g. if requested items are starting from index 0, then prev page and first page link won't be added to the Link header.
 
 Headers follow [GitHub Developer](https://developer.github.com/v3/guides/traversing-with-pagination/) guide.
 
-#### Get items with query 
+#### Filter
 
 ```
 > GET api/{collection}?field=value&otherField=value

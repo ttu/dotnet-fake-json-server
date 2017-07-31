@@ -91,9 +91,22 @@ namespace FakeServer.Controllers
                 datas = datas.Where(d => ObjectHelper.GetPropertyAndCompare(d as ExpandoObject, propertyName, Request.Query[key], compareFunc));
             }
 
-            AddPaginationHeaders(Response, options.Skip, options.Take, datas, options.SkipWord, options.TakeWord);
+            var totalCount = datas.Count();
 
-            return Ok(datas.Skip(skip).Take(take));
+            var paginationHeader = QueryHelper.GetPaginationHeader($"{Request.Scheme}://{Request.Host.Value}{Request.Path}", totalCount, options.Skip, options.Take, options.SkipWord, options.TakeWord);
+
+            var results = datas.Skip(options.Skip).Take(options.Take);
+
+            if (_settings.UseResultObject)
+            {
+                return Ok(QueryHelper.GetResultObject(results, totalCount, paginationHeader, options));
+            }
+            else
+            {
+                Response.Headers.Add("X-Total-Count", totalCount.ToString());
+                Response.Headers.Add("Link", QueryHelper.GetHeaderLink(paginationHeader));
+                return Ok(results);
+            }
         }
 
         /// <summary>
@@ -246,54 +259,23 @@ namespace FakeServer.Controllers
                 return NotFound();
         }
 
-        private void AddPaginationHeaders(HttpResponse response, int skip, int take, IEnumerable<dynamic> datas, string skipWord, string takeWord)
-        {
-            var totalCount = datas.Count();
-
-            var url = $"{Request.Scheme}://{Request.Host.Value}{Request.Path}";
-
-            var paginationHeader = new
-            {
-                Prev = skip > 0 ? $"{url}?{skipWord}={(skip - take > 0 ? skip - take : 0)}&{takeWord}={(take - skip < 0 ? take : skip)}" : string.Empty,
-                Next = totalCount > (skip + take) ? $"{url}?{skipWord}={(skip + take)}&{takeWord}={take}" : string.Empty,
-                First = skip > 0 ? $"{url}?{skipWord}=0&{takeWord}={take}" : string.Empty,
-                Last = (totalCount - take) > 0 ? $"{url}?{skipWord}={(totalCount - take)}&{takeWord}={take}" : string.Empty
-            };
-
-            var links = new List<string>();
-
-            if (!string.IsNullOrEmpty(paginationHeader.Prev))
-                links.Add($@"<{paginationHeader.Prev}>; rel=""prev""");
-            if (!string.IsNullOrEmpty(paginationHeader.Next))
-                links.Add($@"<{paginationHeader.Next}>; rel=""next""");
-            if (!string.IsNullOrEmpty(paginationHeader.First))
-                links.Add($@"<{paginationHeader.First}>; rel=""first""");
-            if (!string.IsNullOrEmpty(paginationHeader.Last))
-                links.Add($@"<{paginationHeader.Last}>; rel=""last""");
-
-            var linksHeader = string.Join(",", links);
-
-            response.Headers.Add("X-Total-Count", totalCount.ToString());
-            response.Headers.Add("Link", linksHeader);
-        }
-
         private QueryOptions GetQueryOptions(IQueryCollection query, int skip, int take)
         {
             var skipWord = "skip";
             var takeWord = "take";
 
-            var queryParams = Request.Query.Keys.ToList();
+            var queryParams = query.Keys.ToList();
 
             if (queryParams.Contains("offset"))
             {
-                skip = Convert.ToInt32(Request.Query["offset"]);
+                skip = Convert.ToInt32(query["offset"]);
                 queryParams.Remove("offset");
                 skipWord = "offset";
             }
 
             if (queryParams.Contains("limit"))
             {
-                take = Convert.ToInt32(Request.Query["limit"]);
+                take = Convert.ToInt32(query["limit"]);
                 queryParams.Remove("limit");
                 takeWord = "limit";
             }
