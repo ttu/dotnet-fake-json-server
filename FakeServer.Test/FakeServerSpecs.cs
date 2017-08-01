@@ -166,6 +166,17 @@ namespace FakeServer.Test
         }
 
         [Fact]
+        public async Task GetItem_QueryFilters_DateTime()
+        {
+            using (var client = new HttpClient())
+            {
+                var result = await client.GetAsync($"{_fixture.BaseUrl}/api/families?bankAccount.opened_lt=1/1/2015");
+                var allFamilies = JsonConvert.DeserializeObject<JArray>(await result.Content.ReadAsStringAsync());
+                Assert.Equal(8, allFamilies.Count());
+            }
+        }
+
+        [Fact]
         public async Task GetItem_Nested()
         {
             using (var client = new HttpClient())

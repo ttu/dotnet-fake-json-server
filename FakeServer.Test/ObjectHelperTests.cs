@@ -1,5 +1,6 @@
 ﻿using FakeServer.Common;
 using Newtonsoft.Json;
+using System;
 using Xunit;
 
 namespace FakeServer.Test
@@ -40,19 +41,29 @@ namespace FakeServer.Test
         }
 
         [Fact]
-        public void GetValueAsCorrectType_Integer()
+        public void GetValueAsCorrectType()
         {
-            string a = "2";
-            var retVal = ObjectHelper.GetValueAsCorrectType(a);
-            Assert.IsType<int>(retVal);
+            Assert.IsType<int>(ObjectHelper.GetValueAsCorrectType("2"));
+            Assert.IsType<double>(ObjectHelper.GetValueAsCorrectType("2.1"));
+            Assert.IsType<DateTime>(ObjectHelper.GetValueAsCorrectType("7/31/2017"));
+            Assert.IsType<string>(ObjectHelper.GetValueAsCorrectType("somevalue"));
         }
 
         [Fact]
-        public void GetValueAsCorrectType_String()
+        public void OperatorFunctions()
         {
-            string a = "somevalue";
-            var retVal = ObjectHelper.GetValueAsCorrectType(a);
-            Assert.IsType<string>(retVal);
+            Assert.True(ObjectHelper.Funcs[""](2, 2));
+            Assert.True(ObjectHelper.Funcs[""]("ok", "ok"));
+            Assert.False(ObjectHelper.Funcs[""]("ok2", "ok"));
+            Assert.True(ObjectHelper.Funcs["_ne"](3.5, 2.3));
+            Assert.True(ObjectHelper.Funcs["_ne"]("ok2", "ok"));
+            Assert.True(ObjectHelper.Funcs["_lt"](2, 3));
+            Assert.True(ObjectHelper.Funcs["_lt"](2.9999, 3));
+            Assert.True(ObjectHelper.Funcs["_lte"](2, 2));
+            Assert.True(ObjectHelper.Funcs["_lte"](2.0, 2.0));
+            Assert.True(ObjectHelper.Funcs["_gt"](3, 2));
+            Assert.False(ObjectHelper.Funcs["_gt"](3.0, 3.1));
+            Assert.True(ObjectHelper.Funcs["_gte"](3, 2));
         }
     }
 }

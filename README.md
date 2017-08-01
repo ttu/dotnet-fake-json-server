@@ -241,7 +241,7 @@ Asynchoronous operations follow [REST CookBook guide](http://restcookbook.com/Re
 
 Method return codes are specified in [REST API Tutorial](http://www.restapitutorial.com/lessons/httpmethods.html).
 
-### OPTIONS method
+#### OPTIONS method
 
 OPTIONS method will return `Allow` header with a list of HTTP methods that may be used on the resource.
 
@@ -256,9 +256,9 @@ Headers:
 Allow: GET, POST, OPTIONS
 ```
 
-### Eager data reload
+#### Eager data reload
 
-By default DataStore updates internal data on every query by reading data from the JSON file. 
+By default DataStore updates it's internal data on every request by reading the data from the JSON file. 
 
 `EagerDataReload` can be configured from `appsettings.json`.
 
@@ -268,11 +268,11 @@ By default DataStore updates internal data on every query by reading data from t
 }
 ```
 
-For performance reasons `EagerDataReload` can be changed to _false_. Then data is reloaded from the file only when DataStore is initialized and when data is updated. 
+For performance reasons `EagerDataReload` can be changed to _false_. Then the data is reloaded from the file only when DataStore is initialized and when the data is updated. 
 
 If `EagerDataReload` is _false_ and JSON file is updated manually, reload endpoint must be called if new data will be queried before any updates. 
 
-### Reload
+#### Reload
 
 Reload endpoint can be used to reload JSON data from the file to DataStore. Endoint is in Admin controller, so it is usable also with Swagger.
 
@@ -280,7 +280,7 @@ Reload endpoint can be used to reload JSON data from the file to DataStore. Endo
 $ curl -X POST http://localhost:57602/admin/reload --data ""
 ```
 
-### Functionalities
+### Endpoints
 
 ##### Example JSON data
 
@@ -652,7 +652,7 @@ Delay value is milliseconds. Default value is 2000ms.
 
 Delay and errors can be configured from `appsettings.json`.
 
-Delay can be simulated by setting `Simulate.Delay.Enabled` to __true__. The inbound request is delayed. The length of the delay is randomly chosen between `MinMs`and `MaxMs`. Delay can be configured for only certain HTTP Methods, e.g. only POST updates have delay and all GET requests are handled normally.
+Delay can be simulated by setting `Simulate.Delay.Enabled` to _true_. The inbound request is delayed. The length of the delay is randomly chosen between `MinMs`and `MaxMs`. Delay can be configured for only certain HTTP Methods, e.g. only POST updates have delay and all GET requests are handled normally.
 
 ```json
 "Simulate": {
@@ -665,7 +665,7 @@ Delay can be simulated by setting `Simulate.Delay.Enabled` to __true__. The inbo
 }
 ```
 
-Random errors can be simulated by setting `Simulate.Error.Enabled` to __true__. Error is thrown if set `Probability` is greater or equal to randomly chosen value between 1 and 100. Error can be configured for only certain HTTP Methods.
+Random errors can be simulated by setting `Simulate.Error.Enabled` to _true_. Error is thrown if set `Probability` is greater or equal to randomly chosen value between 1 and 100. Error can be configured for only certain HTTP Methods.
 
 ```json
 "Simulate": {

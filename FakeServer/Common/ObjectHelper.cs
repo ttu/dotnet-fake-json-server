@@ -9,12 +9,12 @@ namespace FakeServer.Common
     {
         public static Dictionary<string, Func<dynamic, dynamic, bool>> Funcs = new Dictionary<string, Func<dynamic, dynamic, bool>>
         {
-            { "", (value, compare) => { return value == compare; } },
-            { "_ne", (value, compare) => { return value != compare; } },
-            { "_lt", (value, compare) => { return value < compare; }  },
-            { "_gt", (value, compare) => { return value > compare; }  },
-            { "_lte", (value, compare) => { return value <= compare; }  },
-            { "_gte", (value, compare) => { return value >= compare; }  }
+            [""] = (a, b) => a == b,
+            ["_ne"] = (a, b) => a != b,
+            ["_lt"] = (a, b) => (a < b),
+            ["_gt"] = (a, b) => a > b,
+            ["_lte"] = (a, b) => a <= b,
+            ["_gte"] = (a, b) => a >= b
         };
 
         /// <summary>
@@ -38,7 +38,7 @@ namespace FakeServer.Common
             var currentValue = currentAsDict[currentProperty];
 
             if (string.IsNullOrEmpty(tail))
-                return compareFunc(((dynamic)currentValue), GetValueAsCorrectType(valueToCompare));
+                return compareFunc(TryToCastValue(currentValue), GetValueAsCorrectType(valueToCompare));
 
             if (currentValue is IEnumerable<dynamic> valueEnumerable)
                 return valueEnumerable.Any(e => GetPropertyAndCompare(e, tail, valueToCompare, compareFunc));
@@ -90,7 +90,7 @@ namespace FakeServer.Common
         {
             var cleaned = path.StartsWith("/") ? path.Substring(1) : path;
             cleaned = cleaned.EndsWith("/") ? cleaned.Substring(0, cleaned.Length - 1) : cleaned;
-            cleaned = cleaned.Replace("api/", "");
+            cleaned = cleaned.Replace($"{Config.ApiRoute}/", "");
 
             return new
             {
@@ -101,6 +101,13 @@ namespace FakeServer.Common
             };
         }
 
+        private static List<Func<string, dynamic>> _convertFuncs = new List<Func<string, dynamic>>
+        {
+            x => Convert.ToInt32(x),
+            x => Convert.ToDouble(x),
+            x => Convert.ToDateTime(x)
+        };
+
         /// <summary>
         /// Convert input value to correct type
         /// </summary>
@@ -108,24 +115,33 @@ namespace FakeServer.Common
         /// <returns>value as an integer, as a double or as a string</returns>
         public static dynamic GetValueAsCorrectType(string value)
         {
-            try
+            foreach (var func in _convertFuncs)
             {
-                return Convert.ToInt32(value);
-            }
-            catch (Exception)
-            {
-            }
-
-            try
-            {
-                return Convert.ToDouble(value);
-            }
-            catch (Exception)
-            {
+                try
+                {
+                    return func(value);
+                }
+                catch (Exception)
+                {
+                }
             }
 
             return value;
+        }
 
+        /// <summary>
+        /// Try to cast value from JSON file to correct type.
+        /// Now only type to handle is DateTime
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static dynamic TryToCastValue(dynamic value)
+        {
+            if (value is string)
+                if (DateTime.TryParse(value, out DateTime result))
+                    return result;
+
+            return value;
         }
     }
 }

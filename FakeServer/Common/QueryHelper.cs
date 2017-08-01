@@ -45,10 +45,16 @@ namespace FakeServer.Common
 
         public static dynamic GetResultObject(IEnumerable<dynamic> results, int totalCount, PaginationHeader pg, QueryOptions options)
         {
-            if (options.SkipWord == "skip")
-                return new { results = results, link = pg, skip = options.Skip, take = options.Take, count = totalCount };
-            else
-                return new { results = results, link = pg, offset = options.Skip, limit = options.Take, count = totalCount };
+            var result = new Dictionary<string, object>
+            {
+                ["results"] = results,
+                ["link"] = pg,
+                ["count"] = totalCount,
+                [options.SkipWord] = options.Skip,
+                [options.TakeWord] = options.Take
+            };
+
+            return result;
         }
     }
 }
