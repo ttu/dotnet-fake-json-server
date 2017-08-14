@@ -793,7 +793,7 @@
           "phone": "+1 (878) 418-3185",
           "work": {
             "companyName": "AQUACINE",
-            "address": "402 Stockton Street, Grimsley, Vermont, 3945"
+            "address": "402 Stockton Street, Grimsley, Hillsboro, 3945"
           },
           "favouriteMovie": "Die Hard"
         }
@@ -1173,7 +1173,7 @@
       "address": {
         "postNumber": 750,
         "street": "Navy Walk",
-        "city": "Turah",
+        "city": "hillsboro",
         "country": {
           "name": "Mauritius",
           "code": 940

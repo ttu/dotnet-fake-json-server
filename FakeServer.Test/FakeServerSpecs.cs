@@ -155,7 +155,7 @@ namespace FakeServer.Test
         }
 
         [Fact]
-        public async Task GetItem_QueryFilters_GetItem_QueryFilters_GreaterThanEquals()
+        public async Task GetItem_QueryFilters_GreaterThanEquals()
         {
             using (var client = new HttpClient())
             {
@@ -173,6 +173,27 @@ namespace FakeServer.Test
                 var result = await client.GetAsync($"{_fixture.BaseUrl}/api/families?bankAccount.opened_lt=1/1/2015");
                 var allFamilies = JsonConvert.DeserializeObject<JArray>(await result.Content.ReadAsStringAsync());
                 Assert.Equal(8, allFamilies.Count());
+            }
+        }
+
+        [Fact]
+        public async Task GetItem_TextSearch_BadRequest()
+        {
+            using (var client = new HttpClient())
+            {
+                var result = await client.GetAsync($"{_fixture.BaseUrl}/api/families?q=some&k=fail");
+                Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
+            }
+        }
+
+        [Fact]
+        public async Task GetItem_TextSearch()
+        {
+            using (var client = new HttpClient())
+            {
+                var result = await client.GetAsync($"{_fixture.BaseUrl}/api/families?q=Hillsboro");
+                var allFamilies = JsonConvert.DeserializeObject<JArray>(await result.Content.ReadAsStringAsync());
+                Assert.Equal(3, allFamilies.Count());
             }
         }
 

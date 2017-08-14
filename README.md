@@ -16,7 +16,7 @@ Fake REST API for prototyping or as a CRUD backend.
  
 * .NET Core Web API
 * Can be used without .NET with Docker
-* Uses [JSON Flat File DataStore](https://github.com/ttu/json-flatfile-datastore)
+* Uses [JSON Flat File Data Store](https://github.com/ttu/json-flatfile-datastore)
   * All changes are automatically saved to defined JSON file
 * Token authentication
   * Add allowed usernames/passwords to `authentication.json`
@@ -40,7 +40,7 @@ $ cd dotnet-fake-json-server/FakeServer
 $ dotnet run [--file] [--urls]
 
 # Optional arguments:
-#   --file     Datastore's JSON file (default datastore.json)
+#   --file     Data store's JSON file (default datastore.json)
 #   --urls     Server url (default http://localhost:57602)      
 
 # Example: Start server
@@ -258,7 +258,7 @@ Allow: GET, POST, OPTIONS
 
 #### Eager data reload
 
-By default DataStore updates it's internal data on every request by reading the data from the JSON file. 
+By default Data Store updates it's internal data on every request by reading the data from the JSON file. 
 
 `EagerDataReload` can be configured from `appsettings.json`.
 
@@ -268,13 +268,13 @@ By default DataStore updates it's internal data on every request by reading the 
 }
 ```
 
-For performance reasons `EagerDataReload` can be changed to _false_. Then the data is reloaded from the file only when DataStore is initialized and when the data is updated. 
+For performance reasons `EagerDataReload` can be changed to _false_. Then the data is reloaded from the file only when Data Store is initialized and when the data is updated. 
 
 If `EagerDataReload` is _false_ and JSON file is updated manually, reload endpoint must be called if new data will be queried before any updates. 
 
 #### Reload
 
-Reload endpoint can be used to reload JSON data from the file to DataStore. Endoint is in Admin controller, so it is usable also with Swagger.
+Reload endpoint can be used to reload JSON data from the file to Data Store. Endoint is in Admin controller, so it is usable also with Swagger.
 
 ```sh
 $ curl -X POST http://localhost:57602/admin/reload --data ""
@@ -320,8 +320,9 @@ $ curl http://localhost:57602/api
 ```
 > GET /api/{collection}
 
-200 OK        : Collection is found
-404 Not Found : Collection is not found or it is empty
+200 OK          : Collection is found
+400 Bad Request : Invalid query parameters
+404 Not Found   : Collection is not found or it is empty
 ```
 
 By default request returns results in and array. Headers have the collection's total item count (`X-Total-Count`) and pagination links (`Link`).
@@ -333,16 +334,17 @@ $ curl http://localhost:57602/api/users
 [
   { "id": 1, "name": "Phil", "age": 40, "location": "NY" },
   { "id": 2, "name": "Larry", "age": 37, "location": "London" },
-  { "id": 3, "name": "Thomas", "age": 40, "location": "London" }
+  { "id": 3, "name": "Thomas", "age": 40, "location": "London" },
+  ...
 ]
 
 Headers:
-X-Total-Count={total ccount of items in the collection}
+X-Total-Count=20
 Link=
-<http://{url}:{port}/api/{collection}/{parameters}>; rel="next",
-<http://{url}:{port}/api/{collection}/{parameters}>; rel="last",
-<http://{url}:{port}/api/{collection}/{parameters}>; rel="first",
-<http://{url}:{port}/api/{collection}/{parameters}>; rel="prev"
+<http://localhost:57602/api/users?offset=15&limit=5>; rel="next",
+<http://localhost:57602/api/users?offset=15&limit=5>; rel="last",
+<http://localhost:57602/api/users?offset=0&limit=5>; rel="first",
+<http://localhost:57602/api/users?offset=5&limit=5>; rel="prev"
 ```
 
 The return value can also be a JSON object. Set `UseResultObject` to _true_ from `appsettings.json`.
@@ -395,9 +397,6 @@ Headers follow [GitHub Developer](https://developer.github.com/v3/guides/travers
 
 ```
 > GET api/{collection}?field=value&otherField=value
-
-200 OK        : Collection is found
-404 Not Found : Collection is not found or it is empty
 ```
 
 ```sh
@@ -414,7 +413,9 @@ $ curl 'http://localhost:57602/api/users?age=40'
 
 Query can have a path to child properties. Property names are separated by periods.
 
-`> GET api/{collection}?parent.child.grandchild.field=value`
+````
+> GET api/{collection}?parent.child.grandchild.field=value
+```` 
 
 Example JSON:
 ```json
@@ -475,6 +476,20 @@ $ curl http://localhost:57602/api/users?age_lt=40
 [ 
   { "id": 2, "name": "Larry", "age": 37, "location": "London" }
 ]
+```
+
+##### Full-text search
+
+Full-text search can be performed with the `q`-parameter followed by search text. Search is not case sensitive.
+
+```
+> GET api/{collection}?q={text}
+```` 
+
+Get all users that contain text London in the value of any of it's properties.
+
+```sh
+$ curl http://localhost:57602/api/users?q=london
 ```
 
 #### Get item with id 
@@ -689,7 +704,7 @@ Start the server from the command line.
 $ dotnet run --urls http://localhost:57602
 ```
 
-Do first benchmark against `/api/` endpoint using OPTIONS method, as it only uses OptionsMiddleware.
+Do first benchmark against `/api` endpoint using OPTIONS method, as it only uses OptionsMiddleware.
 
 Create a script file (e.g. options.lua) for `OPTIONS` request.
 ```lua
@@ -728,6 +743,16 @@ $ git tag -l
 # Checkout specific tag 
 $ git checkout tags/{version}
 ```
+
+## Guidelines
+
+Api uses best practices and recommendations from these guides:
+
+* [REST CookBook](http://restcookbook.com/Resources/asynchroneous-operations/)
+* [REST API Tutorial](http://www.restapitutorial.com/lessons/httpmethods.html)
+* [Zalando Restful API Guidelines](https://zalando.github.io/restful-api-guidelines)
+* [Microsoft API Design](https://docs.microsoft.com/en-us/azure/architecture/best-practices/api-design)
+* [GitHub v3 Guide](https://developer.github.com/v3/guides/)
 
 ## Changelog
 

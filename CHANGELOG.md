@@ -1,8 +1,9 @@
 # Changelog
 
 ### [Unreleased]
-* offset and limit slice option
-* Option for query to return JSON object
+* Offset and limit slice option
+* Option for query to return JSON object, instead of the results array
+* Full-text search
 
 ### [0.2.0] - 2017-07-31
 * Get Controller's route template from constant value
