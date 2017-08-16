@@ -2,13 +2,13 @@
 using FakeServer.Authentication.Custom;
 using FakeServer.Authentication.Jwt;
 using FakeServer.Common;
+using FakeServer.GraphQL;
 using FakeServer.Jobs;
 using FakeServer.Simulate;
 using FakeServer.WebSockets;
 using JsonFlatFileDataStore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -125,7 +125,9 @@ namespace FakeServer
             app.UseMiddleware<NotifyWebSocketMiddlerware>();
             app.UseMiddleware<WebSocketMiddleware>();
 
-            if (Configuration.GetValue<bool>("Authentication:Enabled"))
+            var useAuthentication = Configuration.GetValue<bool>("Authentication:Enabled");
+
+            if (useAuthentication)
             {
                 TokenConfiguration.Configure(app);
             }
@@ -136,6 +138,8 @@ namespace FakeServer
 
             app.UseDefaultFiles();
             app.UseStaticFiles();
+
+            app.UseMiddleware<GraphQLMiddleware>(app.ApplicationServices.GetRequiredService<IDataStore>(), useAuthentication);
 
             app.UseMvc();
 

@@ -599,5 +599,72 @@ namespace FakeServer.Test
                 Assert.Contains(@"<http://localhost:5001/api/families?offset=3&limit=17>; rel=""last""", linksHeaders);
             }
         }
+
+        [Fact]
+        public async Task PostGraphQL()
+        {
+            using (var client = new HttpClient())
+            {
+                var q = @"
+                    query {
+                          families {
+                            familyName
+                            children(age: 4) {
+                              name
+                              age
+                            }
+                          }
+                    }";
+
+                var content = new StringContent(q, Encoding.UTF8, "application/graphql");
+                var result = await client.PostAsync($"{_fixture.BaseUrl}/graphql", content);
+
+                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+
+                var data = JsonConvert.DeserializeObject<JObject>(await result.Content.ReadAsStringAsync());
+
+                Assert.NotNull(data["data"]);
+                Assert.Null(data["errors"]);
+            }
+        }
+
+        [Fact]
+        public async Task PostGraphQL_Filter_Bool()
+        {
+            using (var client = new HttpClient())
+            {
+                var q = @"
+                    query {
+                          families {
+                            id
+                            bankAccount(isActive: true) {
+                              balance
+                            }
+                          }
+                    }";
+
+                var content = new StringContent(q, Encoding.UTF8, "application/graphql");
+                var result = await client.PostAsync($"{_fixture.BaseUrl}/graphql", content);
+
+                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+
+                var data = JsonConvert.DeserializeObject<JObject>(await result.Content.ReadAsStringAsync());
+
+                Assert.True(data["data"]["families"][0]["id"].ToString() == "1");
+                Assert.Equal(9, data["data"]["families"].Count());
+                Assert.Null(data["errors"]);
+            }
+        }
+
+        [Fact]
+        public async Task PostGraphQL_Error()
+        {
+            using (var client = new HttpClient())
+            {
+                var content = new StringContent("{ users }", Encoding.UTF8, "application/json");
+                var result = await client.PostAsync($"{_fixture.BaseUrl}/graphql", content);
+                Assert.Equal(HttpStatusCode.NotImplemented, result.StatusCode);
+            }
+        }
     }
 }

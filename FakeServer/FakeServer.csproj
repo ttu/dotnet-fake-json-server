@@ -27,6 +27,7 @@
     <Content Include="wwwroot\index.html" />
   </ItemGroup>-->
   <ItemGroup>
+    <PackageReference Include="GraphQL" Version="0.17.2" />
     <PackageReference Include="JsonFlatFileDataStore" Version="1.7.0" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.1.1" />
     <PackageReference Include="Microsoft.AspNetCore" Version="1.1.2" />
@@ -40,6 +41,7 @@
     <PackageReference Include="Serilog.Sinks.RollingFile" Version="3.3.0" />
     <PackageReference Include="System.Linq.Dynamic.Core" Version="1.0.7.6" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="1.0.0" />
+    <PackageReference Include="System.Reflection.TypeExtensions" Version="4.4.0" />
   </ItemGroup>
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="1.0.0" />

@@ -3,7 +3,7 @@
 
 [![Build Status](https://travis-ci.org/ttu/dotnet-fake-json-server.svg?branch=master)](https://travis-ci.org/ttu/dotnet-fake-json-server) [![Build status](https://ci.appveyor.com/api/projects/status/hacg7qupp5oxbct8?svg=true)](https://ci.appveyor.com/project/ttu/dotnet-fake-json-server)
 
-Fake REST API for prototyping or as a CRUD backend.
+Fake REST API for prototyping or as a CRUD backend with experimental GraphQL query support.
 
 * No need to define types for resources. Types are handled dynamically
 * No database. Data is stored to a JSON file
@@ -11,6 +11,7 @@ Fake REST API for prototyping or as a CRUD backend.
 * Async versions of update operations with long running jobs
 * Simulate delay and errors for requests
 * No configuration needed, start the Server and API is ready to be used with any data
+
 
 ## Features
  
@@ -24,6 +25,7 @@ Fake REST API for prototyping or as a CRUD backend.
 * Static files
 * Swagger
 * CORS
+* _Experimantal_ GraphQL query support
 
 ## Get started
 
@@ -191,6 +193,8 @@ PUT      /async/{collection}/{id}
 PATCH    /async/{collection}/{id}
 DELETE   /async/{collection}/{id}
 OPTIONS  /async/*
+
+POST     /graphql
 ```
 
 ##### Routes
@@ -204,6 +208,7 @@ public class Config
 {
     public const string ApiRoute = "api";
     public const string AsyncRoute = "async";
+    public const string GraphQLRoute = "graphql";
 }
 ```
 
@@ -651,6 +656,90 @@ After job is finished, it must be deleted manually
 404 Not Found  : Job not found
 ```
 
+##### GraphQL query support
+
+GraphQL implementation is experimental and supports only most basic queries. At the moment this is a good way to compare simple GraphQL and REST queries.
+
+```
+> POST /graphql
+
+Content-type: application/graphql
+Body: [query]
+
+
+200 OK              : Query successful 
+400 Bad Request     : Query contains errors
+501 Not Implemented : HTTP method and/or content-type combination not implemented
+```
+
+Response is in JSON format. It contains `data` and `errors` fields. `errors` field is not present if there are no errors. 
+```json
+{
+  "data": { 
+    "users": [ ... ],
+    ...
+  },
+  "errors": [ ... ]
+}
+```` 
+
+Implementation supports equals filtering with arguments. Query's first field is the name of the collection.
+
+```graphql
+query {
+  [collection](filter: value) {
+    [field1]
+    [field2](filter: value) {
+      [field2.1]
+    }
+    [field3]
+  }
+}
+```
+
+Get `familyName` and `age` of the `children` from `families` where `id` is 1 and `name`from all `users`.
+
+```sh
+$ curl -H "Content-type: application/graphql" -X POST -d '{ families(id: 1) { familyName children { age } } users { name } }' http://localhost:57602/graphql
+```
+
+
+Implementaiton accepts queries with operation type, with any query name (which is ignored) and query shorthands.
+
+```graphql
+# Operation type
+query {
+  users(id: 3) {
+    name
+    work {
+      location
+    }
+  }
+}
+
+# Optional query name
+query getUsers {
+  users {
+    name
+    work {
+      location
+    }
+  }
+}
+
+# Query shorthand
+{
+  families {
+    familyName
+    childred(age: 5){
+        name
+    }
+  }
+}
+```
+
+Uses [graphql-dotnet](https://github.com/graphql-dotnet/graphql-dotnet) to parse Abstract Syntax Tree from the query.
+
 ##### Job delay
 
 Delay for operations can be set from `appsettings.json`. With long delay it is easier to simulate long running jobs.
@@ -753,6 +842,7 @@ Api uses best practices and recommendations from these guides:
 * [Zalando Restful API Guidelines](https://zalando.github.io/restful-api-guidelines)
 * [Microsoft API Design](https://docs.microsoft.com/en-us/azure/architecture/best-practices/api-design)
 * [GitHub v3 Guide](https://developer.github.com/v3/guides/)
+* [Introduction to GraphQL](http://graphql.org/learn/)
 
 ## Changelog
 

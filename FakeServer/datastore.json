@@ -100,7 +100,7 @@
       "bankAccount": {
         "opened": "2014-03-16T04:33:58 -02:00",
         "balance": "$3,595.79",
-        "isActive": true
+        "isActive": false
       },
       "notes": "Elit consectetur dolor qui sunt esse velit cupidatat Lorem esse est deserunt quis culpa. Cupidatat eiusmod pariatur officia cillum pariatur reprehenderit mollit nostrud est. Labore qui deserunt aliquip sit. Elit eiusmod magna laboris ut id voluptate in.\r\n"
     },
