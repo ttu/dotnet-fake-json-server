@@ -103,6 +103,7 @@ namespace FakeServer.Common
 
         private static List<Func<string, dynamic>> _convertFuncs = new List<Func<string, dynamic>>
         {
+            x => Convert.ToBoolean(x),
             x => Convert.ToInt32(x),
             x => Convert.ToDouble(x),
             x => Convert.ToDateTime(x)

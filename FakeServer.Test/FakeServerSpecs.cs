@@ -177,6 +177,17 @@ namespace FakeServer.Test
         }
 
         [Fact]
+        public async Task GetItem_QueryFilters_Bool()
+        {
+            using (var client = new HttpClient())
+            {
+                var result = await client.GetAsync($"{_fixture.BaseUrl}/api/families?bankAccount.isActive=true");
+                var allFamilies = JsonConvert.DeserializeObject<JArray>(await result.Content.ReadAsStringAsync());
+                Assert.Equal(9, allFamilies.Count());
+            }
+        }
+
+        [Fact]
         public async Task GetItem_TextSearch_BadRequest()
         {
             using (var client = new HttpClient())
