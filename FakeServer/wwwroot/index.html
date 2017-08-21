@@ -47,14 +47,14 @@
     const request = window.superagent;
 
     request
-        .get('http://localhost:57602/api')
+        .get(`http://${window.location.host}/api`)
         .then(response => {
             app.collections = response.body;
         }).catch(error => {
             console.log(error.message || error);
         });
 
-    const webSocket = new WebSocket("ws://localhost:57602/ws");
+    const webSocket = new WebSocket(`ws://${window.location.host}/ws`);
 
     webSocket.onmessage = (evt) => {
         app.lastUpdate = JSON.parse(evt.data);
