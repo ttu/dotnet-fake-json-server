@@ -19,7 +19,7 @@ Fake REST API for prototyping or as a CRUD backend with experimental GraphQL que
 * Can be used without .NET with Docker
 * Uses [JSON Flat File Data Store](https://github.com/ttu/json-flatfile-datastore)
   * All changes are automatically saved to defined JSON file
-* Token authentication
+* Token and Basic Authentication
   * Add allowed usernames/passwords to `authentication.json`
 * WebSockets
 * Static files
@@ -111,9 +111,10 @@ $ curl http://localhost:57602/api/users/
 # Or open url http://localhost:57602/swagger/ with browser and use Swagger
 ```
 
-#### Redux TodoMVC Example
+#### Examples
 
-[Redux TodoMVC](https://github.com/ttu/todomvc-fake-server) example modified to use Fake JSON Server as a Back End.
+* [Introduction Blog Post](http://ttu.github.io/introduction-to-fake-json-server/)
+* [Redux TodoMVC Example](https://github.com/ttu/todomvc-fake-server) modified to use Fake JSON Server as a Back End
 
 ## Features
 
@@ -127,7 +128,7 @@ Authentication can be disabled from `authentication.json` by setting Enabled to 
 {
   "Authentication": {
     "Enabled": true,
-    "AuthenticationType": 'token',
+    "AuthenticationType": "token",
     "Users": [
         { "Username": "admin", "Password": "root" }
     ]
