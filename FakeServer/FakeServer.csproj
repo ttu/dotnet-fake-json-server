@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp1.1</TargetFramework>
+    <RuntimeIdentifiers>win10-x64;osx.10.11-x64;osx.10.12-x64;ubuntu.16.04-x64;ubuntu.16.10-x64</RuntimeIdentifiers>
     <Authors>Tomi Tuhkanen</Authors>
     <Company />
     <Description>Fake JSON Server</Description>
@@ -12,12 +13,11 @@
     <PackageTags>fake json server rest api</PackageTags>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>bin\Debug\netcoreapp1.1\FakeServer.xml</DocumentationFile>
+  <PropertyGroup>
+    <DocumentationFile>FakeServer.xml</DocumentationFile>
     <NoWarn>1591;1701;1702;1705</NoWarn>
   </PropertyGroup>
-
-
+    
   <!-- 
    This made build on Travis CI fail. Apparently this is fixed in some later .NET Core SDK versions, so uncomment it when it works with Travis.
 
@@ -49,7 +49,11 @@
   <ItemGroup>
     <Content Update="datastore.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="FakeServer.xml" CopyToPublishDirectory="Always" />
   </ItemGroup>
 
 </Project>
