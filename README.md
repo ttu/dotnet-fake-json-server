@@ -119,14 +119,15 @@ $ curl http://localhost:57602/api/users/
 
 ### Authentication
 
-Fake REST API supports token authentication. API has a token provider middleware which provides an endpoint for token generation `/token`.
+Fake REST API supports Token and Basic Authentication. 
 
-Authentiation can be disabled from `authentiation.json` by setting Enabled to `false`.
+Authentication can be disabled from `authentication.json` by setting Enabled to `false`. `AuthenticationType` options are `token` and `basic`.
 
 ```json
 {
   "Authentication": {
     "Enabled": true,
+    "AuthenticationType": 'token',
     "Users": [
         { "Username": "admin", "Password": "root" }
     ]
@@ -134,7 +135,9 @@ Authentiation can be disabled from `authentiation.json` by setting Enabled to `f
 }
 ```
 
-Check SimpleTokenProvider from [GitHub](https://github.com/nbarbettini/SimpleTokenProvider) and [StormPath's blog post](https://stormpath.com/blog/token-authentication-asp-net-core).
+#### Token Authentication
+
+API has a token provider middleware which provides an endpoint for token generation `/token`.
 
 Get token:
 ```sh
@@ -144,6 +147,16 @@ $ curl -X POST -H 'content-type: multipart/form-data' -F username=admin -F passw
 Add token to Authorization header:
 ```sh
 $ curl -H 'Authorization: Bearer [TOKEN]' http://localhost:57602/api
+```
+
+Check SimpleTokenProvider from [GitHub](https://github.com/nbarbettini/SimpleTokenProvider) and [StormPath's blog post](https://stormpath.com/blog/token-authentication-asp-net-core).
+
+#### Basic Authentication
+
+> NOTE: It is not recommended to use Basic Authentication in production
+
+```sh
+$ curl -u admin:root http://localhost:57602/api
 ```
 
 ### WebSockets

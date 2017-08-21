@@ -1,6 +1,7 @@
 ﻿{
   "Authentication": {
     "Enabled": false,
+    "AuthenticationType": "token",
     "Users": [
       {
         "Username": "admin",

@@ -1,4 +1,5 @@
 ﻿using FakeServer.Authentication;
+using FakeServer.Authentication.Basic;
 using FakeServer.Authentication.Custom;
 using FakeServer.Authentication.Jwt;
 using FakeServer.Common;
@@ -129,7 +130,10 @@ namespace FakeServer
 
             if (useAuthentication)
             {
-                TokenConfiguration.Configure(app);
+                if (Configuration.GetValue<string>("Authentication:AuthenticationType") == "token")
+                    TokenConfiguration.Configure(app);
+                else
+                    app.UseMiddleware<BasicAuthenticationMiddleware>();
             }
             else
             {

@@ -1,7 +1,7 @@
 # Changelog
 
 ### [Unreleased]
-*
+* Basic Authentication
 
 ### [0.3.0] - 2017-08-17
 * Offset and limit slice option
