@@ -10,11 +10,18 @@ namespace FakeServer.Test
 {
     public class IntegrationFixture : IDisposable
     {
-        private readonly Task _serverTask;
-        private readonly string _newFilePath;
+        private Task _serverTask;
+        private string _newFilePath;
 
         public IntegrationFixture()
         {
+        }
+
+        public void StartServer(string authenticationType = "")
+        {
+            if (_serverTask != null)
+                return;
+
             var dir = Path.GetDirectoryName(typeof(IntegrationFixture).GetTypeInfo().Assembly.Location);
 
             var fileName = Guid.NewGuid().ToString();
@@ -25,7 +32,7 @@ namespace FakeServer.Test
 
             _serverTask = Task.Run(() =>
             {
-                TestServer.Run(BaseUrl, dir, $"{fileName}.json");
+                TestServer.Run(BaseUrl, dir, $"{fileName}.json", authenticationType);
             });
 
             var success = WaitForServer().Result;
@@ -51,7 +58,7 @@ namespace FakeServer.Test
                 {
                     using (var client = new HttpClient())
                     {
-                        var result = await client.GetAsync($"{BaseUrl}/status");
+                        var result = await client.GetAsync($"{BaseUrl}");
                         return true;
                     }
                 }

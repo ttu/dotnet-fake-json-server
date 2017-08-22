@@ -7,16 +7,22 @@ namespace FakeServer
     {
         private static IWebHost _host;
 
-        public static void Run(string url, string path, string file)
+        public static void Run(string url, string path, string file, string authenticationType = "")
         {
             Startup.MainConfiguration.Add("file", file);
 
+            if (!string.IsNullOrEmpty(authenticationType))
+            {
+                Startup.MainConfiguration.Add("Authentication:Enabled", "true");
+                Startup.MainConfiguration.Add("Authentication:AuthenticationType", authenticationType);
+            }
+
             _host = new WebHostBuilder()
-                .UseUrls(url)
-                .UseKestrel()
-                .UseContentRoot(path)
-                .UseStartup<Startup>()
-                .Build();
+               .UseUrls(url)
+               .UseKestrel()
+               .UseContentRoot(path)
+               .UseStartup<Startup>()
+               .Build();
 
             _host.Run();
         }

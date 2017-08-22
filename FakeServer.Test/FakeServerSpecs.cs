@@ -22,6 +22,7 @@ namespace FakeServer.Test
         public FakeServerSpecs(IntegrationFixture fixture)
         {
             _fixture = fixture;
+            _fixture.StartServer();
         }
 
         [Fact]

@@ -36,10 +36,10 @@ namespace FakeServer
 
             var builder = new ConfigurationBuilder()
                 .SetBasePath(_path)
-                .AddInMemoryCollection(MainConfiguration)
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile("authentication.json", optional: true, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+                .AddInMemoryCollection(MainConfiguration)
                 .AddEnvironmentVariables();
 
             Configuration = builder.Build();
