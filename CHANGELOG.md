@@ -2,6 +2,7 @@
 
 ### [Unreleased]
 * Basic Authentication
+* Select fields to return from query
 
 ### [0.3.0] - 2017-08-17
 * Offset and limit slice option

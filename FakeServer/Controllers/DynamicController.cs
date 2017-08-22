@@ -103,6 +103,11 @@ namespace FakeServer.Controllers
 
             var results = datas.Skip(options.Skip).Take(options.Take);
 
+            if (options.Fields.Any())
+            {
+                results = ObjectHelper.SelectFields(results, options.Fields);
+            }
+
             if (_settings.UseResultObject)
             {
                 return Ok(QueryHelper.GetResultObject(results, totalCount, paginationHeader, options));
@@ -270,6 +275,7 @@ namespace FakeServer.Controllers
             var skipWord = "skip";
             var takeWord = "take";
             var isTextSearch = false;
+            var fields = new List<string>();
 
             var queryParams = query.Keys.ToList();
 
@@ -293,10 +299,16 @@ namespace FakeServer.Controllers
                 queryParams.Remove("q");
             }
 
+            if (queryParams.Contains("fields"))
+            {
+                fields = query["fields"].ToString().Split(',').ToList();
+                queryParams.Remove("fields");
+            }
+
             queryParams.Remove("skip");
             queryParams.Remove("take");
 
-            return new QueryOptions { Skip = skip, Take = take, SkipWord = skipWord, TakeWord = takeWord, IsTextSearch = isTextSearch, QueryParams = queryParams };
+            return new QueryOptions { Skip = skip, Take = take, SkipWord = skipWord, TakeWord = takeWord, IsTextSearch = isTextSearch, Fields = fields, QueryParams = queryParams };
         }
     }
 
@@ -311,6 +323,8 @@ namespace FakeServer.Controllers
         public string TakeWord { get; set; }
 
         public bool IsTextSearch { get; set; }
+
+        public List<string> Fields { get; set; }
 
         public List<string> QueryParams { get; set; }
 

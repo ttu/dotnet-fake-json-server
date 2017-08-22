@@ -1,6 +1,9 @@
 ﻿using FakeServer.Common;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
+using System.Dynamic;
+using System.Linq;
 using Xunit;
 
 namespace FakeServer.Test
@@ -64,6 +67,25 @@ namespace FakeServer.Test
             Assert.True(ObjectHelper.Funcs["_gt"](3, 2));
             Assert.False(ObjectHelper.Funcs["_gt"](3.0, 3.1));
             Assert.True(ObjectHelper.Funcs["_gte"](3, 2));
+        }
+
+        [Fact]
+        public void SelectFields()
+        {
+            dynamic exp = new ExpandoObject();
+            exp.Name = "Jim";
+            exp.Age = 20;
+            exp.Occupation = "Gardener";
+
+            dynamic exp2 = new ExpandoObject();
+            exp2.Name = "Danny";
+            exp2.Age = 40;
+            exp2.Occupation = "Engineer";
+
+            var result = ObjectHelper.SelectFields(new[] { exp, exp2 }, new[] { "Occupation", "Age" });
+            Assert.Equal(2, result.Count());
+            Assert.Equal(20, result.ToList()[0]["Age"]);
+            Assert.Equal(40, result.ToList()[1]["Age"]);
         }
     }
 }

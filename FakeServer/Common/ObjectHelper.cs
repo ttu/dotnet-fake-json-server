@@ -101,6 +101,17 @@ namespace FakeServer.Common
             };
         }
 
+        public static IEnumerable<dynamic> SelectFields(IEnumerable<dynamic> results, IEnumerable<string> fields)
+        {
+            return results.Select(s => ParseFields(s as ExpandoObject, fields));
+        }
+
+        private static dynamic ParseFields(ExpandoObject s, IEnumerable<string> fields)
+        {
+            var dict = s as IDictionary<string, object>;
+            return dict.Where(kvp => fields.Contains(kvp.Key)).ToDictionary(k => k.Key, k => k.Value);
+        }
+
         private static List<Func<string, dynamic>> _convertFuncs = new List<Func<string, dynamic>>
         {
             x => Convert.ToBoolean(x),

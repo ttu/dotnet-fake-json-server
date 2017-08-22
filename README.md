@@ -511,6 +511,27 @@ Get all users that contain text London in the value of any of it's properties.
 $ curl http://localhost:57602/api/users?q=london
 ```
 
+##### Select Fields
+
+Choose which fields to include in the results. Field names are separated by comma.
+
+```
+> GET api/{collection}?fields={fields}
+```` 
+
+Select age and name from users.
+
+```sh
+$ curl http://localhost:57602/api/users?fields=age,name
+```
+
+```json
+[ 
+  { "name": "Phil", "age": 40 },
+  { "name": "Larry", "age": 37 }
+]
+```
+
 #### Get item with id 
 
 ``` 

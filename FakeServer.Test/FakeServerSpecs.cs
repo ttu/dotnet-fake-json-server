@@ -189,6 +189,20 @@ namespace FakeServer.Test
         }
 
         [Fact]
+        public async Task GetItem_Fields()
+        {
+            using (var client = new HttpClient())
+            {
+                var result = await client.GetAsync($"{_fixture.BaseUrl}/api/users?fields=age,name");
+                var allUsers = JsonConvert.DeserializeObject<JArray>(await result.Content.ReadAsStringAsync());
+                Assert.Equal(2, allUsers[0].Count());
+                Assert.NotNull(allUsers[0]["age"]);
+                Assert.NotNull(allUsers[0]["name"]);
+                Assert.Null(allUsers[0]["id"]);
+            }
+        }
+
+        [Fact]
         public async Task GetItem_TextSearch_BadRequest()
         {
             using (var client = new HttpClient())
