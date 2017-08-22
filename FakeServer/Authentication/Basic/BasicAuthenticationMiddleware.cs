@@ -1,30 +1,53 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Authentication;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 
 namespace FakeServer.Authentication.Basic
 {
-    // Basic Authentication implemented with normal Middleware
-    public class BasicAuthenticationMiddleware
+    public class BasicTokenOptions : AuthenticationOptions
     {
-        private readonly RequestDelegate _next;
-
-        public BasicAuthenticationMiddleware(RequestDelegate next)
+        public BasicTokenOptions() : base()
         {
-            _next = next;
+            AuthenticationScheme = "Basic";
+            AutomaticAuthenticate = true;
+            AutomaticChallenge = true;
+        }
+    }
+
+    public class BasicAuthenticationMiddleware : AuthenticationMiddleware<BasicTokenOptions>
+    {
+        public BasicAuthenticationMiddleware(RequestDelegate next,
+                                IOptions<BasicTokenOptions> options,
+                                ILoggerFactory loggerFactory,
+                                UrlEncoder encoder)
+                                : base(next, options, loggerFactory, encoder)
+        {
         }
 
-        public async Task Invoke(HttpContext context)
+        protected override AuthenticationHandler<BasicTokenOptions> CreateHandler()
         {
-            var authHeader = context.Request.Headers["Authorization"].ToString();
+            return new BasicAuthenticationHandler();
+        }
+    }
+
+    public class BasicAuthenticationHandler : AuthenticationHandler<BasicTokenOptions>
+    {
+        protected override Task<AuthenticateResult> HandleAuthenticateAsync()
+        {
+            var authHeader = Context.Request.Headers["Authorization"].ToString();
 
             bool Authenticate(out string name)
             {
-                var authenticationSettings = context.RequestServices.GetService(typeof(IOptions<AuthenticationSettings>)) as IOptions<AuthenticationSettings>;
+                var authenticationSettings = Context.RequestServices.GetService(typeof(IOptions<AuthenticationSettings>)) as IOptions<AuthenticationSettings>;
 
                 var token = authHeader.Substring("Basic ".Length).Trim();
                 var credentialString = Encoding.UTF8.GetString(Convert.FromBase64String(token));
@@ -46,15 +69,18 @@ namespace FakeServer.Authentication.Basic
             {
                 var claims = new[] { new Claim("name", loginName), new Claim(ClaimTypes.Role, "Admin") };
                 var identity = new ClaimsIdentity(claims, "Basic");
-                context.User = new ClaimsPrincipal(identity);
+
+                return Task.FromResult(AuthenticateResult.Success(
+                          new AuthenticationTicket(
+                              new ClaimsPrincipal(identity),
+                              new AuthenticationProperties(),
+                              Options.AuthenticationScheme)));
             }
             else
             {
-                context.Response.StatusCode = 401;
-                context.Response.Headers["WWW-Authenticate"] = "Basic";
+                Context.Response.Headers["WWW-Authenticate"] = "Basic";
+                return Task.FromResult(AuthenticateResult.Fail(""));
             }
-
-            await _next(context);
         }
     }
 }
