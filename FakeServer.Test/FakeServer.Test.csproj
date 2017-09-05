@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>    
-    <TargetFramework>netcoreapp1.1</TargetFramework>    
+    <TargetFramework>netcoreapp2.0</TargetFramework>    
     <RootNamespace>FakeServer.Test</RootNamespace>    
     <AssemblyName>FakeServer.Test</AssemblyName>
   </PropertyGroup>
@@ -14,7 +14,7 @@
 
   <ItemGroup>
     <PackageReference Include="JsonFlatFileDataStore" Version="1.7.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0" />
     <PackageReference Include="WebSocket4Net" Version="0.15.0-beta6" />
     <PackageReference Include="xunit" Version="2.3.0-beta3-build3705" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.3.0-beta3-build3705" />

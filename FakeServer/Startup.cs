@@ -79,6 +79,22 @@ namespace FakeServer
                     .AllowCredentials());
             });
 
+            if (Configuration.GetValue<bool>("Authentication:Enabled"))
+            {
+                if (Configuration.GetValue<string>("Authentication:AuthenticationType") == "token")
+                {
+                    TokenConfiguration.Configure(services);
+                }
+                else
+                {
+                    BasicAuthenticationConfiguration.Configure(services);
+                }
+            }
+            else
+            {
+                AllowAllAuthenticationConfiguration.Configure(services);
+            }
+
             services.AddMvc();
 
             services.AddSwaggerGen(c =>
@@ -126,18 +142,18 @@ namespace FakeServer
             app.UseMiddleware<NotifyWebSocketMiddlerware>();
             app.UseMiddleware<WebSocketMiddleware>();
 
+            // Authentication must be always used as we have Authorize attributes in use
+            // When Authentication is turned off, special AllowAll hander is used
+            app.UseAuthentication();
+
             var useAuthentication = Configuration.GetValue<bool>("Authentication:Enabled");
 
             if (useAuthentication)
             {
                 if (Configuration.GetValue<string>("Authentication:AuthenticationType") == "token")
-                    TokenConfiguration.Configure(app);
-                else
-                    app.UseMiddleware<BasicAuthenticationMiddleware>();
-            }
-            else
-            {
-                app.UseMiddleware<AllowAllAuthenticationMiddleware>();
+                {
+                    TokenConfiguration.UseTokenProviderMiddleware(app);
+                }
             }
 
             app.UseDefaultFiles();

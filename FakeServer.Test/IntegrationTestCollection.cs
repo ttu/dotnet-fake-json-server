@@ -52,7 +52,7 @@ namespace FakeServer.Test
         {
             var sw = Stopwatch.StartNew();
 
-            while (sw.ElapsedMilliseconds < 10000)
+            while (sw.ElapsedMilliseconds < 20000)
             {
                 try
                 {

@@ -15,7 +15,7 @@ Fake REST API for prototyping or as a CRUD backend with experimental GraphQL que
 
 ## Features
  
-* .NET Core Web API
+* ASP.NET Core 2.0 / C# 7
 * Can be used without .NET with Docker
 * Uses [JSON Flat File Data Store](https://github.com/ttu/json-flatfile-datastore)
   * All changes are automatically saved to defined JSON file

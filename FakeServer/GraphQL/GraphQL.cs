@@ -260,7 +260,7 @@ namespace FakeServer.GraphQL
 
                     foreach (var i in subFields)
                     {
-                        var r = await ResolveFieldAsync(item, rootObject, i.Value).ConfigureAwait(false);
+                        var r = await ResolveFieldAsync(item, rootObject, i.Value);
                         rootObject = r.Value;
                     }
 
@@ -287,7 +287,7 @@ namespace FakeServer.GraphQL
 
                     foreach (var i in subFields)
                     {
-                        var r = await ResolveFieldAsync(newSource, newTarget, i.Value).ConfigureAwait(false);
+                        var r = await ResolveFieldAsync(newSource, newTarget, i.Value);
                     }
                 }
                 else if (IsEnumerable(newSource.GetType()) && subFields.Count > 0)
@@ -304,7 +304,7 @@ namespace FakeServer.GraphQL
 
                         foreach (var i in subFields)
                         {
-                            var r = await ResolveFieldAsync(item, rootObject, i.Value).ConfigureAwait(false);
+                            var r = await ResolveFieldAsync(item, rootObject, i.Value);
                             rootObject = r.Value;
                         }
 

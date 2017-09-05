@@ -3,6 +3,7 @@
 ### [Unreleased]
 * Basic Authentication
 * Select fields to return from query
+* Upgrade to ASP.NET Core 2.0
 
 ### [0.3.0] - 2017-08-17
 * Offset and limit slice option
