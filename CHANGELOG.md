@@ -1,6 +1,9 @@
 # Changelog
 
 ### [Unreleased]
+*
+
+### [0.4.0] - 2017-09-13
 * Basic Authentication
 * Select fields to return from query
 * Upgrade to ASP.NET Core 2.0

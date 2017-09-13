@@ -883,7 +883,11 @@ Api uses best practices and recommendations from these guides:
 
 [Changelog](CHANGELOG.md)
 
-### License
+## Contributing
+
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+
+## License
 
 Licensed under the [MIT](LICENSE) License.
 
