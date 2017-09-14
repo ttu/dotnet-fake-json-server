@@ -16,7 +16,9 @@ Fake REST API for prototyping or as a CRUD backend with experimental GraphQL que
 ## Features
  
 * ASP.NET Core 2.0 / C# 7
-* Can be used without .NET with Docker
+* Can be used without .NET
+  * [Docker](#docker) 
+  * [Self-contained Application](#self-contained-application)
 * Uses [JSON Flat File Data Store](https://github.com/ttu/json-flatfile-datastore)
   * All changes are automatically saved to defined JSON file
 * Token and Basic Authentication
@@ -78,6 +80,24 @@ $ docker cp [ContainerId]:/app/db.json db.json
 ```
 
 `docker run` will reset JSON-file, so copy it before closing the server.
+
+#### Self-contained Application
+
+1) Go to [Lates Release](https://github.com/ttu/dotnet-fake-json-server/releases/latest)
+1) Download correct archive matching your OS
+1) Extract files and execute
+
+Self-contained application archive contains Fake JSON Server and .NET Core runtime inculding all required third-party dependencies. __No installation or prerequisites are needed__.
+
+E.g. download version _0.4.0_ for _macOS 10.12 Sierra_
+
+```sh
+$ mkdir FakeServer && cd FakeServer
+$ wget https://github.com/ttu/dotnet-fake-json-server/releases/download/0.4.0/fakeserver-osx.10.12-x64.tar.gz
+$ tar -zxvf fakeserver-osx.10.12-x64.tar.gz
+$ chmod +x FakeServer
+$ ./FakeServer
+```
 
 #### Quick example
 
