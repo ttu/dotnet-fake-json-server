@@ -27,7 +27,7 @@ Fake REST API for prototyping or as a CRUD backend with experimental GraphQL que
 * Static files
 * Swagger
 * CORS
-* _Experimantal_ GraphQL query support
+* _Experimental_ GraphQL query support
 
 ## Get started
 
@@ -131,10 +131,9 @@ $ curl http://localhost:57602/api/users/
 # Or open url http://localhost:57602/swagger/ with browser and use Swagger
 ```
 
-#### Examples
+#### Example project
 
-* [Introduction Blog Post](http://ttu.github.io/introduction-to-fake-json-server/)
-* [Redux TodoMVC Example](https://github.com/ttu/todomvc-fake-server) modified to use Fake JSON Server as a Back End
+[Redux TodoMVC example](https://github.com/ttu/todomvc-fake-server) modified to use Fake JSON Server as a Back End.
 
 ## Features
 
