@@ -6,8 +6,8 @@ md releases
 
 rmdir /s /q .\FakeServer\bin\release 
 
-set winOS=win10-x64
-set unixOS=osx.10.11-x64 osx.10.12-x64 ubuntu.16.04-x64 ubuntu.16.10-x64
+set winOS=win-x64
+set unixOS=osx-x64 linux-x64
 
 for %%N in (%winOS%) do (
 	set rid=%%N

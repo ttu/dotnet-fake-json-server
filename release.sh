@@ -5,8 +5,8 @@ mkdir releases
 
 rm -rf ./FakeServer/bin/release 
 
-declare -a winOS=("win10-x64")
-declare -a unixOS=("osx.10.11-x64" "osx.10.12-x64" "ubuntu.16.04-x64" "ubuntu.16.10-x64")
+declare -a winOS=("win-x64")
+declare -a unixOS=("osx-x64" "linux-x64")
 
 for rid in "${winOS[@]}"
 do

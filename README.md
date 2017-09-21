@@ -89,12 +89,12 @@ $ docker cp [ContainerId]:/app/db.json db.json
 
 Self-contained application archive contains Fake JSON Server and .NET Core runtime inculding all required third-party dependencies. __No installation or prerequisites are needed__.
 
-E.g. download version _0.4.0_ for _macOS 10.12 Sierra_
+E.g. download version _0.4.0_ for _macOS_
 
 ```sh
 $ mkdir FakeServer && cd FakeServer
-$ wget https://github.com/ttu/dotnet-fake-json-server/releases/download/0.4.0/fakeserver-osx.10.12-x64.tar.gz
-$ tar -zxvf fakeserver-osx.10.12-x64.tar.gz
+$ wget https://github.com/ttu/dotnet-fake-json-server/releases/download/0.4.0/fakeserver-osx-x64.tar.gz
+$ tar -zxvf fakeserver-osx-x64.tar.gz
 $ chmod +x FakeServer
 $ ./FakeServer
 ```
