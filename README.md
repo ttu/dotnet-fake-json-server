@@ -1,17 +1,20 @@
 .NET Fake JSON Server
 --------------------------
 
-[![Build Status](https://travis-ci.org/ttu/dotnet-fake-json-server.svg?branch=master)](https://travis-ci.org/ttu/dotnet-fake-json-server) [![Build status](https://ci.appveyor.com/api/projects/status/hacg7qupp5oxbct8?svg=true)](https://ci.appveyor.com/project/ttu/dotnet-fake-json-server)
+| Build server| Platform       | Build status      |
+|-------------|----------------|-------------|
+| AppVeyor    | Windows        |[![Build status](https://ci.appveyor.com/api/projects/status/hacg7qupp5oxbct8?svg=true)](https://ci.appveyor.com/project/ttu/dotnet-fake-json-server)|
+| Travis      | Linux / macOS  |[![Build Status](https://travis-ci.org/ttu/dotnet-fake-json-server.svg?branch=master)](https://travis-ci.org/ttu/dotnet-fake-json-server)| 
 
-Fake REST API for prototyping or as a CRUD backend with experimental GraphQL query support.
+Fake JSON Server is a Fake REST API for prototyping or as a CRUD Back End with experimental GraphQL query support.
 
-* No need to define types for resources. Types are handled dynamically
-* No database. Data is stored to a JSON file
-* CRUD operations (GET, PUT, POST, PATCH, DELETE)
-* Async versions of update operations with long running jobs
+* No need to define types for resources, uses dynamic typing
+* No need to define routes, routes are handled dynamically
+* No database, data is stored to a single JSON file
+* CRUD operations (_GET, PUT, POST, PATCH, DELETE_)
+* Async versions of update operations with long running operations
 * Simulate delay and errors for requests
-* No configuration needed, start the Server and API is ready to be used with any data
-
+* No configuration is needed, start the server and API is ready to be used with any data
 
 ## Features
  
@@ -20,10 +23,10 @@ Fake REST API for prototyping or as a CRUD backend with experimental GraphQL que
   * [Docker](#docker) 
   * [Self-contained Application](#self-contained-application)
 * Uses [JSON Flat File Data Store](https://github.com/ttu/json-flatfile-datastore)
-  * All changes are automatically saved to defined JSON file
+  * All changes are automatically updated to a defined JSON file
+* REST API follows best practices from multiple guides
 * Token and Basic Authentication
-  * Add allowed usernames/passwords to `authentication.json`
-* WebSockets
+* WebSocket update notification
 * Static files
 * Swagger
 * CORS
@@ -143,6 +146,8 @@ Fake REST API supports Token and Basic Authentication.
 
 Authentication can be disabled from `authentication.json` by setting Enabled to `false`. `AuthenticationType` options are `token` and `basic`.
 
+Add allowed usernames/passwords to `Users`-array.
+
 ```json
 {
   "Authentication": {
@@ -230,7 +235,7 @@ OPTIONS  /async/*
 POST     /graphql
 ```
 
-##### Routes
+#### Routes
 
 Dynamic routes are defined by the name of item's collection and id: `api/{collection}/{id}`. All examples below use `users` as a collection name.
 
@@ -258,7 +263,7 @@ $ curl 'http://localhost:57602/api/users?skip=5&take=20'
 $ curl 'http://localhost:57602/users?skip=5&take=20'
 ```
 
-##### Identifiers
+#### Identifiers
 
 `id` is used as the identifier field. By default Id field's type is _integer_. `POST` will always use integer as id field's type.
 
@@ -273,9 +278,9 @@ $ curl 'http://localhost:57602/users?skip=5&take=20'
 
 If _string_ is used as the identifiers type, then items must be inserted with `PUT` and  `UpsertOnPut` must be set to _true_ from `appsettings.json`.
 
-##### Return codes
+#### Return codes
 
-Asynchoronous operations follow [REST CookBook guide](http://restcookbook.com/Resources/asynchroneous-operations/). Updates will return `202` with location header to queue item. Queue will return `200` while job is processing and `303` when job is ready with location header to changed or new item.
+Asynchoronous operations follow [REST CookBook guide](http://restcookbook.com/Resources/asynchroneous-operations/). Updates will return `202` with location header to queue item. Queue will return `200` while operation is processing and `303` when job is ready with location header to changed or new item.
 
 Method return codes are specified in [REST API Tutorial](http://www.restapitutorial.com/lessons/httpmethods.html).
 
@@ -668,7 +673,7 @@ $ curl -X DELETE http://localhost:57602/api/users/1
 
 ### Async Operations
 
-`/async` endoint has long running jobs for each update operation.
+`/async` endoint has long running operation for each update operation.
 
 ```
 > POST/PUT/PATCH/DELETE /async/{collection}/{id}
@@ -876,9 +881,7 @@ $ wrk -c 256 -t 32 -d 10 -s post.lua http://localhost:57602/api/users
 
 ## Get specific version
 
-Releases are marked with Tag. 
-
-At the moment there is no compiled versions of the releases available.
+Releases are marked with Tag and can be found from [Releases](https://github.com/ttu/dotnet-fake-json-server/releases).
 
 ```sh
 # List versions
@@ -889,7 +892,7 @@ $ git checkout tags/{version}
 
 ## Guidelines
 
-Api uses best practices and recommendations from these guides:
+API follows best practices and recommendations from these guides:
 
 * [REST CookBook](http://restcookbook.com/Resources/asynchroneous-operations/)
 * [REST API Tutorial](http://www.restapitutorial.com/lessons/httpmethods.html)
