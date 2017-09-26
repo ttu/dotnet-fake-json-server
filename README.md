@@ -11,26 +11,29 @@ Fake JSON Server is a Fake REST API for prototyping or as a CRUD Back End with e
 * No need to define types for resources, uses dynamic typing
 * No need to define routes, routes are handled dynamically
 * No database, data is stored to a single JSON file
-* CRUD operations (_GET, PUT, POST, PATCH, DELETE_)
-* Async versions of update operations with long running operations
-* Simulate delay and errors for requests
 * No configuration is needed, start the server and API is ready to be used with any data
 
 ## Features
- 
-* ASP.NET Core 2.0 / C# 7
-* Can be used without .NET
-  * [Docker](#docker) 
-  * [Self-contained Application](#self-contained-application)
-* Uses [JSON Flat File Data Store](https://github.com/ttu/json-flatfile-datastore)
-  * All changes are automatically updated to a defined JSON file
+
+* All HTTP methods (_GET, PUT, POST, PATCH, DELETE, OPTIONS_)
+* Async versions of update operations with long running operations
 * REST API follows best practices from multiple guides
+  * Uses correct return codes, headers, etc.
 * Token and Basic Authentication
-* WebSocket update notification
+* WebSocket update notifications
+* Simulate delay and errors for requests
 * Static files
 * Swagger
 * CORS
 * _Experimental_ GraphQL query support
+
+##### Developed with
+ 
+* ASP.NET Core 2.0 / C# 7
+* Uses [JSON Flat File Data Store](https://github.com/ttu/json-flatfile-datastore) to store data
+* Can be used without .NET
+  * [Docker](#docker) 
+  * [Self-contained Application](#self-contained-application)
 
 ## Get started
 
@@ -419,7 +422,7 @@ JSON object has items in results array in result field, link object has the pagi
 
 ##### Slice
 
-Slicing can be defined with `skip` and `take` or `offset` and `limit` parameters. By default request returns first 512 items.
+Slicing can be defined with `skip`/`take` or with `offset`/`limit` parameters. By default request returns first 512 items.
 
 Example request returns items from 6 to 26.
 
@@ -842,54 +845,6 @@ Random errors can be simulated by setting `Simulate.Error.Enabled` to _true_. Er
 
 Error simulation is always skipped for Swagger, WebSocket (ws) and for any html file.
 
-## Benchmark with wrk
-
-[wrk installation guide](https://github.com/wg/wrk/wiki/Installing-Wrk-on-Linux)
-
-Start the server from the command line.
-
-```sh
-$ dotnet run --urls http://localhost:57602
-```
-
-Do first benchmark against `/api` endpoint using OPTIONS method, as it only uses OptionsMiddleware.
-
-Create a script file (e.g. options.lua) for `OPTIONS` request.
-```lua
-wrk.method = "OPTIONS"
-```
-
-Execute OPTIONS benchmark for 10 seconds.
-
-```sh
-$ wrk -c 256 -t 32 -d 10 -s options.lua http://localhost:57602/api
-```
-
-Create a script file (e.g. post.lua) for `POST` request.
-
-```lua
-wrk.method = "POST"
-wrk.body   = "{ \"name\": \"Benchmark User\", \"age\": 50, \"location\": \"NY\" }"
-wrk.headers["Content-Type"] = "application/json"
-```
-
-Execute POST benchmark for 10 seconds.
-
-```sh
-$ wrk -c 256 -t 32 -d 10 -s post.lua http://localhost:57602/api/users
-```
-
-## Get specific version
-
-Releases are marked with Tag and can be found from [Releases](https://github.com/ttu/dotnet-fake-json-server/releases).
-
-```sh
-# List versions
-$ git tag -l
-# Checkout specific tag 
-$ git checkout tags/{version}
-```
-
 ## Guidelines
 
 API follows best practices and recommendations from these guides:
@@ -900,6 +855,14 @@ API follows best practices and recommendations from these guides:
 * [Microsoft API Design](https://docs.microsoft.com/en-us/azure/architecture/best-practices/api-design)
 * [GitHub v3 Guide](https://developer.github.com/v3/guides/)
 * [Introduction to GraphQL](http://graphql.org/learn/)
+
+## Other Links
+
+* [Benchmark with wrk](BenchmarkWrk.md)
+
+## Releases
+
+Releases are marked with Tag and can be found from [Releases](https://github.com/ttu/dotnet-fake-json-server/releases).
 
 ## Changelog
 
