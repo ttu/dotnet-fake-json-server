@@ -15,10 +15,11 @@ Fake JSON Server is a Fake REST API for prototyping or as a CRUD Back End with e
 
 ## Features
 
-* All HTTP methods (_GET, PUT, POST, PATCH, DELETE, OPTIONS_)
-* Async versions of update operations with long running operations
-* REST API follows best practices from multiple guides
-  * Uses correct return codes, headers, etc.
+* All HTTP methods for CRUD operations (_GET, PUT, POST, PATCH, DELETE_)
+* _OPTIONS_ method to get supported HTTP methods for the target resource 
+* Async versions of update operations with long running operations and queues
+* REST API follows best practices from multiple guides 
+  * Uses correct Status Codes, Headers, etc. (_opinionated selection_)
 * Token and Basic Authentication
 * WebSocket update notifications
 * Simulate delay and errors for requests
@@ -353,6 +354,8 @@ Example JSON generation guide for data used in unit tests [CreateJSON.md](Create
 200 OK : List of collections
 ```
 
+Get all collections.
+
 ```sh
 $ curl http://localhost:57602/api
 ```
@@ -445,6 +448,8 @@ Headers follow [GitHub Developer](https://developer.github.com/v3/guides/travers
 > GET api/{collection}?field=value&otherField=value
 ```
 
+Get all users whose `age` equals to _40_.
+
 ```sh
 $ curl 'http://localhost:57602/api/users?age=40'
 ```
@@ -481,11 +486,13 @@ Example JSON:
 ]
 ```
 
-Query would return ACME from the example JSON.
+Get all companies which has employess with _London_ in `address.city`.
 
 ```sh
-$ curl http://localhost:57602/api/users?employees.address.city=London
+$ curl http://localhost:57602/api/companies?employees.address.city=London
 ```
+
+Query will return ACME from the example JSON.
 
 ```json
 [
@@ -513,7 +520,7 @@ _lte= : Less than or equal to
 _gte= : Greater than or equal to
 ```
 
-Query users with age less than 40.
+Query users with `age` less than _40_.
 
 ```sh
 $ curl http://localhost:57602/api/users?age_lt=40
@@ -532,7 +539,7 @@ Full-text search can be performed with the `q`-parameter followed by search text
 > GET api/{collection}?q={text}
 ```` 
 
-Get all users that contain text London in the value of any of it's properties.
+Get all users that contain text _London_ in the value of any of it's properties.
 
 ```sh
 $ curl http://localhost:57602/api/users?q=london
@@ -546,7 +553,7 @@ Choose which fields to include in the results. Field names are separated by comm
 > GET api/{collection}?fields={fields}
 ```` 
 
-Select age and name from users.
+Select `age` and `name` from users.
 
 ```sh
 $ curl http://localhost:57602/api/users?fields=age,name
@@ -568,6 +575,8 @@ $ curl http://localhost:57602/api/users?fields=age,name
 400 Bad Request : Collection is not found
 404 Not Found   : Item is not found
 ```
+
+Get user with `id` _1_.
 
 ```sh
 $ curl http://localhost:57602/api/users/1
@@ -601,7 +610,7 @@ It is possible to request only child objects instead of full item. Path to neste
 ]
 ```
 
-Example query will return address object from the employee.
+Example query will return address object from the employee with `id` _1_ from the company with `id` _0_.
 
 ```sh
 $ curl http://localhost:57602/api/company/0/employees/1/address
@@ -620,11 +629,13 @@ $ curl http://localhost:57602/api/company/0/employees/1/address
 400 Bad Request : New item is null
 ```
 
+Add _{ "name": "Phil", "age": 40, "location": "NY" }_ to users.
+
 ```sh
 $ curl -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{ "name": "Phil", "age": 40, "location": "NY" }' http://localhost:57602/api/users/
 ```
 
-Response has new item's id and Location header to new item
+Response has new item's id and Location header containts path to the new item.
 
 ```json
 { "id": 6 }
@@ -643,6 +654,7 @@ Location=http://localhost:57602/api/users/6
 404 Not Found   : Item is not found
 ```
 
+Replace user with `id` _1_ with object _{ "name": "Roger", "age": 28, "location": "SF" }_.
 ```sh
 $ curl -H "Accept: application/json" -H "Content-type: application/json" -X PUT -d '{ "name": "Roger", "age": 28, "location": "SF" }' http://localhost:57602/api/users/1
 ```
@@ -657,6 +669,8 @@ $ curl -H "Accept: application/json" -H "Content-type: application/json" -X PUT 
 404 Not Found   : Item is not found
 ```
 
+Set `name` to _Timmy_ from user with `id` _1_.
+
 ```sh
 $ curl -H "Accept: application/json" -H "Content-type: application/json" -X PATCH -d '{ "name": "Timmy" }' http://localhost:57602/api/users/1
 ```
@@ -669,6 +683,8 @@ $ curl -H "Accept: application/json" -H "Content-type: application/json" -X PATC
 204 No Content  : Item deleted
 404 Not Found   : Item is not found
 ```
+
+Delete user with id _1_.
 
 ```sh
 $ curl -X DELETE http://localhost:57602/api/users/1
@@ -690,7 +706,7 @@ Location=http://{url}:{port}/async/queue/{id}
 
 Update operations will return location to job queue in headers.
 
-Create new item. Curl has a verbose flag so it will print response headers among other things.
+Create new item. Curl has a verbose flag (`-v`). When it is used, curl will print response headers among other information.
 
 ```sh
 $ curl -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{ "name": "Phil", "age": 40, "location": "NY" }' -v http://localhost:57602/async/users/
@@ -707,7 +723,7 @@ Headers:
 Location=http://{url}:{port}/api/{collectionId}/{id}
 ```
 
-When Job is ready, status code will be redirect See Other. Location header will have modified item's url.
+When Job is ready, status code will be _redirect See Other_. Location header will have modified item's url.
 
 After job is finished, it must be deleted manually
 
