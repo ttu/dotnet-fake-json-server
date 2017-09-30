@@ -27,7 +27,6 @@ Fake JSON Server is a Fake REST API for prototyping or as a CRUD Back End with e
 * Static files
 * Swagger
 * CORS
-* Response Caching
 * _Experimental_ GraphQL query support
 
 ##### Developed with
