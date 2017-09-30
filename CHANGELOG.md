@@ -1,7 +1,7 @@
 # Changelog
 
 ### [Unreleased]
-*
+* Support for HTTP HEAD Method
 
 ### [0.4.0] - 2017-09-13
 * Basic Authentication

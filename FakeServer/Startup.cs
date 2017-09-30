@@ -168,6 +168,7 @@ namespace FakeServer
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Fake JSON API V1");
+                c.SupportedSubmitMethods(new[] { "get", "head", "post", "put", "patch", "delete" });
             });
         }
     }

@@ -15,8 +15,9 @@ Fake JSON Server is a Fake REST API for prototyping or as a CRUD Back End with e
 
 ## Features
 
-* All HTTP methods for CRUD operations (_GET, PUT, POST, PATCH, DELETE_)
-* _OPTIONS_ method to get supported HTTP methods for the target resource 
+* Supported HTTP methods
+  * All methods for CRUD operations (_GET, PUT, POST, PATCH, DELETE_)
+  * Methods for fetching resource information (_HEAD_, _OPTIONS_)
 * Async versions of update operations with long running operations and queues
 * REST API follows best practices from multiple guides 
   * Uses correct Status Codes, Headers, etc. (_opinionated selection_)
@@ -26,6 +27,7 @@ Fake JSON Server is a Fake REST API for prototyping or as a CRUD Back End with e
 * Static files
 * Swagger
 * CORS
+* Response Caching
 * _Experimental_ GraphQL query support
 
 ##### Developed with
@@ -220,9 +222,12 @@ POST     /token
 POST     /admin/reload
 
 GET      /api
+HEAD     /api
 GET      /api/{collection}
+HEAD     /api/{collection}
 POST     /api/{collection}
 GET      /api/{collection}/{id}
+HEAD     /api/{collection}/{id}
 PUT      /api/{collection}/{id}
 PATCH    /api/{collection}/{id}
 DELETE   /api/{collection}/{id}
@@ -301,6 +306,23 @@ $ curl -X OPTIONS -v http://localhost:57602/api/
 
 Headers:
 Allow: GET, POST, OPTIONS
+```
+
+#### HEAD method
+
+HEAD method can be used to get metadata and headers without receiving response body.
+
+E.g. get user count without downloading large response body.
+
+```sh
+$ curl -X HEAD -v http://localhost:57602/api/users
+```
+
+```json
+200 OK
+
+Headers:
+X-Total-Count: 1249
 ```
 
 #### Eager data reload

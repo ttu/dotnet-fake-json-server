@@ -563,6 +563,38 @@ namespace FakeServer.Test
         }
 
         [Fact]
+        public async Task GetHead_Families_Count()
+        {
+            using (var client = new HttpClient())
+            {
+                var request = new HttpRequestMessage(new HttpMethod("HEAD"), $"{_fixture.BaseUrl}/api/families");
+                var result = await client.SendAsync(request);
+                result.EnsureSuccessStatusCode();
+
+                var countHeader = result.Headers.GetValues("X-Total-Count").First();
+                Assert.Equal("20", countHeader);
+
+                var body = await result.Content.ReadAsStringAsync();
+                Assert.Equal(string.Empty, body);
+            }
+        }
+
+        [Fact]
+        public async Task GetHead_NotFound()
+        {
+            using (var client = new HttpClient())
+            {
+                var request = new HttpRequestMessage(new HttpMethod("HEAD"), $"{_fixture.BaseUrl}/api/users/2000");
+                var result = await client.SendAsync(request);
+
+                Assert.Equal(HttpStatusCode.NotFound, result.StatusCode);
+
+                var body = await result.Content.ReadAsStringAsync();
+                Assert.Equal(string.Empty, body);
+            }
+        }
+
+        [Fact]
         public async Task GetPaginationHeaders()
         {
             using (var client = new HttpClient())
