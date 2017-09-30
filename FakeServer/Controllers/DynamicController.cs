@@ -32,6 +32,7 @@ namespace FakeServer.Controllers
         /// </summary>
         /// <returns>List of collections</returns>
         [HttpGet]
+        [ResponseCache(CacheProfileName = "Default")]
         public IEnumerable<string> GetCollections()
         {
             return _ds.ListCollections();
@@ -65,6 +66,7 @@ namespace FakeServer.Controllers
         /// <response code="400">Invalid query parameters</response>
         /// <response code="404">Collection not found</response>
         [HttpGet("{collectionId}")]
+        [ResponseCache(CacheProfileName = "Default")]
         public IActionResult GetItems(string collectionId, int skip = 0, int take = 512)
         {
             var collection = _ds.GetCollection(collectionId);
@@ -129,6 +131,7 @@ namespace FakeServer.Controllers
         /// <response code="200">Item found</response>
         /// <response code="404">Item not found</response>
         [HttpGet("{collectionId}/{id}")]
+        [ResponseCache(CacheProfileName = "Default")]
         public IActionResult GetItem(string collectionId, [FromRoute][DynamicBinder]dynamic id)
         {
             var result = _ds.GetCollection(collectionId).Find(e => e.id == id).FirstOrDefault();
@@ -153,6 +156,7 @@ namespace FakeServer.Controllers
         /// <response code="400">Parent item not found</response>
         /// <response code="404">Nested item not found</response>
         [HttpGet("{collectionId}/{id}/{*path}")]
+        [ResponseCache(CacheProfileName = "Default")]
         public IActionResult GetNested(string collectionId, [FromRoute][DynamicBinder]dynamic id, string path)
         {
             var item = _ds.GetCollection(collectionId).AsQueryable().FirstOrDefault(e => e.id == id);
