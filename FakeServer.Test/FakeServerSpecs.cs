@@ -538,15 +538,15 @@ namespace FakeServer.Test
 
                 var request = new HttpRequestMessage(new HttpMethod("OPTIONS"), $"{_fixture.BaseUrl}/api");
                 var result = await client.SendAsync(request);
-                Assert.Equal("GET, POST, OPTIONS", GetAllow(result));
+                Assert.Equal("GET, HEAD, POST, OPTIONS", GetAllow(result));
 
                 request = new HttpRequestMessage(new HttpMethod("OPTIONS"), $"{_fixture.BaseUrl}/api/users");
                 result = await client.SendAsync(request);
-                Assert.Equal("GET, POST, OPTIONS", GetAllow(result));
+                Assert.Equal("GET, HEAD, POST, OPTIONS", GetAllow(result));
 
                 request = new HttpRequestMessage(new HttpMethod("OPTIONS"), $"{_fixture.BaseUrl}/api/users/22");
                 result = await client.SendAsync(request);
-                Assert.Equal("GET, POST, PUT, PATCH, DELETE, OPTIONS", GetAllow(result));
+                Assert.Equal("GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS", GetAllow(result));
 
                 request = new HttpRequestMessage(new HttpMethod("OPTIONS"), $"{_fixture.BaseUrl}/async/users");
                 result = await client.SendAsync(request);

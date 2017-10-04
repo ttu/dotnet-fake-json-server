@@ -13,12 +13,12 @@ namespace FakeServer.Common
 
         private readonly Dictionary<string, string> _routeMethods = new Dictionary<string, string>
         {
-            { $@"^\/{Config.ApiRoute}\/?$", "GET, POST, OPTIONS" },                             // /api
-            { $@"^\/{Config.ApiRoute}\/\w+\/?$", "GET, POST, OPTIONS" },                        // /api/{collection}
-            { $@"^\/{Config.ApiRoute}\/\w+\/.*", "GET, POST, PUT, PATCH, DELETE, OPTIONS" },    // /api/{collection}/{id}
-            { $@"^\/{Config.AsyncRoute}\/queue\/.*", "GET, DELETE, OPTIONS" },                  // /async/queue/{id}
-            { $@"^\/{Config.AsyncRoute}\/\w+\/?$", "POST, OPTIONS" },                           // /async/{collection}
-            { $@"^\/{Config.AsyncRoute}\/\w+\/.*", "PUT, PATCH, DELETE, OPTIONS" },             // /async/{collection}/{id}
+            { $@"^\/{Config.ApiRoute}\/?$", "GET, HEAD, POST, OPTIONS" },                             // /api
+            { $@"^\/{Config.ApiRoute}\/\w+\/?$", "GET, HEAD, POST, OPTIONS" },                        // /api/{collection}
+            { $@"^\/{Config.ApiRoute}\/\w+\/.*", "GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS" },    // /api/{collection}/{id}
+            { $@"^\/{Config.AsyncRoute}\/queue\/.*", "GET, DELETE, OPTIONS" },                        // /async/queue/{id}
+            { $@"^\/{Config.AsyncRoute}\/\w+\/?$", "POST, OPTIONS" },                                 // /async/{collection}
+            { $@"^\/{Config.AsyncRoute}\/\w+\/.*", "PUT, PATCH, DELETE, OPTIONS" },                   // /async/{collection}/{id}
         };
 
         public OptionsMiddleware(RequestDelegate next)
