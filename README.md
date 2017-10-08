@@ -1,10 +1,10 @@
 .NET Fake JSON Server
 --------------------------
 
-| Build server| Platform       | Build status      |
+| Build server| Platform       | Build status |
 |-------------|----------------|-------------|
-| AppVeyor    | Windows        |[![Build status](https://ci.appveyor.com/api/projects/status/hacg7qupp5oxbct8?svg=true)](https://ci.appveyor.com/project/ttu/dotnet-fake-json-server)|
 | Travis      | Linux / macOS  |[![Build Status](https://travis-ci.org/ttu/dotnet-fake-json-server.svg?branch=master)](https://travis-ci.org/ttu/dotnet-fake-json-server)| 
+| AppVeyor    | Windows        |[![Build status](https://ci.appveyor.com/api/projects/status/hacg7qupp5oxbct8?svg=true)](https://ci.appveyor.com/project/ttu/dotnet-fake-json-server)|
 
 Fake JSON Server is a Fake REST API for prototyping or as a CRUD Back End with experimental GraphQL query support.
 
@@ -13,6 +13,12 @@ Fake JSON Server is a Fake REST API for prototyping or as a CRUD Back End with e
 * No database, data is stored to a single JSON file
 * No configuration is needed, start the server and API is ready to be used with any data
 
+##### Why would I use this instead of other Fake Servers?
+
+1) API is built following the best practices and it can be used as a reference when building your own API
+1) Can be run on Windows, Linux and macOS without any installation or prerequisites from executable or with Docker
+1) See features listed below
+
 ## Features
 
 * Supported HTTP methods
@@ -20,7 +26,8 @@ Fake JSON Server is a Fake REST API for prototyping or as a CRUD Back End with e
   * Methods for fetching resource information (_HEAD_, _OPTIONS_)
 * Async versions of update operations with long running operations and queues
 * REST API follows best practices from multiple guides 
-  * Uses correct Status Codes, Headers, etc. (_opinionated selection_)
+  * Uses correct Status Codes, Headers, etc.
+  * As all guides have a little different recommendations, this compilation is an opinionated selection
 * Token and Basic Authentication
 * WebSocket update notifications
 * Simulate delay and errors for requests
@@ -39,15 +46,12 @@ Fake JSON Server is a Fake REST API for prototyping or as a CRUD Back End with e
 
 ## Get started
 
-Get source code from GitHub
-
-```sh
-$ git clone https://github.com/ttu/dotnet-fake-json-server.git
-```
-
 #### Start with .NET CLI
 
 ```sh
+# Get source code from GitHub
+$ git clone https://github.com/ttu/dotnet-fake-json-server.git
+
 $ cd dotnet-fake-json-server/FakeServer
 $ dotnet run [--file] [--urls]
 
@@ -61,9 +65,12 @@ $ dotnet run --file data.json --urls http://localhost:57602
 
 #### Docker
 
-If you don't have .NET installed, you can run server with Docker.
+If you don't have .NET installed, you can run the server with Docker.
 
 ```sh
+# Get source code from GitHub
+$ git clone https://github.com/ttu/dotnet-fake-json-server.git
+
 $ cd dotnet-fake-json-server
 $ docker build -t fakeapi .
 
@@ -91,13 +98,13 @@ $ docker cp [ContainerId]:/app/db.json db.json
 
 #### Self-contained Application
 
+Self-contained application archive contains Fake JSON Server and .NET Core runtime including all required third-party dependencies. __No installation or prerequisites are needed__.
+
 1) Go to [Lates Release](https://github.com/ttu/dotnet-fake-json-server/releases/latest)
 1) Download correct archive matching your OS
 1) Extract files and execute
 
-Self-contained application archive contains Fake JSON Server and .NET Core runtime inculding all required third-party dependencies. __No installation or prerequisites are needed__.
-
-E.g. download version _0.4.0_ for _macOS_
+E.g. download and execute version _0.4.0_ for _macOS_
 
 ```sh
 $ mkdir FakeServer && cd FakeServer
@@ -183,10 +190,14 @@ Check SimpleTokenProvider from [GitHub](https://github.com/nbarbettini/SimpleTok
 
 #### Basic Authentication
 
-> NOTE: It is not recommended to use Basic Authentication in production
+> NOTE: It is not recommended to use Basic Authentication in production as base64 is a reversible encoding
+
+Add base64 encoded username:password to authorization header e.g. `'Authorization: Basic YWRtaW46cm9vdA=='`.
 
 ```sh
 $ curl -u admin:root http://localhost:57602/api
+# -u argument creates Authorization header with encoded username and password
+$ curl -H 'Authorization: Basic YWRtaW46cm9vdA==' http://localhost:57602/api
 ```
 
 ### WebSockets
@@ -211,7 +222,7 @@ Returns static files from wwwroot. Default file is `index.html`.
 
 ### Swagger
 
-Swagger is configured to endpoint `/swagger` and Swagger UI opens when project is started.
+Swagger is configured to endpoint `/swagger` and Swagger UI opens when project is started from IDE.
 
 ## Routes, Functionalities and Examples
 
@@ -326,7 +337,7 @@ X-Total-Count: 1249
 
 #### Eager data reload
 
-By default Data Store updates it's internal data on every request by reading the data from the JSON file. 
+By default Data Store updates its internal data on every request by reading the data from the JSON file. 
 
 `EagerDataReload` can be configured from `appsettings.json`.
 
@@ -342,7 +353,7 @@ If `EagerDataReload` is _false_ and JSON file is updated manually, reload endpoi
 
 #### Reload
 
-Reload endpoint can be used to reload JSON data from the file to Data Store. Endoint is in Admin controller, so it is usable also with Swagger.
+Reload endpoint can be used to reload JSON data from the file to Data Store. Endpoint is in Admin controller, so it is usable also with Swagger.
 
 ```sh
 $ curl -X POST http://localhost:57602/admin/reload --data ""
@@ -395,7 +406,7 @@ $ curl http://localhost:57602/api
 404 Not Found   : Collection is not found or it is empty
 ```
 
-By default request returns results in and array. Headers have the collection's total item count (`X-Total-Count`) and pagination links (`Link`).
+By default request returns results in an array. Headers have the collection's total item count (`X-Total-Count`) and pagination links (`Link`).
 
 ```sh
 $ curl http://localhost:57602/api/users
@@ -507,7 +518,7 @@ Example JSON:
 ]
 ```
 
-Get all companies which has employess with _London_ in `address.city`.
+Get all companies which has employees with _London_ in `address.city`.
 
 ```sh
 $ curl http://localhost:57602/api/companies?employees.address.city=London
@@ -656,7 +667,7 @@ Add _{ "name": "Phil", "age": 40, "location": "NY" }_ to users.
 $ curl -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{ "name": "Phil", "age": 40, "location": "NY" }' http://localhost:57602/api/users/
 ```
 
-Response has new item's id and Location header containts path to the new item.
+Response has new item's id and a Location header that contains the path to the new item.
 
 ```json
 { "id": 6 }
@@ -676,6 +687,7 @@ Location=http://localhost:57602/api/users/6
 ```
 
 Replace user with `id` _1_ with object _{ "name": "Roger", "age": 28, "location": "SF" }_.
+
 ```sh
 $ curl -H "Accept: application/json" -H "Content-type: application/json" -X PUT -d '{ "name": "Roger", "age": 28, "location": "SF" }' http://localhost:57602/api/users/1
 ```
@@ -713,7 +725,7 @@ $ curl -X DELETE http://localhost:57602/api/users/1
 
 ### Async Operations
 
-`/async` endoint has long running operation for each update operation.
+`/async` endpoint has long running operation for each update operation.
 
 ```
 > POST/PUT/PATCH/DELETE /async/{collection}/{id}
@@ -755,7 +767,19 @@ After job is finished, it must be deleted manually
 404 Not Found  : Job not found
 ```
 
-##### GraphQL query support
+##### Job delay
+
+Delay for operations can be set from `appsettings.json`. With long delay it is easier to simulate long running jobs.
+
+```json
+  "Jobs": {
+    "DelayMs": 2000
+  }
+ ```
+
+Delay value is milliseconds. Default value is 2000ms.
+
+### GraphQL query support
 
 GraphQL implementation is experimental and supports only most basic queries. At the moment this is a good way to compare simple GraphQL and REST queries.
 
@@ -796,14 +820,7 @@ query {
 }
 ```
 
-Get `familyName` and `age` of the `children` from `families` where `id` is 1 and `name`from all `users`.
-
-```sh
-$ curl -H "Content-type: application/graphql" -X POST -d '{ families(id: 1) { familyName children { age } } users { name } }' http://localhost:57602/graphql
-```
-
-
-Implementaiton accepts queries with operation type, with any query name (which is ignored) and query shorthands.
+Implementation accepts queries with operation type, with any query name (which is ignored) and query shorthands.
 
 ```graphql
 # Operation type
@@ -830,26 +847,59 @@ query getUsers {
 {
   families {
     familyName
-    childred(age: 5){
-        name
+    children(age: 5){
+      name
     }
   }
 }
 ```
 
-Uses [graphql-dotnet](https://github.com/graphql-dotnet/graphql-dotnet) to parse Abstract Syntax Tree from the query.
+Example: get `familyName` and `age` of the `children` from `families` where `id` is 1 and `name`from all `users`.
 
-##### Job delay
+```graphql
+{
+  families(id: 1) {
+    familyName
+    children {
+      age
+    }
+  }
+  users {
+    name
+  }
+}
+```
 
-Delay for operations can be set from `appsettings.json`. With long delay it is easier to simulate long running jobs.
+```sh
+$ curl -H "Content-type: application/graphql" -X POST -d '{ families(id: 1) { familyName children { age } } users { name } }' http://localhost:57602/graphql
+```
+
+Respose:
 
 ```json
-  "Jobs": {
-    "DelayMs": 2000
+{ 
+  "data": {
+    "families": [ 
+      { 
+        "familyName": "Day", 
+        "children": [ 
+          { "age": 14 }, 
+          { "age": 18 }, 
+          { "age": 9 } 
+        ] 
+      }
+    ],
+    "users": [ 
+      { "name": "James" }, 
+      { "name": "Phil" }, 
+      { "name": "Raymond" }, 
+      { "name": "Jarvis" } 
+    ] 
   }
- ```
+}
+```
 
-Delay value is milliseconds. Default value is 2000ms.
+Implementation uses [graphql-dotnet](https://github.com/graphql-dotnet/graphql-dotnet) to parse Abstract Syntax Tree from the query.
 
 ### Simulate Delay and Random Errors
 
