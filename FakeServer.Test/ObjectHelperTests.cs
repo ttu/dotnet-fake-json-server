@@ -1,9 +1,10 @@
 ﻿using FakeServer.Common;
+using FakeServer.WebSockets;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
+using System.Threading;
 using Xunit;
 
 namespace FakeServer.Test
@@ -86,6 +87,57 @@ namespace FakeServer.Test
             Assert.Equal(2, result.Count());
             Assert.Equal(20, result.ToList()[0]["Age"]);
             Assert.Equal(40, result.ToList()[1]["Age"]);
+        }
+
+        private class BusMessage
+        {
+            public string Message { get; set; }
+        }
+
+        [Fact]
+        public void MessageBus_Subscribe_MessageChanged()
+        {
+            var bus = new MessageBus();
+
+            var message = new BusMessage { Message = "Hello" };
+            var message2 = new BusMessage { Message = "Hello2" };
+
+            var are = new AutoResetEvent(false);
+
+            bus.Subscribe("1", (dynamic m) =>
+            {
+                Thread.Sleep(1500);
+                Assert.Equal("Changed", m.Message);
+                // This should be the last one
+                are.Set();
+            });
+
+            bus.Subscribe("1", (dynamic m) =>
+            {
+                Thread.Sleep(1);
+                Assert.Equal("Hello", m.Message);
+                // As this MessageBus is pretty simple, should use immutable objects for sending data
+                message.Message = "Changed";
+            });
+
+            bus.Subscribe("1", (dynamic m) =>
+            {
+                Thread.Sleep(500);
+                Assert.Equal("Changed", m.Message);
+            });
+
+            bus.Subscribe("2", (dynamic m) =>
+            {
+                Thread.Sleep(5);
+                Assert.Equal("Hello2", m.Message);
+            });
+
+            bus.Publish("1", message);
+            bus.Publish("2", message2);
+
+            var success = are.WaitOne();
+
+            Assert.True(success);
         }
     }
 }

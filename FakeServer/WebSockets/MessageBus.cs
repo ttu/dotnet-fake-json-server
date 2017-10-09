@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
+using System.Threading.Tasks;
 
 namespace FakeServer.WebSockets
 {
@@ -14,21 +13,24 @@ namespace FakeServer.WebSockets
 
     public class MessageBus : IMessageBus
     {
-        public ConcurrentDictionary<string, List<dynamic>> _subscriptions = new ConcurrentDictionary<string, List<dynamic>>();
+        public ConcurrentDictionary<string, ConcurrentBag<dynamic>> _subscriptions = new ConcurrentDictionary<string, ConcurrentBag<dynamic>>();
 
         public void Publish<T>(string topic, T message)
         {
             if (_subscriptions.ContainsKey(topic))
             {
-                foreach (var action in _subscriptions[topic].AsParallel())
-                    action(message);
+                foreach (var action in _subscriptions[topic])
+                {
+                    // T message should be cloned if it is a reference type, so data can't be changed after new thread is created
+                    Task.Run(() => { action(message); });
+                };
             }
         }
 
         public void Subscribe<T>(string topic, Action<T> handler)
         {
             if (!_subscriptions.ContainsKey(topic))
-                _subscriptions.TryAdd(topic, new List<dynamic>());
+                _subscriptions.TryAdd(topic, new ConcurrentBag<dynamic>());
 
             _subscriptions[topic].Add(handler);
         }
