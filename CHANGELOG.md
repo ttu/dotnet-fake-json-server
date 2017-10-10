@@ -2,7 +2,8 @@
 
 ### [Unreleased]
 * Support for HTTP HEAD Method
-
+* Experimental GraphQL mutations support
+ 
 ### [0.4.0] - 2017-09-13
 * Basic Authentication
 * Select fields to return from query

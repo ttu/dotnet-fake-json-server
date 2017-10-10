@@ -159,7 +159,7 @@ namespace FakeServer
             app.UseDefaultFiles();
             app.UseStaticFiles();
 
-            app.UseMiddleware<GraphQLMiddleware>(app.ApplicationServices.GetRequiredService<IDataStore>(), useAuthentication);
+            app.UseMiddleware<GraphQLMiddleware>(app.ApplicationServices.GetRequiredService<IDataStore>(), app.ApplicationServices.GetRequiredService<IMessageBus>(), useAuthentication);
 
             app.UseMvc();
 

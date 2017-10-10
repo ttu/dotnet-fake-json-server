@@ -676,6 +676,140 @@ namespace FakeServer.Test
         }
 
         [Fact]
+        public async Task PostGraphQL_Mutation_Update()
+        {
+            using (var client = new HttpClient())
+            {
+                var patch = @"
+                    mutation {
+                          updateFamilies( input: {
+                            id: 4
+                            patch: {
+                              familyName: Habboo
+                            }
+                          }) {
+                              families {
+                                id
+                              }
+                            }
+                    }";
+
+                var contentMutation = new StringContent(patch, Encoding.UTF8, "application/graphql");
+                var resultMutation = await client.PostAsync($"{_fixture.BaseUrl}/graphql", contentMutation);
+
+                Assert.Equal(HttpStatusCode.OK, resultMutation.StatusCode);
+
+                var q = @"
+                    query {
+                          families(id: 4) {
+                            familyName
+                            parents(id: 1) {
+                              name
+                              work {
+                                companyName
+                              }
+                            }
+                          }
+                    }";
+
+                var contentQuery = new StringContent(q, Encoding.UTF8, "application/graphql");
+                var resultQuery = await client.PostAsync($"{_fixture.BaseUrl}/graphql", contentQuery);
+
+                Assert.Equal(HttpStatusCode.OK, resultQuery.StatusCode);
+
+                var data = JsonConvert.DeserializeObject<JObject>(await resultQuery.Content.ReadAsStringAsync());
+                Assert.NotNull(data["data"]);
+                Assert.Equal("Habboo", data["data"]["families"][0]["familyName"].Value<string>());
+            }
+        }
+
+        //[Fact]
+        public async Task PostGraphQL_Mutation_Add_Delete()
+        {
+            using (var client = new HttpClient())
+            {
+                var add = @"
+                    mutation {
+                          addFamilies ( input: {
+                            families: {
+                              familyName: Newtons
+                              notes: Hello
+                            }
+                          }) {
+                            families {
+                              id
+                              familyName
+                              children {
+                                name
+                                age
+                              }
+                            }
+                          }
+                    }";
+
+                var contentMutation = new StringContent(add, Encoding.UTF8, "application/graphql");
+                var resultMutation = await client.PostAsync($"{_fixture.BaseUrl}/graphql", contentMutation);
+
+                Assert.Equal(HttpStatusCode.OK, resultMutation.StatusCode);
+
+                var addResult = JsonConvert.DeserializeObject<JObject>(await resultMutation.Content.ReadAsStringAsync());
+
+                var id = addResult["data"]["families"]["id"].Value<string>();
+
+                var q = @"
+                    query {
+                          families(id: " + id + @") {
+                            familyName
+                            parents(id: 1) {
+                              name
+                              work {
+                                companyName
+                              }
+                            }
+                          }
+                    }";
+
+                var contentQuery = new StringContent(q, Encoding.UTF8, "application/graphql");
+                var resultQuery = await client.PostAsync($"{_fixture.BaseUrl}/graphql", contentQuery);
+
+                Assert.Equal(HttpStatusCode.OK, resultQuery.StatusCode);
+
+                var data = JsonConvert.DeserializeObject<JObject>(await resultQuery.Content.ReadAsStringAsync());
+                Assert.NotNull(data["data"]);
+                Assert.Equal("Newtons", data["data"]["families"][0]["familyName"].Value<string>());
+
+                // Delete
+
+                var delete = @"
+                    mutation {
+                          deleteFamilies ( input: {
+                            id: " + id + @"
+                          })
+                    }";
+
+                var deleteMutaiton = new StringContent(delete, Encoding.UTF8, "application/graphql");
+                var resultDelete = await client.PostAsync($"{_fixture.BaseUrl}/graphql", deleteMutaiton);
+
+                Assert.Equal(HttpStatusCode.OK, resultDelete.StatusCode);
+
+                data = JsonConvert.DeserializeObject<JObject>(await resultDelete.Content.ReadAsStringAsync());
+
+                Assert.True(data["data"].Value<bool>());
+
+                // Try to fetch deleted
+
+                contentQuery = new StringContent(q, Encoding.UTF8, "application/graphql");
+                resultQuery = await client.PostAsync($"{_fixture.BaseUrl}/graphql", contentQuery);
+
+                Assert.Equal(HttpStatusCode.OK, resultQuery.StatusCode);
+
+                data = JsonConvert.DeserializeObject<JObject>(await resultQuery.Content.ReadAsStringAsync());
+                Assert.NotNull(data["data"]);
+                Assert.Equal("Newtons", data["data"]["families"][0]["familyName"].Value<string>());
+            }
+        }
+
+        [Fact]
         public async Task PostGraphQL_Filter_Bool()
         {
             using (var client = new HttpClient())

@@ -6,7 +6,7 @@
 | Travis      | Linux / macOS  |[![Build Status](https://travis-ci.org/ttu/dotnet-fake-json-server.svg?branch=master)](https://travis-ci.org/ttu/dotnet-fake-json-server)| 
 | AppVeyor    | Windows        |[![Build status](https://ci.appveyor.com/api/projects/status/hacg7qupp5oxbct8?svg=true)](https://ci.appveyor.com/project/ttu/dotnet-fake-json-server)|
 
-Fake JSON Server is a Fake REST API for prototyping or as a CRUD Back End with experimental GraphQL query support.
+Fake JSON Server is a Fake REST API for prototyping or as a CRUD Back End with experimental GraphQL query and mutation support.
 
 * No need to define types for resources, uses dynamic typing
 * No need to define routes, routes are handled dynamically
@@ -34,7 +34,7 @@ Fake JSON Server is a Fake REST API for prototyping or as a CRUD Back End with e
 * Static files
 * Swagger
 * CORS
-* _Experimental_ GraphQL query support
+* _Experimental_ GraphQL query and mutation support
 
 ##### Developed with
  
@@ -779,23 +779,24 @@ Delay for operations can be set from `appsettings.json`. With long delay it is e
 
 Delay value is milliseconds. Default value is 2000ms.
 
-### GraphQL query support
+### GraphQL
 
-GraphQL implementation is experimental and supports only most basic queries. At the moment this is a good way to compare simple GraphQL and REST queries.
+GraphQL implementation is experimental and supports only basic queries and mutations. At the moment this is a good way to compare simple GraphQL and REST queries.
 
 ```
 > POST /graphql
 
 Content-type: application/graphql
-Body: [query]
+Body: [query/mutation]
 
 
-200 OK              : Query successful 
-400 Bad Request     : Query contains errors
+200 OK              : Query/mutation successful 
+400 Bad Request     : Query/mutation contains errors
 501 Not Implemented : HTTP method and/or content-type combination not implemented
 ```
 
 Response is in JSON format. It contains `data` and `errors` fields. `errors` field is not present if there are no errors. 
+
 ```json
 {
   "data": { 
@@ -806,7 +807,11 @@ Response is in JSON format. It contains `data` and `errors` fields. `errors` fie
 }
 ```` 
 
-Implementation supports equals filtering with arguments. Query's first field is the name of the collection.
+Implementation uses [graphql-dotnet](https://github.com/graphql-dotnet/graphql-dotnet) to parse Abstract Syntax Tree from the query.
+
+#### Query
+
+Query implementation supports equals filtering with arguments. Query's first field is the name of the collection.
 
 ```graphql
 query {
@@ -870,6 +875,8 @@ Example: get `familyName` and `age` of the `children` from `families` where `id`
 }
 ```
 
+Execute query with curl:
+
 ```sh
 $ curl -H "Content-type: application/graphql" -X POST -d '{ families(id: 1) { familyName children { age } } users { name } }' http://localhost:57602/graphql
 ```
@@ -899,7 +906,180 @@ Respose:
 }
 ```
 
-Implementation uses [graphql-dotnet](https://github.com/graphql-dotnet/graphql-dotnet) to parse Abstract Syntax Tree from the query.
+#### Mutation
+
+Fake JSON Server supports dynamic mutations with format defined below:
+
+```graphql
+mutation {
+  [mutationName](input: {
+    [optional id]
+    [updateData]
+    }) {
+      [collection]{
+        [fields]
+    }
+}
+```
+
+Action is decided from the mutation name. Name follows pattern _add|update|replace|delete[collection}_ E.g. deleteUsers will delete from users collection etc. Input object has optional id field and update data object. Return data is defined the same way as in queries.
+
+##### Add item
+
+`add{collection}`
+
+Input containtains object to be added with the collection's name.
+
+```graphql
+mutation {
+  addUsers(input: {
+    users: {
+      name: James
+      work: {
+        name: ACME
+      }
+    }
+  }) {
+    users {
+      id
+      name 
+    }
+  }
+}
+```
+Execute mutation with curl:
+
+```sh
+$ curl -H "Content-type: application/graphql" -X POST -d 'mutation { addUsers(input: { users: { name: James work: { name: ACME } } }) { users { id name } } }' http://localhost:57602/graphql
+```
+
+Response:
+```json
+{ 
+  "data": {
+    "users":{
+      "id": 12,
+      "name": "James"
+    }
+  }
+}
+```
+
+#### Update Item
+
+`update{collection}`
+
+```graphql
+mutation {
+  updateUsers(input: {
+    id: 2
+    patch:{
+      name: Timothy
+    }
+  }) {
+    users {
+      id
+      name 
+    }
+  }
+}
+```
+
+Execute mutation with curl:
+
+```sh
+$ curl -H "Content-type: application/graphql" -X POST -d 'mutation { updateUsers(input: { id: 2 patch:{ name: Timothy } }) { users { id name age }}}' http://localhost:57602/graphql
+```
+
+Response:
+```json
+{ 
+  "data": { 
+    "users": { 
+      "id": 2, 
+      "name": "Timothy", 
+      "age": 25 
+    } 
+  } 
+}
+```
+
+> NOTE: Update doesn't support updating child arrays
+
+##### Replace item
+
+`replace{collection}`
+
+Input must contain id of the item to be replacecd and items full data in object named with collection's name.
+
+```graphql
+mutation {
+  replaceUsers(input: {
+    id: 5
+    users:{
+      name: Rick
+      age: 44
+      workplace: {
+       companyName: ACME 
+      }
+    }
+  }) {
+    users {
+      id
+      name
+      age
+    }
+  }
+}
+```
+
+Execute mutation with curl:
+
+```sh
+$ curl -H "Content-type: application/graphql" -X POST -d 'mutation { replaceUsers(input: { id: 1 users: { name: Rick age: 44 workplace: { name: ACME } } }) {users {id name age}}}' http://localhost:57602/graphql
+```
+
+Response:
+```
+{
+  "data": {
+    "users": {"
+      id": 1,
+      "name": "Rick",
+      "age": 44
+    }
+  }
+}
+```
+
+##### Delete item
+
+`delete{collection}`
+
+Delete requires only the id of item to be deleted. Response will only contain success boolean `true/false`, so mutation doesn't need any definition for return data. 
+
+```graphql
+mutation {
+  deleteUsers(input: {
+    id: 4
+  })
+}
+```
+
+Execute mutation with curl:
+
+```sh
+$ curl -H "Content-type: application/graphql" -X POST -d 'mutation { deleteUsers(input: { id: 4 }) }' http://localhost:57602/graphql
+```
+
+Response:
+```json
+{
+  "data": {
+    "Result": true
+  }
+}
+```
 
 ### Simulate Delay and Random Errors
 
@@ -942,6 +1122,7 @@ API follows best practices and recommendations from these guides:
 * [Microsoft API Design](https://docs.microsoft.com/en-us/azure/architecture/best-practices/api-design)
 * [GitHub v3 Guide](https://developer.github.com/v3/guides/)
 * [Introduction to GraphQL](http://graphql.org/learn/)
+* [Designing GraphQL Mutations](https://dev-blog.apollodata.com/designing-graphql-mutations-e09de826ed97)
 
 ## Other Links
 

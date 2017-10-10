@@ -1,4 +1,5 @@
 ﻿using FakeServer.Common;
+using FakeServer.WebSockets;
 using JsonFlatFileDataStore;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
@@ -13,12 +14,14 @@ namespace FakeServer.GraphQL
     {
         private readonly RequestDelegate _next;
         private readonly IDataStore _datastore;
+        private readonly IMessageBus _bus;
         private readonly bool _authenticationEnabled;
 
-        public GraphQLMiddleware(RequestDelegate next, IDataStore datastore, bool authenticationEnabled)
+        public GraphQLMiddleware(RequestDelegate next, IDataStore datastore, IMessageBus bus, bool authenticationEnabled)
         {
             _next = next;
             _datastore = datastore;
+            _bus = bus;
             _authenticationEnabled = authenticationEnabled;
         }
 
@@ -64,6 +67,8 @@ namespace FakeServer.GraphQL
             var json = result.Errors?.Any() == true
                             ? JsonConvert.SerializeObject(new { data = result.Data, errors = result.Errors })
                             : JsonConvert.SerializeObject(new { data = result.Data });
+
+            result.Notifications?.ForEach(msg => _bus.Publish("updated", msg));
 
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = result.Errors?.Any() == true ? (int)HttpStatusCode.BadRequest : (int)HttpStatusCode.OK;
