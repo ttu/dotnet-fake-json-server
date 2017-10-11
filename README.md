@@ -21,28 +21,28 @@ Fake JSON Server is a Fake REST API for prototyping or as a CRUD Back End with e
 
 ## Features
 
-* Supported HTTP methods
+* Supported HTTP methods [#](#routes-functionalities-and-examples)
   * All methods for CRUD operations (_GET, PUT, POST, PATCH, DELETE_)
   * Methods for fetching resource information (_HEAD_, _OPTIONS_)
-* Async versions of update operations with long running operations and queues
+* Async versions of update operations with long running operations and queues [#](#async-operations)
 * REST API follows best practices from multiple guides 
   * Uses correct Status Codes, Headers, etc.
   * As all guides have a little different recommendations, this compilation is an opinionated selection
-* Token and Basic Authentication
-* WebSocket update notifications
-* Simulate delay and errors for requests
-* Static files
-* Swagger
-* CORS
-* _Experimental_ GraphQL query and mutation support
+* Token and Basic Authentication [#](#authentication)
+* WebSocket update notifications [#](#websockets)
+* Simulate delay and errors for requests [#](#simulate-delay-and-random-errors)
+* Static files [#](#static-files)
+* Swagger [#](#swagger)
+* CORS [#](#cors)
+* _Experimental_ GraphQL query and mutation support [#](#graphql)
 
 ##### Developed with
  
 * ASP.NET Core 2.0 / C# 7
 * Uses [JSON Flat File Data Store](https://github.com/ttu/json-flatfile-datastore) to store data
 * Can be used without .NET
-  * [Docker](#docker) 
-  * [Self-contained Application](#self-contained-application)
+  * Docker [#](#docker) 
+  * Self-contained Application [#](#self-contained-application)
 
 ## Get started
 
@@ -914,7 +914,7 @@ Fake JSON Server supports dynamic mutations with format defined below:
 mutation {
   [mutationName](input: {
     [optional id]
-    [updateData]
+    [itemData/patch]
     }) {
       [collection]{
         [fields]
@@ -922,7 +922,7 @@ mutation {
 }
 ```
 
-Action is decided from the mutation name. Name follows pattern _add|update|replace|delete[collection}_ E.g. deleteUsers will delete from users collection etc. Input object has optional id field and update data object. Return data is defined the same way as in queries.
+Action is decided from the mutation name. Name follows pattern _add|update|replace|delete[collection]_ E.g. _deleteUsers_ will delete an item from the _users_ collection. Input object has an optional id-field and update data object. Return data is defined the same way as in queries.
 
 ##### Add item
 
