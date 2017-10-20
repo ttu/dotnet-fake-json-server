@@ -104,11 +104,11 @@ Self-contained application archive contains Fake JSON Server and .NET Core runti
 1) Download correct archive matching your OS
 1) Extract files and execute
 
-E.g. download and execute version _0.4.0_ for _macOS_
+E.g. download and execute version _0.5.0_ for _macOS_
 
 ```sh
 $ mkdir FakeServer && cd FakeServer
-$ wget https://github.com/ttu/dotnet-fake-json-server/releases/download/0.4.0/fakeserver-osx-x64.tar.gz
+$ wget https://github.com/ttu/dotnet-fake-json-server/releases/download/0.5.0/fakeserver-osx-x64.tar.gz
 $ tar -zxvf fakeserver-osx-x64.tar.gz
 $ chmod +x FakeServer
 $ ./FakeServer

@@ -1,6 +1,9 @@
 # Changelog
 
 ### [Unreleased]
+*
+ 
+### [0.5.0] - 2017-10-20
 * Support for HTTP HEAD Method
 * Experimental GraphQL mutations support
  
