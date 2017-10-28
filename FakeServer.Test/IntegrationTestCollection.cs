@@ -35,7 +35,7 @@ namespace FakeServer.Test
                 TestServer.Run(BaseUrl, dir, $"{fileName}.json", authenticationType);
             });
 
-            var success = WaitForServer().Result;
+            var success = Task.Run(() => WaitForServer()).GetAwaiter().GetResult();
         }
 
         public void Dispose()
