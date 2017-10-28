@@ -65,6 +65,8 @@ namespace FakeServer.Test
                 catch (Exception)
                 {
                 }
+
+                await Task.Delay(500);
             }
 
             throw new Exception("Server not started");
