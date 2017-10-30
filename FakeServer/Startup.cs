@@ -148,18 +148,23 @@ namespace FakeServer
 
             var useAuthentication = Configuration.GetValue<bool>("Authentication:Enabled");
 
-            if (useAuthentication)
+            if (useAuthentication && Configuration.GetValue<string>("Authentication:AuthenticationType") == "token")
             {
-                if (Configuration.GetValue<string>("Authentication:AuthenticationType") == "token")
-                {
-                    TokenConfiguration.UseTokenProviderMiddleware(app);
-                }
+                TokenConfiguration.UseTokenProviderMiddleware(app);
             }
 
             app.UseDefaultFiles();
             app.UseStaticFiles();
 
-            app.UseMiddleware<GraphQLMiddleware>(app.ApplicationServices.GetRequiredService<IDataStore>(), app.ApplicationServices.GetRequiredService<IMessageBus>(), useAuthentication);
+            if (Configuration.GetValue<bool>("Caching:ETag:Enabled"))
+            {
+                app.UseMiddleware<ETagMiddleware>();
+            }
+
+            app.UseMiddleware<GraphQLMiddleware>(
+                        app.ApplicationServices.GetRequiredService<IDataStore>(),
+                        app.ApplicationServices.GetRequiredService<IMessageBus>(),
+                        useAuthentication);
 
             app.UseMvc();
 

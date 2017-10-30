@@ -11,6 +11,8 @@ namespace FakeServer
         {
             Startup.MainConfiguration.Add("file", file);
 
+            Startup.MainConfiguration.Add("Caching:ETag:Enabled", "true");
+
             if (!string.IsNullOrEmpty(authenticationType))
             {
                 Startup.MainConfiguration.Add("Authentication:Enabled", "true");

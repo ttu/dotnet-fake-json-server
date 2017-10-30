@@ -34,6 +34,7 @@ Fake JSON Server is a Fake REST API for prototyping or as a CRUD Back End with e
 * Static files [#](#static-files)
 * Swagger [#](#swagger)
 * CORS [#](#cors)
+* Caching of unchanged resources with ETag header [#](#caching)
 * _Experimental_ GraphQL query and mutation support [#](#graphql)
 
 ##### Developed with
@@ -223,6 +224,43 @@ Returns static files from wwwroot. Default file is `index.html`.
 ### Swagger
 
 Swagger is configured to endpoint `/swagger` and Swagger UI opens when project is started from IDE.
+
+### Caching
+
+Fake Server supports caching of unchanged resources with _ETag_ and _If-None-Match_ headers. Caching can be disabled from `appsettings.json` by setting ETag.Enabled to `false`.
+
+```json
+{
+  "Caching": {
+    "ETag": {
+      "Enabled": true
+    }
+  }
+}
+```
+
+If caching is enabled, _ETag_ is added to response headers.
+
+```sh
+$ curl -v 'http://localhost:57602/api/users?age=40'
+```
+
+```json
+200 OK
+
+Headers:
+ETag: "5yZCXmjhk5ozJyTK4-OJkkd_X18"
+```
+
+If request containts _If-None-Match_ header, its value is compared to the reponse and if the value matches to response's checksum then `304 Not Modified` is returned.
+
+```sh
+$ curl -H "If-None-Match: \"5yZCXmjhk5ozJyTK4-OJkkd_X18\"" 'http://localhost:57602/api/users?age=40'
+```
+
+```json
+304 Not Modified
+```
 
 ## Routes, Functionalities and Examples
 
