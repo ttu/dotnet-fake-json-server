@@ -162,14 +162,12 @@ Authentication can be disabled from `authentication.json` by setting Enabled to 
 Add allowed usernames/passwords to `Users`-array.
 
 ```json
-{
-  "Authentication": {
-    "Enabled": true,
-    "AuthenticationType": "token",
-    "Users": [
-        { "Username": "admin", "Password": "root" }
-    ]
-  }
+"Authentication": {
+  "Enabled": true,
+  "AuthenticationType": "token",
+  "Users": [
+      { "Username": "admin", "Password": "root" }
+  ]
 }
 ```
 
@@ -230,11 +228,9 @@ Swagger is configured to endpoint `/swagger` and Swagger UI opens when project i
 Caching can be disabled from `appsettings.json` by setting ETag.Enabled to `false`.
 
 ```json
-{
-  "Caching": {
-    "ETag": {
-      "Enabled": true
-    }
+"Caching": {
+  "ETag": { 
+    "Enabled": true 
   }
 }
 ```
@@ -1117,6 +1113,7 @@ $ curl -H "Content-type: application/graphql" -X POST -d 'mutation { deleteUsers
 ```
 
 Response:
+
 ```json
 {
   "data": {
