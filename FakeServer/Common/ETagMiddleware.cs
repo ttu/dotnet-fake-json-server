@@ -7,7 +7,8 @@ using System.Threading.Tasks;
 
 namespace FakeServer.Common
 {
-    //  Based on middleware from: https://gist.github.com/madskristensen/36357b1df9ddbfd123162cd4201124c4
+    // Based on the middleware from: 
+    // https://gist.github.com/madskristensen/36357b1df9ddbfd123162cd4201124c4
 
     public class ETagMiddleware
     {
@@ -20,8 +21,67 @@ namespace FakeServer.Common
 
         public async Task Invoke(HttpContext context)
         {
-            if (context.Request.Path.Value.StartsWith($"/{Config.ApiRoute}") && context.Request.Method == "GET")
+            // Etag Middleware can handle
+            // GET : Caching of unchanged resources
+            // PUT : Avoiding mid-air collisions
+
+            if (context.Request.Path.Value.StartsWith($"/{Config.ApiRoute}") == false ||
+                (context.Request.Method != "GET" && context.Request.Method != "PUT"))
             {
+                await _next(context);
+                return;
+            }
+
+            if (context.Request.Method == "GET")
+            {
+                await HandleGet(context);
+            }
+            else
+            {
+                await HandlePut(context);
+            }
+        }
+
+        private async Task HandleGet(HttpContext context)
+        {
+            // FrameResponseStream doesn't support reading, so we need to use MemoryStream as a buffer
+
+            var response = context.Response;
+            var originalStream = response.Body;
+
+            using (var ms = new MemoryStream())
+            {
+                response.Body = ms;
+
+                await _next(context);
+
+                if (IsEtagSupported(response))
+                {
+                    var checksum = CalculateChecksum(ms);
+
+                    response.Headers[HeaderNames.ETag] = checksum;
+
+                    if (context.Request.Headers.TryGetValue(HeaderNames.IfNoneMatch, out var etag) && checksum == etag)
+                    {
+                        response.StatusCode = StatusCodes.Status304NotModified;
+                        return;
+                    }
+                }
+
+                ms.Position = 0;
+                await ms.CopyToAsync(originalStream);
+            }
+        }
+
+        private async Task HandlePut(HttpContext context)
+        {
+            if (context.Request.Headers.ContainsKey(HeaderNames.IfMatch))
+            {
+                // Switch request to GET and fetch data that is going to be updated
+                // Compare reveived data's checksum to tag in If-Match header
+
+                context.Request.Method = "GET";
+
                 var response = context.Response;
                 var originalStream = response.Body;
 
@@ -33,25 +93,21 @@ namespace FakeServer.Common
 
                     if (IsEtagSupported(response))
                     {
-                        var checksum = CalculateChecksum(ms);
-
-                        response.Headers[HeaderNames.ETag] = checksum;
-
-                        if (context.Request.Headers.TryGetValue(HeaderNames.IfNoneMatch, out var etag) && checksum == etag)
+                        if (context.Request.Headers.TryGetValue(HeaderNames.IfMatch, out var etag) && CalculateChecksum(ms) != etag)
                         {
-                            response.StatusCode = StatusCodes.Status304NotModified;
+                            context.Request.Method = "PUT";
+                            response.Body = originalStream;
+                            response.StatusCode = StatusCodes.Status412PreconditionFailed;
                             return;
                         }
                     }
 
-                    ms.Position = 0;
-                    await ms.CopyToAsync(originalStream);
+                    context.Request.Method = "PUT";
+                    response.Body = originalStream;
                 }
             }
-            else
-            {
-                await _next(context);
-            }
+
+            await _next(context);
         }
 
         private static bool IsEtagSupported(HttpResponse response)
@@ -71,16 +127,12 @@ namespace FakeServer.Common
 
         private static string CalculateChecksum(MemoryStream ms)
         {
-            var checksum = string.Empty;
-
             using (var algo = SHA1.Create())
             {
                 ms.Position = 0;
                 var bytes = algo.ComputeHash(ms);
-                checksum = $"\"{WebEncoders.Base64UrlEncode(bytes)}\"";
+                return $"\"{WebEncoders.Base64UrlEncode(bytes)}\"";
             }
-
-            return checksum;
         }
     }
 }

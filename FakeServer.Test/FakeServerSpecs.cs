@@ -401,7 +401,7 @@ namespace FakeServer.Test
         }
 
         [Fact]
-        public async Task Async_PostPutPathDelete()
+        public async Task Async_PostPutPatchDelete()
         {
             async Task<HttpResponseMessage> GetWhenStatusNotOk(System.Uri queueUrl)
             {
@@ -416,7 +416,7 @@ namespace FakeServer.Test
                         if (response.StatusCode != HttpStatusCode.OK)
                             return response;
 
-                        Thread.Sleep(100);
+                        await Task.Delay(100);
                     }
                 }
             }
@@ -653,7 +653,7 @@ namespace FakeServer.Test
             using (var client = new HttpClient())
             {
                 var result = await client.GetAsync($"{_fixture.BaseUrl}/api/users?name=Phil");
-                var original = result.Headers.ETag.Tag;
+                var originalEtag = result.Headers.ETag.Tag;
 
                 var allUsers = JsonConvert.DeserializeObject<JArray>(await result.Content.ReadAsStringAsync());
                 Assert.Equal("Phil", allUsers[0]["name"].Value<string>());
@@ -662,9 +662,9 @@ namespace FakeServer.Test
                 var request = new HttpRequestMessage(new HttpMethod("GET"), $"{_fixture.BaseUrl}/api/users?name=Phil&age=25");
 
                 result = await client.SendAsync(request);
-                var newTag = result.Headers.ETag.Tag;
+                var newEtag = result.Headers.ETag.Tag;
 
-                Assert.Equal(original, newTag);
+                Assert.Equal(originalEtag, newEtag);
 
                 allUsers = JsonConvert.DeserializeObject<JArray>(await result.Content.ReadAsStringAsync());
                 Assert.Equal("Phil", allUsers[0]["name"].Value<string>());
@@ -678,19 +678,19 @@ namespace FakeServer.Test
             using (var client = new HttpClient())
             {
                 var result = await client.GetAsync($"{_fixture.BaseUrl}/api/users?name=Phil");
-                var original = result.Headers.ETag.Tag;
+                var originalEtag = result.Headers.ETag.Tag;
 
                 var allUsers = JsonConvert.DeserializeObject<JArray>(await result.Content.ReadAsStringAsync());
                 Assert.Equal("Phil", allUsers[0]["name"].Value<string>());
                 Assert.Equal("Box Company", allUsers[0]["work"]["name"].Value<string>());
 
                 var request = new HttpRequestMessage(new HttpMethod("GET"), $"{_fixture.BaseUrl}/api/users?name=Phil&age=25");
-                request.Headers.IfNoneMatch.Add(new System.Net.Http.Headers.EntityTagHeaderValue(original));
+                request.Headers.IfNoneMatch.Add(new System.Net.Http.Headers.EntityTagHeaderValue(originalEtag));
 
                 result = await client.SendAsync(request);
-                var newTag = result.Headers.ETag.Tag;
+                var newEtag = result.Headers.ETag.Tag;
 
-                Assert.Equal(original, newTag);
+                Assert.Equal(originalEtag, newEtag);
                 Assert.Equal(HttpStatusCode.NotModified, result.StatusCode);
 
                 var content = await result.Content.ReadAsStringAsync();
@@ -698,7 +698,49 @@ namespace FakeServer.Test
             }
         }
 
+        [Fact]
+        public async Task GetItem_ETag_Cached_Put()
+        {
+            using (var client = new HttpClient())
+            {
+                var result = await client.GetAsync($"{_fixture.BaseUrl}/api/users/1");
+                var originalEtag = result.Headers.ETag.Tag;
 
+                var user = JsonConvert.DeserializeObject<JObject>(await result.Content.ReadAsStringAsync());
+                Assert.Equal("James", user["name"].Value<string>());
+                Assert.Equal("ACME", user["work"]["name"].Value<string>());
+
+                user["work"]["name"] = "Other Company";
+                var request = new HttpRequestMessage(new HttpMethod("PUT"), $"{_fixture.BaseUrl}/api/users/1");
+                request.Content = new StringContent(JsonConvert.SerializeObject(user), Encoding.UTF8, "application/json");
+                request.Headers.IfMatch.Add(new System.Net.Http.Headers.EntityTagHeaderValue(originalEtag));
+
+                result = await client.SendAsync(request);
+                Assert.Equal(HttpStatusCode.NoContent, result.StatusCode);
+
+                result = await client.GetAsync($"{_fixture.BaseUrl}/api/users/1");
+
+                user = JsonConvert.DeserializeObject<JObject>(await result.Content.ReadAsStringAsync());
+                Assert.Equal("James", user["name"].Value<string>());
+                Assert.Equal("Other Company", user["work"]["name"].Value<string>());
+
+                // Try to update with original Tag
+
+                user["work"]["name"] = "No Company";
+                var request2 = new HttpRequestMessage(new HttpMethod("PUT"), $"{_fixture.BaseUrl}/api/users/1");
+                request2.Content = new StringContent(JsonConvert.SerializeObject(user), Encoding.UTF8, "application/json");
+                request2.Headers.IfMatch.Add(new System.Net.Http.Headers.EntityTagHeaderValue(originalEtag));
+
+                result = await client.SendAsync(request2);
+                Assert.Equal(HttpStatusCode.PreconditionFailed, result.StatusCode);
+
+                result = await client.GetAsync($"{_fixture.BaseUrl}/api/users/1");
+
+                user = JsonConvert.DeserializeObject<JObject>(await result.Content.ReadAsStringAsync());
+                Assert.Equal("James", user["name"].Value<string>());
+                Assert.Equal("Other Company", user["work"]["name"].Value<string>());
+            }
+        }
 
         [Fact]
         public async Task PostGraphQL()

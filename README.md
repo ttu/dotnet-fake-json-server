@@ -34,7 +34,7 @@ Fake JSON Server is a Fake REST API for prototyping or as a CRUD Back End with e
 * Static files [#](#static-files)
 * Swagger [#](#swagger)
 * CORS [#](#cors)
-* Caching of unchanged resources with ETag header [#](#caching)
+* Caching and avoiding mid-air collisions with ETag [#](#caching-and-avoiding-mid-air-collisions-with-etag)
 * _Experimental_ GraphQL query and mutation support [#](#graphql)
 
 ##### Developed with
@@ -225,9 +225,9 @@ Returns static files from wwwroot. Default file is `index.html`.
 
 Swagger is configured to endpoint `/swagger` and Swagger UI opens when project is started from IDE.
 
-### Caching
+### Caching and avoiding mid-air collisions with ETag
 
-Fake Server supports caching of unchanged resources with _ETag_ and _If-None-Match_ headers. Caching can be disabled from `appsettings.json` by setting ETag.Enabled to `false`.
+Caching can be disabled from `appsettings.json` by setting ETag.Enabled to `false`.
 
 ```json
 {
@@ -252,7 +252,9 @@ Headers:
 ETag: "5yZCXmjhk5ozJyTK4-OJkkd_X18"
 ```
 
-If request containts _If-None-Match_ header, its value is compared to the reponse and if the value matches to response's checksum then `304 Not Modified` is returned.
+#### Caching of unchanged resources
+
+If request containts `If-None-Match` header, header's value is compared to the response's body and if the value matches to body's checksum then `304 Not Modified` is returned.
 
 ```sh
 $ curl -H "If-None-Match: \"5yZCXmjhk5ozJyTK4-OJkkd_X18\"" 'http://localhost:57602/api/users?age=40'
@@ -261,6 +263,10 @@ $ curl -H "If-None-Match: \"5yZCXmjhk5ozJyTK4-OJkkd_X18\"" 'http://localhost:576
 ```json
 304 Not Modified
 ```
+
+#### Avoiding mid-air collisions
+
+If `PUT` request containts `If-Match` header, header's value is compared to the item to be updated. If the value matches to the item's checksum then items is updated, else `412 Precondition Failed` is returned.
 
 ## Routes, Functionalities and Examples
 
@@ -1160,6 +1166,7 @@ API follows best practices and recommendations from these guides:
 * [Microsoft API Design](https://docs.microsoft.com/en-us/azure/architecture/best-practices/api-design)
 * [GitHub v3 Guide](https://developer.github.com/v3/guides/)
 * [Introduction to GraphQL](http://graphql.org/learn/)
+* [MDN Web Docs: ETag](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/ETag)
 * [Designing GraphQL Mutations](https://dev-blog.apollodata.com/designing-graphql-mutations-e09de826ed97)
 
 ## Other Links
