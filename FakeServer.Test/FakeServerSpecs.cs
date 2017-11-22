@@ -107,7 +107,7 @@ namespace FakeServer.Test
             {
                 var result = await client.GetAsync($"{_fixture.BaseUrl}/api/users?notfound=AA");
                 var foundUsers = JsonConvert.DeserializeObject<JArray>(await result.Content.ReadAsStringAsync());
-                Assert.Equal(0, foundUsers.Count());
+                Assert.Empty(foundUsers);
             }
         }
 
@@ -129,7 +129,7 @@ namespace FakeServer.Test
             {
                 var result = await client.GetAsync($"{_fixture.BaseUrl}/api/users?age_lt=30");
                 var allUsers = JsonConvert.DeserializeObject<JArray>(await result.Content.ReadAsStringAsync());
-                Assert.Equal(1, allUsers.Count());
+                Assert.Single(allUsers);
             }
         }
 
@@ -342,7 +342,7 @@ namespace FakeServer.Test
                 result = await client.GetAsync($"{_fixture.BaseUrl}/api/hello");
                 result.EnsureSuccessStatusCode();
                 var items = JsonConvert.DeserializeObject<IEnumerable<JObject>>(await result.Content.ReadAsStringAsync());
-                Assert.Equal(1, items.Count());
+                Assert.Single(items);
 
                 result = await client.DeleteAsync($"{_fixture.BaseUrl}/api/hello/0");
                 result.EnsureSuccessStatusCode();

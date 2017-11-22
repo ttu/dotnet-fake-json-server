@@ -63,7 +63,7 @@ namespace FakeServer.Test
 
             var results = await GraphQL.GraphQL.HandleQuery(q, ds);
 
-            Assert.Equal(1, results.Errors.Count);
+            Assert.Single(results.Errors);
 
             UTHelpers.Down(filePath);
         }

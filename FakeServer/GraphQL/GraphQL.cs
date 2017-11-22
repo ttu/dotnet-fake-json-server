@@ -140,11 +140,9 @@ namespace FakeServer.GraphQL
                         directive.Arguments,
                         null);
 
-                    object ifObj;
-                    values.TryGetValue("if", out ifObj);
+                    values.TryGetValue("if", out object ifObj);
 
-                    bool ifVal;
-                    return !(bool.TryParse(ifObj?.ToString() ?? string.Empty, out ifVal) && ifVal);
+                    return !(bool.TryParse(ifObj?.ToString() ?? string.Empty, out bool ifVal) && ifVal);
                 }
 
                 directive = directives.Find(DirectiveGraphType.Include.Name);
@@ -155,11 +153,9 @@ namespace FakeServer.GraphQL
                         directive.Arguments,
                         null);
 
-                    object ifObj;
-                    values.TryGetValue("if", out ifObj);
+                    values.TryGetValue("if", out object ifObj);
 
-                    bool ifVal;
-                    return bool.TryParse(ifObj?.ToString() ?? string.Empty, out ifVal) && ifVal;
+                    return bool.TryParse(ifObj?.ToString() ?? string.Empty, out bool ifVal) && ifVal;
                 }
             }
 
@@ -198,12 +194,9 @@ namespace FakeServer.GraphQL
                 return null;
             }
 
-            var variable = input as VariableReference;
-            if (variable != null)
+            if (input is VariableReference variable)
             {
-                return variables != null
-                    ? variables.ValueFor(variable.Name)
-                    : null;
+                return variables?.ValueFor(variable.Name);
             }
 
             if (type is ListGraphType listType)
