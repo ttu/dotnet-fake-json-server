@@ -1,5 +1,7 @@
-﻿using FakeServer.Controllers;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace FakeServer.Common
 {
@@ -12,6 +14,31 @@ namespace FakeServer.Common
         public string First { get; set; }
 
         public string Last { get; set; }
+    }
+
+    public class QueryOptions
+    {
+        public int Skip { get; set; }
+
+        public int Take { get; set; }
+
+        public string SkipWord { get; set; }
+
+        public string TakeWord { get; set; }
+
+        public bool IsTextSearch { get; set; }
+
+        public List<string> Fields { get; set; }
+
+        public List<string> QueryParams { get; set; }
+
+        public bool Validate()
+        {
+            if (IsTextSearch && QueryParams.Any())
+                return false;
+
+            return true;
+        }
     }
 
     public static class QueryHelper
@@ -55,6 +82,47 @@ namespace FakeServer.Common
             };
 
             return result;
+        }
+
+        public static QueryOptions GetQueryOptions(IQueryCollection query, int skip, int take)
+        {
+            var skipWord = "skip";
+            var takeWord = "take";
+            var isTextSearch = false;
+            var fields = new List<string>();
+
+            var queryParams = query.Keys.ToList();
+
+            if (queryParams.Contains("offset"))
+            {
+                skip = Convert.ToInt32(query["offset"]);
+                queryParams.Remove("offset");
+                skipWord = "offset";
+            }
+
+            if (queryParams.Contains("limit"))
+            {
+                take = Convert.ToInt32(query["limit"]);
+                queryParams.Remove("limit");
+                takeWord = "limit";
+            }
+
+            if (queryParams.Contains("q"))
+            {
+                isTextSearch = true;
+                queryParams.Remove("q");
+            }
+
+            if (queryParams.Contains("fields"))
+            {
+                fields = query["fields"].ToString().Split(',').ToList();
+                queryParams.Remove("fields");
+            }
+
+            queryParams.Remove("skip");
+            queryParams.Remove("take");
+
+            return new QueryOptions { Skip = skip, Take = take, SkipWord = skipWord, TakeWord = takeWord, IsTextSearch = isTextSearch, Fields = fields, QueryParams = queryParams };
         }
     }
 }

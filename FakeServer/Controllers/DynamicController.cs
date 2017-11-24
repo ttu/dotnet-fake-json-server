@@ -1,7 +1,6 @@
 ﻿using FakeServer.Common;
 using JsonFlatFileDataStore;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -73,7 +72,7 @@ namespace FakeServer.Controllers
             if (!collection.AsQueryable().Any())
                 return NotFound();
 
-            var options = GetQueryOptions(Request.Query, skip, take);
+            var options = QueryHelper.GetQueryOptions(Request.Query, skip, take);
 
             if (!options.Validate())
                 return BadRequest();
@@ -344,72 +343,6 @@ namespace FakeServer.Controllers
                 return Ok();
             else
                 return result;
-        }
-
-        private QueryOptions GetQueryOptions(IQueryCollection query, int skip, int take)
-        {
-            var skipWord = "skip";
-            var takeWord = "take";
-            var isTextSearch = false;
-            var fields = new List<string>();
-
-            var queryParams = query.Keys.ToList();
-
-            if (queryParams.Contains("offset"))
-            {
-                skip = Convert.ToInt32(query["offset"]);
-                queryParams.Remove("offset");
-                skipWord = "offset";
-            }
-
-            if (queryParams.Contains("limit"))
-            {
-                take = Convert.ToInt32(query["limit"]);
-                queryParams.Remove("limit");
-                takeWord = "limit";
-            }
-
-            if (queryParams.Contains("q"))
-            {
-                isTextSearch = true;
-                queryParams.Remove("q");
-            }
-
-            if (queryParams.Contains("fields"))
-            {
-                fields = query["fields"].ToString().Split(',').ToList();
-                queryParams.Remove("fields");
-            }
-
-            queryParams.Remove("skip");
-            queryParams.Remove("take");
-
-            return new QueryOptions { Skip = skip, Take = take, SkipWord = skipWord, TakeWord = takeWord, IsTextSearch = isTextSearch, Fields = fields, QueryParams = queryParams };
-        }
-    }
-
-    public class QueryOptions
-    {
-        public int Skip { get; set; }
-
-        public int Take { get; set; }
-
-        public string SkipWord { get; set; }
-
-        public string TakeWord { get; set; }
-
-        public bool IsTextSearch { get; set; }
-
-        public List<string> Fields { get; set; }
-
-        public List<string> QueryParams { get; set; }
-
-        public bool Validate()
-        {
-            if (IsTextSearch && QueryParams.Any())
-                return false;
-
-            return true;
         }
     }
 }
