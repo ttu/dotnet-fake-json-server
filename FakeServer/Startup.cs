@@ -79,7 +79,9 @@ namespace FakeServer
                     .AllowCredentials());
             });
 
-            if (Configuration.GetValue<bool>("Authentication:Enabled"))
+            var useAuthentication = Configuration.GetValue<bool>("Authentication:Enabled");
+
+            if (useAuthentication)
             {
                 if (Configuration.GetValue<string>("Authentication:AuthenticationType") == "token")
                 {
@@ -104,6 +106,9 @@ namespace FakeServer
                 var basePath = PlatformServices.Default.Application.ApplicationBasePath;
                 var xmlPath = Path.Combine(basePath, "FakeServer.xml");
                 c.IncludeXmlComments(xmlPath);
+
+                if (useAuthentication)
+                    c.OperationFilter<AddAuthorizationHeaderParameterOperationFilter>();
             });
         }
 
