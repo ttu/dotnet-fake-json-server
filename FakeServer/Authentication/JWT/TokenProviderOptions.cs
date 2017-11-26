@@ -1,11 +1,12 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using FakeServer.Common;
+using Microsoft.IdentityModel.Tokens;
 using System;
 
 namespace FakeServer.Authentication.Jwt
 {
     public class TokenProviderOptions
     {
-        public string Path { get; set; } = "/token";
+        public string Path { get; set; } = $"/{Config.TokenRoute}";
 
         public string Issuer { get; set; }
 

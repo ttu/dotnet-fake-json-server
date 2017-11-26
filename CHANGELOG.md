@@ -4,6 +4,7 @@
 * Caching of unchanged resources with ETag and If-None-Match headers
 * Avoiding mid-air collisions with ETag and If-Match headers
 * Authorization header input to Swagger if authentication is enabled
+* Token endpoint to Swagger if JWT authentication is used
 
 ### [0.5.0] - 2017-10-20
 * Support for HTTP HEAD Method

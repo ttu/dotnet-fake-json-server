@@ -108,7 +108,12 @@ namespace FakeServer
                 c.IncludeXmlComments(xmlPath);
 
                 if (useAuthentication)
+                {
                     c.OperationFilter<AddAuthorizationHeaderParameterOperationFilter>();
+
+                    if (Configuration.GetValue<string>("Authentication:AuthenticationType") == "token")
+                        c.DocumentFilter<AuthTokenOperation>();
+                }
             });
         }
 
