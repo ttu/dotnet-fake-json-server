@@ -85,7 +85,10 @@ namespace FakeServer
             {
                 if (Configuration.GetValue<string>("Authentication:AuthenticationType") == "token")
                 {
-                    TokenConfiguration.Configure(services);
+                    var blacklistService = new TokenBlacklistService();
+                    services.AddSingleton(blacklistService);
+
+                    TokenConfiguration.Configure(services, blacklistService);
                 }
                 else
                 {

@@ -5,6 +5,7 @@
 * Avoiding mid-air collisions with ETag and If-Match headers
 * Authorization header input to Swagger if authentication is enabled
 * Token endpoint to Swagger if JWT authentication is used
+* Blacklist tokens with logout endpoint
 
 ### [0.5.0] - 2017-10-20
 * Support for HTTP HEAD Method

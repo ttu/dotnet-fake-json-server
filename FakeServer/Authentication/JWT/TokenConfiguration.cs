@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace FakeServer.Authentication.Jwt
 {
@@ -36,7 +37,7 @@ namespace FakeServer.Authentication.Jwt
             ClockSkew = TimeSpan.Zero
         };
 
-        public static void Configure(IServiceCollection services)
+        public static void Configure(IServiceCollection services, TokenBlacklistService blacklist)
         {
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                     .AddJwtBearer(options =>
@@ -44,6 +45,21 @@ namespace FakeServer.Authentication.Jwt
                                     options.Audience = _tokenValidationParameters.ValidAudience;
                                     options.ClaimsIssuer = _tokenValidationParameters.ValidIssuer;
                                     options.TokenValidationParameters = _tokenValidationParameters;
+                                    options.Events = new JwtBearerEvents()
+                                    {
+                                        OnTokenValidated = (context) =>
+                                        {
+                                            var header = context.Request.Headers["Authorization"];
+
+                                            if (blacklist.Headers.Contains(header.ToString()))
+                                            {
+                                                context.Response.StatusCode = 401;
+                                                context.Fail(new Exception("Authorization token blacklisted"));
+                                            }
+
+                                            return Task.CompletedTask;
+                                        }
+                                    };
                                 });
         }
 
@@ -57,7 +73,9 @@ namespace FakeServer.Authentication.Jwt
                 SigningCredentials = new SigningCredentials(_signingKey, SecurityAlgorithms.HmacSha256),
             };
 
-            app.UseMiddleware<TokenProviderMiddleware>(Options.Create(options));
+            var opts = Options.Create(options);
+            app.UseMiddleware<TokenProviderMiddleware>(opts);
+            app.UseMiddleware<TokenLogoutMiddleware>(opts);
         }
     }
 }

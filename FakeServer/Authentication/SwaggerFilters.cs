@@ -55,6 +55,24 @@ namespace FakeServer.Authentication
                     }
                 }
             });
+
+            swaggerDoc.Paths.Add($"/{Config.TokenLogoutRoute}", new PathItem
+            {
+                Post = new Operation
+                {
+                    Tags = new List<string> { "Authentication" },
+                    Parameters = new List<IParameter>
+                    {
+                        new NonBodyParameter
+                        {
+                            Type = "string",
+                            Name = "Authorization",
+                            Required = false,
+                            In = "header"
+                        }
+                    }
+                }
+            });
         }
     }
 }

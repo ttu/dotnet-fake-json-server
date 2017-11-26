@@ -8,6 +8,8 @@ namespace FakeServer.Authentication.Jwt
     {
         public string Path { get; set; } = $"/{Config.TokenRoute}";
 
+        public string LogoutPath { get; set; } = $"/{Config.TokenLogoutRoute}";
+
         public string Issuer { get; set; }
 
         public string Audience { get; set; }
