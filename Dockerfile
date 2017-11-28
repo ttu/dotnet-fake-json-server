@@ -1,12 +1,12 @@
-FROM microsoft/dotnet:1.1-sdk-msbuild
+FROM microsoft/aspnetcore-build
 
 COPY ./FakeServer /app
 
 WORKDIR /app
 
-RUN ["dotnet", "restore"]
+RUN dotnet restore
 
-RUN ["dotnet", "build"]
+RUN dotnet build
 
 EXPOSE 57602/tcp
 
