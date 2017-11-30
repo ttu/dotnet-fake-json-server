@@ -6,7 +6,7 @@
 | Travis      | Linux / macOS  |[![Build Status](https://travis-ci.org/ttu/dotnet-fake-json-server.svg?branch=master)](https://travis-ci.org/ttu/dotnet-fake-json-server)| 
 | AppVeyor    | Windows        |[![Build status](https://ci.appveyor.com/api/projects/status/hacg7qupp5oxbct8?svg=true&branch=master)](https://ci.appveyor.com/project/ttu/dotnet-fake-json-server)|
 
-Fake JSON Server is a Fake REST API for prototyping or as a CRUD Back End with experimental GraphQL query and mutation support.
+Fake JSON Server is a Fake REST API that is used for prototyping CRUD Back Ends with experimental GraphQL query and mutation support.
 
 * No need to define types for resources, uses dynamic typing
 * No need to define routes, routes are handled dynamically
@@ -15,7 +15,7 @@ Fake JSON Server is a Fake REST API for prototyping or as a CRUD Back End with e
 
 ##### Why would I use this instead of other Fake Servers?
 
-1) API is built following the best practices and it can be used as a reference when building your own API
+1) API is built following the best practices and can be used as a reference when building your own API
 1) Can be run on Windows, Linux and macOS without any installation or prerequisites from executable or with Docker
 1) See features listed below
 
@@ -27,7 +27,7 @@ Fake JSON Server is a Fake REST API for prototyping or as a CRUD Back End with e
 * Async versions of update operations with long running operations and queues [#](#async-operations)
 * REST API follows best practices from multiple guides 
   * Uses correct Status Codes, Headers, etc.
-  * As all guides have a little different recommendations, this compilation is an opinionated selection
+  * As all guides have slightly different recommendations, this compilation is based on our opinions
 * Token and Basic Authentication [#](#authentication)
 * WebSocket update notifications [#](#websockets)
 * Simulate delay and errors for requests [#](#simulate-delay-and-random-errors)
@@ -99,9 +99,9 @@ $ docker cp [ContainerId]:/app/db.json db.json
 
 #### Self-contained Application
 
-Self-contained application archive contains Fake JSON Server and .NET Core runtime including all required third-party dependencies. __No installation or prerequisites are needed__.
+The self-contained application archive contains Fake JSON Server, .NET Core runtime and all required third-party dependencies. __No installation or prerequisites are needed__.
 
-1) Go to [Lates Release](https://github.com/ttu/dotnet-fake-json-server/releases/latest)
+1) Go to [Latest Release](https://github.com/ttu/dotnet-fake-json-server/releases/latest)
 1) Download correct archive matching your OS
 1) Extract files and execute
 
@@ -201,7 +201,7 @@ $ curl -H 'Authorization: Basic YWRtaW46cm9vdA==' http://localhost:57602/api
 
 ### WebSockets
 
-API will send latest update's method (`POST, PUT, PATCH, DELETE`), path, collection and optional item id with WebSocket.
+API will send the latest update's method (`POST, PUT, PATCH, DELETE`), path, collection and optional item id with WebSocket.
 
 ```json
 { "method": "PATCH", "path": "/api/users/2", "collection": "users", "itemId": 2 }
@@ -250,7 +250,7 @@ ETag: "5yZCXmjhk5ozJyTK4-OJkkd_X18"
 
 #### Caching of unchanged resources
 
-If request containts `If-None-Match` header, header's value is compared to the response's body and if the value matches to body's checksum then `304 Not Modified` is returned.
+If a request contains the `If-None-Match` header, the header's value is compared to the response's body and if the value matches to the body's checksum then `304 Not Modified` is returned.
 
 ```sh
 $ curl -H "If-None-Match: \"5yZCXmjhk5ozJyTK4-OJkkd_X18\"" 'http://localhost:57602/api/users?age=40'
@@ -262,7 +262,7 @@ $ curl -H "If-None-Match: \"5yZCXmjhk5ozJyTK4-OJkkd_X18\"" 'http://localhost:576
 
 #### Avoiding mid-air collisions
 
-If `PUT` request containts `If-Match` header, header's value is compared to the item to be updated. If the value matches to the item's checksum then items is updated, else `412 Precondition Failed` is returned.
+If the `PUT` request contains the `If-Match` header, the header's value is compared to the item to be updated. If the value matches to the item's checksum then items is updated, else `412 Precondition Failed` is returned.
 
 ## Routes, Functionalities and Examples
 
@@ -339,7 +339,7 @@ If _string_ is used as the identifiers type, then items must be inserted with `P
 
 #### Return codes
 
-Asynchoronous operations follow [REST CookBook guide](http://restcookbook.com/Resources/asynchroneous-operations/). Updates will return `202` with location header to queue item. Queue will return `200` while operation is processing and `303` when job is ready with location header to changed or new item.
+Asynchoronous operations follow the [REST CookBook guide](http://restcookbook.com/Resources/asynchroneous-operations/). Updates will return `202` with location header to queue item. Queue will return `200` while operation is processing and `303` when job is ready with location header to changed or new item.
 
 Method return codes are specified in [REST API Tutorial](http://www.restapitutorial.com/lessons/httpmethods.html).
 
@@ -360,7 +360,7 @@ Allow: GET, POST, OPTIONS
 
 #### HEAD method
 
-HEAD method can be used to get metadata and headers without receiving response body.
+HEAD method can be used to get the metadata and headers without receiving response body.
 
 E.g. get user count without downloading large response body.
 
@@ -446,7 +446,7 @@ $ curl http://localhost:57602/api
 404 Not Found   : Collection is not found or it is empty
 ```
 
-By default request returns results in an array. Headers have the collection's total item count (`X-Total-Count`) and pagination links (`Link`).
+By default the request returns results in an array. Headers have the collection's total item count (`X-Total-Count`) and pagination links (`Link`).
 
 ```sh
 $ curl http://localhost:57602/api/users
@@ -497,7 +497,7 @@ JSON object has items in results array in result field, link object has the pagi
 
 ##### Slice
 
-Slicing can be defined with `skip`/`take` or with `offset`/`limit` parameters. By default request returns first 512 items.
+Slicing can be defined with `skip`/`take` or with `offset`/`limit` parameters. By default request returns the first 512 items.
 
 Example request returns items from 6 to 26.
 
@@ -510,7 +510,7 @@ $ curl 'http://localhost:57602/api/users?offset=5&limit=20'
 
 ##### Pagination headers
 
-Link items are optional, so e.g. if requested items are starting from index 0, then prev page and first page link won't be added to the Link header.
+Link items are optional, so e.g. if requested items are starting from index 0, then the prev and first page link won't be added to the Link header.
 
 Headers follow [GitHub Developer](https://developer.github.com/v3/guides/traversing-with-pagination/) guide.
 
@@ -851,7 +851,7 @@ Implementation uses [graphql-dotnet](https://github.com/graphql-dotnet/graphql-d
 
 #### Query
 
-Query implementation supports equals filtering with arguments. Query's first field is the name of the collection.
+Query implementation supports equal filtering with arguments. Query's first field is the name of the collection.
 
 ```graphql
 query {
@@ -948,7 +948,7 @@ Respose:
 
 #### Mutation
 
-Fake JSON Server supports dynamic mutations with format defined below:
+Fake JSON Server supports dynamic mutations with the format defined below:
 
 ```graphql
 mutation {
@@ -968,7 +968,7 @@ Action is decided from the mutation name. Name follows pattern _add|update|repla
 
 `add{collection}`
 
-Input containtains object to be added with the collection's name.
+Input contains object to be added with the collection's name.
 
 ```graphql
 mutation {
