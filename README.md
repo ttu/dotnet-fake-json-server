@@ -6,7 +6,7 @@
 | Travis      | Linux / macOS  |[![Build Status](https://travis-ci.org/ttu/dotnet-fake-json-server.svg?branch=master)](https://travis-ci.org/ttu/dotnet-fake-json-server)| 
 | AppVeyor    | Windows        |[![Build status](https://ci.appveyor.com/api/projects/status/hacg7qupp5oxbct8?svg=true&branch=master)](https://ci.appveyor.com/project/ttu/dotnet-fake-json-server)|
 
-Fake JSON Server is a Fake REST API that is used for prototyping CRUD Back Ends with experimental GraphQL query and mutation support.
+Fake JSON Server is a Fake REST API that can be used as a Back End for prototyping or as a template for CRUD Back End. It also has an an experimental GraphQL query and mutation support.
 
 * No need to define types for resources, uses dynamic typing
 * No need to define routes, routes are handled dynamically
@@ -176,16 +176,24 @@ Add allowed usernames/passwords to `Users`-array.
 API has a token provider middleware which provides an endpoint for token generation `/token`.
 
 Get token:
+
 ```sh
 $ curl -X POST -H 'content-type: multipart/form-data' -F username=admin -F password=root http://localhost:57602/token
 ```
 
 Add token to Authorization header:
+
 ```sh
 $ curl -H 'Authorization: Bearer [TOKEN]' http://localhost:57602/api
 ```
 
-Check SimpleTokenProvider from [GitHub](https://github.com/nbarbettini/SimpleTokenProvider) and [StormPath's blog post](https://stormpath.com/blog/token-authentication-asp-net-core).
+Token authentication has also a logout functionality. By design tokens do not support token invalidation, so logout is implemented by blacklisting tokens.
+
+```sh
+$ curl -H 'Authorization: Bearer [TOKEN]' http://localhost:57602/logout
+```
+
+The implementation is quite similiar to SimpleTokenProvider and more info on that can be found from [GitHub](https://github.com/nbarbettini/SimpleTokenProvider) and [StormPath's blog post](https://stormpath.com/blog/token-authentication-asp-net-core).
 
 #### Basic Authentication
 
@@ -269,6 +277,7 @@ If the `PUT` request contains the `If-Match` header, the header's value is compa
 ```
 GET      /
 POST     /token
+POST     /logout
 POST     /admin/reload
 
 GET      /api
@@ -306,6 +315,8 @@ public class Config
     public const string ApiRoute = "api";
     public const string AsyncRoute = "async";
     public const string GraphQLRoute = "graphql";
+    public const string TokenRoute = "token";
+    public const string TokenLogoutRoute = "logout";
 }
 ```
 
