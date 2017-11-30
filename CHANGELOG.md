@@ -1,6 +1,9 @@
 # Changelog
 
 ### [Unreleased]
+*
+
+### [0.6.0] - 2017-11-30
 * Caching of unchanged resources with ETag and If-None-Match headers
 * Avoiding mid-air collisions with ETag and If-Match headers
 * Authorization header input to Swagger if authentication is enabled
