@@ -818,7 +818,7 @@ namespace FakeServer.Test
             }
         }
 
-        //[Fact]
+        [Fact]
         public async Task PostGraphQL_Mutation_Add_Delete()
         {
             using (var client = new HttpClient())
@@ -889,9 +889,9 @@ namespace FakeServer.Test
 
                 data = JsonConvert.DeserializeObject<JObject>(await resultDelete.Content.ReadAsStringAsync());
 
-                Assert.True(data["data"].Value<bool>());
+                Assert.True(data["data"]["Result"].Value<bool>());
 
-                // Try to fetch deleted
+                // Try to fetch deleted data
 
                 contentQuery = new StringContent(q, Encoding.UTF8, "application/graphql");
                 resultQuery = await client.PostAsync($"{_fixture.BaseUrl}/graphql", contentQuery);
@@ -900,7 +900,7 @@ namespace FakeServer.Test
 
                 data = JsonConvert.DeserializeObject<JObject>(await resultQuery.Content.ReadAsStringAsync());
                 Assert.NotNull(data["data"]);
-                Assert.Equal("Newtons", data["data"]["families"][0]["familyName"].Value<string>());
+                Assert.Empty(data["data"]["families"]);
             }
         }
 

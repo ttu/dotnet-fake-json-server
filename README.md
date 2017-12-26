@@ -6,12 +6,12 @@
 | Travis      | Linux / macOS  |[![Build Status](https://travis-ci.org/ttu/dotnet-fake-json-server.svg?branch=master)](https://travis-ci.org/ttu/dotnet-fake-json-server)| 
 | AppVeyor    | Windows        |[![Build status](https://ci.appveyor.com/api/projects/status/hacg7qupp5oxbct8?svg=true&branch=master)](https://ci.appveyor.com/project/ttu/dotnet-fake-json-server)|
 
-Fake JSON Server is a Fake REST API that can be used as a Back End for prototyping or as a template for CRUD Back End. It also has an an experimental GraphQL query and mutation support.
+Fake JSON Server is a Fake REST API that can be used as a Back End for prototyping or as a template for a CRUD Back End. Fake JSON Server also has an an experimental GraphQL query and mutation support.
 
 * No need to define types for resources, uses dynamic typing
 * No need to define routes, routes are handled dynamically
 * No database, data is stored to a single JSON file
-* No configuration is needed, start the server and API is ready to be used with any data
+* No setup required, just start the server and API is ready to be used with any data
 
 ##### Why would I use this instead of other Fake Servers?
 
