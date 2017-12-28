@@ -51,7 +51,7 @@ namespace FakeServer.Authentication.Jwt
                                         {
                                             var header = context.Request.Headers["Authorization"];
 
-                                            if (blacklist.Headers.Contains(header.ToString()))
+                                            if (blacklist.IsBlacklisted(header.ToString()))
                                             {
                                                 context.Response.StatusCode = 401;
                                                 context.Fail(new Exception("Authorization token blacklisted"));

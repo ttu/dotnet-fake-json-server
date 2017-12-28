@@ -190,7 +190,7 @@ $ curl -H 'Authorization: Bearer [TOKEN]' http://localhost:57602/api
 Token authentication has also a logout functionality. By design tokens do not support token invalidation, so logout is implemented by blacklisting tokens.
 
 ```sh
-$ curl -H 'Authorization: Bearer [TOKEN]' http://localhost:57602/logout
+$ curl -X POST -d '' -H 'Authorization: Bearer [TOKEN]' http://localhost:57602/logout
 ```
 
 The implementation is quite similiar to SimpleTokenProvider and more info on that can be found from [GitHub](https://github.com/nbarbettini/SimpleTokenProvider) and [StormPath's blog post](https://stormpath.com/blog/token-authentication-asp-net-core).
