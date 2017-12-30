@@ -1,8 +1,54 @@
+.NET Fake JSON Server
+--------------------------
+
+| Build server| Platform       | Build status |
+|-------------|----------------|-------------|
+| Travis      | Linux / macOS  |[![Build Status](https://travis-ci.org/ttu/dotnet-fake-json-server.svg?branch=master)](https://travis-ci.org/ttu/dotnet-fake-json-server)| 
+| AppVeyor    | Windows        |[![Build status](https://ci.appveyor.com/api/projects/status/hacg7qupp5oxbct8?svg=true&branch=master)](https://ci.appveyor.com/project/ttu/dotnet-fake-json-server)|
+
+Fake JSON Server is a Fake REST API that can be used as a Back End for prototyping or as a template for a CRUD Back End. Fake JSON Server also has an an experimental GraphQL query and mutation support.
+
+* No need to define types for resources, uses dynamic typing
+* No need to define routes, routes are handled dynamically
+* No database, data is stored to a single JSON file
+* No setup required, just start the server and API is ready to be used with any data
+
+##### Why would I use this instead of other Fake Servers?
+
+1) API is built following the best practices and can be used as a reference when building your own API
+1) Can be run on Windows, Linux and macOS without any installation or prerequisites from executable or with Docker
+1) See features listed below
+
+## Features
+
+* Supported HTTP methods [#](#routes-functionalities-and-examples)
+  * All methods for CRUD operations (_GET, PUT, POST, PATCH, DELETE_)
+  * Methods for fetching resource information (_HEAD_, _OPTIONS_)
+* Async versions of update operations with long running operations and queues [#](#async-operations)
+* REST API follows best practices from multiple guides 
+  * Uses correct Status Codes, Headers, etc.
+  * As all guides have slightly different recommendations, this compilation is based on our opinions
+* Token and Basic Authentication [#](#authentication)
+* WebSocket update notifications [#](#websockets)
+* Simulate delay and errors for requests [#](#simulate-delay-and-random-errors)
+* Static files [#](#static-files)
+* Swagger [#](#swagger)
+* CORS [#](#cors)
+* Caching and avoiding mid-air collisions with ETag [#](#caching-and-avoiding-mid-air-collisions-with-etag)
+* _Experimental_ GraphQL query and mutation support [#](#graphql)
+
+##### Developed with
+ 
+* ASP.NET Core 2.0 / C# 7
+* Uses [JSON Flat File Data Store](https://github.com/ttu/json-flatfile-datastore) to store data
+* Can be used without .NET
+  * Docker [#](#docker) 
+  * Self-contained Application [#](#self-contained-application)
+
+
 # Table of contents
 <details>
 <summary>Click to here to see contents </summary>
-      
-      
 
 - [Get started](#get-started)
     + [Start with .NET CLI](#start-with-net-cli)
@@ -68,54 +114,6 @@
 
 
 
-
-
-.NET Fake JSON Server
---------------------------
-
-| Build server| Platform       | Build status |
-|-------------|----------------|-------------|
-| Travis      | Linux / macOS  |[![Build Status](https://travis-ci.org/ttu/dotnet-fake-json-server.svg?branch=master)](https://travis-ci.org/ttu/dotnet-fake-json-server)| 
-| AppVeyor    | Windows        |[![Build status](https://ci.appveyor.com/api/projects/status/hacg7qupp5oxbct8?svg=true&branch=master)](https://ci.appveyor.com/project/ttu/dotnet-fake-json-server)|
-
-Fake JSON Server is a Fake REST API that can be used as a Back End for prototyping or as a template for a CRUD Back End. Fake JSON Server also has an an experimental GraphQL query and mutation support.
-
-* No need to define types for resources, uses dynamic typing
-* No need to define routes, routes are handled dynamically
-* No database, data is stored to a single JSON file
-* No setup required, just start the server and API is ready to be used with any data
-
-##### Why would I use this instead of other Fake Servers?
-
-1) API is built following the best practices and can be used as a reference when building your own API
-1) Can be run on Windows, Linux and macOS without any installation or prerequisites from executable or with Docker
-1) See features listed below
-
-## Features
-
-* Supported HTTP methods [#](#routes-functionalities-and-examples)
-  * All methods for CRUD operations (_GET, PUT, POST, PATCH, DELETE_)
-  * Methods for fetching resource information (_HEAD_, _OPTIONS_)
-* Async versions of update operations with long running operations and queues [#](#async-operations)
-* REST API follows best practices from multiple guides 
-  * Uses correct Status Codes, Headers, etc.
-  * As all guides have slightly different recommendations, this compilation is based on our opinions
-* Token and Basic Authentication [#](#authentication)
-* WebSocket update notifications [#](#websockets)
-* Simulate delay and errors for requests [#](#simulate-delay-and-random-errors)
-* Static files [#](#static-files)
-* Swagger [#](#swagger)
-* CORS [#](#cors)
-* Caching and avoiding mid-air collisions with ETag [#](#caching-and-avoiding-mid-air-collisions-with-etag)
-* _Experimental_ GraphQL query and mutation support [#](#graphql)
-
-##### Developed with
- 
-* ASP.NET Core 2.0 / C# 7
-* Uses [JSON Flat File Data Store](https://github.com/ttu/json-flatfile-datastore) to store data
-* Can be used without .NET
-  * Docker [#](#docker) 
-  * Self-contained Application [#](#self-contained-application)
 
 ## Get started
 
