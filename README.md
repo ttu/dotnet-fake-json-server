@@ -3,10 +3,7 @@
 <summary>Click to here to see contents </summary>
       
       
-- [.NET Fake JSON Server](#net-fake-json-server)
-      - [Why would I use this instead of other Fake Servers?](#why-would-i-use-this-instead-of-other-fake-servers-)
-- [Features](#features)
-      - [Developed with](#developed-with)
+
 - [Get started](#get-started)
     + [Start with .NET CLI](#start-with-net-cli)
     + [Docker](#docker)
