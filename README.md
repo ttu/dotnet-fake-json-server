@@ -46,7 +46,7 @@ Fake JSON Server is a Fake REST API that can be used as a Back End for prototypi
   * Self-contained Application [#](#self-contained-application)
 
 
-# Table of contents
+## Table of contents
 <details>
 <summary>Click to here to see contents </summary>
 
