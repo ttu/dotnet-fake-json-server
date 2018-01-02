@@ -45,6 +45,76 @@ Fake JSON Server is a Fake REST API that can be used as a Back End for prototypi
   * Docker [#](#docker) 
   * Self-contained Application [#](#self-contained-application)
 
+
+## Table of contents
+<details>
+<summary>Click to here to see contents </summary>
+
+- [Get started](#get-started)
+    + [Start with .NET CLI](#start-with-net-cli)
+    + [Docker](#docker)
+    + [Self-contained Application](#self-contained-application)
+    + [Quick example](#quick-example)
+    + [Example project](#example-project)
+- [Features](#features-1)
+  * [Authentication](#authentication)
+    + [Token Authentication](#token-authentication)
+    + [Basic Authentication](#basic-authentication)
+  * [WebSockets](#websockets)
+  * [CORS](#cors)
+  * [Static Files](#static-files)
+  * [Swagger](#swagger)
+  * [Caching and avoiding mid-air collisions with ETag](#caching-and-avoiding-mid-air-collisions-with-etag)
+    + [Caching of unchanged resources](#caching-of-unchanged-resources)
+    + [Avoiding mid-air collisions](#avoiding-mid-air-collisions)
+- [Routes, Functionalities and Examples](#routes--functionalities-and-examples)
+    + [Routes](#routes)
+    + [Identifiers](#identifiers)
+    + [Return codes](#return-codes)
+    + [OPTIONS method](#options-method)
+    + [HEAD method](#head-method)
+    + [Eager data reload](#eager-data-reload)
+    + [Reload](#reload)
+  * [Endpoints](#endpoints)
+      - [Example JSON data](#example-json-data)
+    + [List collections](#list-collections)
+    + [Query](#query)
+      - [Slice](#slice)
+      - [Pagination headers](#pagination-headers)
+    + [Filter](#filter)
+      - [Child properties](#child-properties)
+      - [Filter operators](#filter-operators)
+      - [Full-text search](#full-text-search)
+      - [Select Fields](#select-fields)
+    + [Get item with id](#get-item-with-id)
+    + [Get nested items](#get-nested-items)
+    + [Add item](#add-item)
+    + [Replace item](#replace-item)
+    + [Update item](#update-item)
+    + [Delete item](#delete-item)
+  * [Async Operations](#async-operations)
+      - [Job delay](#job-delay)
+  * [GraphQL](#graphql)
+    + [Query](#query-1)
+    + [Mutation](#mutation)
+      - [Add item](#add-item-1)
+    + [Update Item](#update-item)
+      - [Replace item](#replace-item-1)
+      - [Delete item](#delete-item-1)
+  * [Simulate Delay and Random Errors](#simulate-delay-and-random-errors)
+- [Guidelines](#guidelines)
+- [Other Links](#other-links)
+- [Releases](#releases)
+- [Changelog](#changelog)
+- [Contributing](#contributing)
+- [License](#license)
+
+
+</details>
+
+
+
+
 ## Get started
 
 #### Start with .NET CLI
