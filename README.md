@@ -152,17 +152,17 @@ $ docker run -it -p 57602:57602 fakeapi
 $ docker run -it -d -p 57602:57602 fakeapi
 ```
 
-Copy JSON-file to container. Filename is `db.json`
+Copy JSON-file to container. Filename is `datastore.json`
 
 ```sh
 # Check container id (image name is fakeapi)
 $ docker ps
 
 # Copy file from host to container
-$ docker cp db.json [ContainerId]:/app/db.json
+$ docker cp datastore.json [ContainerId]:/app/datastore.json
 
 # Copy file from container to host
-$ docker cp [ContainerId]:/app/db.json db.json
+$ docker cp [ContainerId]:/app/datastore.json datastore.json
 ```
 
 `docker run` will reset JSON-file, so copy it before closing the server.

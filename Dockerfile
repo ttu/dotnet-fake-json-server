@@ -10,4 +10,4 @@ RUN dotnet build
 
 EXPOSE 57602/tcp
 
-CMD ["dotnet", "run", "--file", "db.json", "--urls", "http://*:57602"]
+CMD ["dotnet", "run", "--file", "datastore.json", "--urls", "http://*:57602"]
