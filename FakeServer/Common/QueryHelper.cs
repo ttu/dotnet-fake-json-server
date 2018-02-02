@@ -30,6 +30,8 @@ namespace FakeServer.Common
 
         public List<string> Fields { get; set; }
 
+        public List<string> SortFields { get; set; }
+
         public List<string> QueryParams { get; set; }
 
         public bool Validate()
@@ -90,6 +92,7 @@ namespace FakeServer.Common
             var takeWord = "take";
             var isTextSearch = false;
             var fields = new List<string>();
+            var sortFields = new List<string>();
 
             var queryParams = query.Keys.ToList();
 
@@ -119,10 +122,17 @@ namespace FakeServer.Common
                 queryParams.Remove("fields");
             }
 
+            if (queryParams.Contains("sort"))
+            {
+                sortFields = query["sort"].ToString().Split(',').ToList();
+                queryParams.Remove("sort");
+            }
+
             queryParams.Remove("skip");
             queryParams.Remove("take");
 
-            return new QueryOptions { Skip = skip, Take = take, SkipWord = skipWord, TakeWord = takeWord, IsTextSearch = isTextSearch, Fields = fields, QueryParams = queryParams };
+            return new QueryOptions { Skip = skip, Take = take, SkipWord = skipWord, TakeWord = takeWord, IsTextSearch = isTextSearch, 
+                Fields = fields, SortFields = sortFields, QueryParams = queryParams };
         }
     }
 }
