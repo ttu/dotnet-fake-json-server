@@ -12,7 +12,7 @@ namespace FakeServer.Common
             IOrderedEnumerable<dynamic> sortedResults = null;
             int i = 0;
 
-            sortFields.ToList().ForEach(x => 
+            sortFields.ToList().ForEach(x =>
             {
                 if (i == 0)
                     sortedResults = GetFirstSortResults(results, x, IsSortDescending(x));
@@ -29,10 +29,10 @@ namespace FakeServer.Common
             sortField = RemoveSortDirection(sortField);
             IOrderedEnumerable<dynamic> sortResults;
 
-            if(isSortDescending)
-                sortResults = results.OrderByDescending(x => ObjectHelper.GetNestedProperty((x as ExpandoObject), sortField));
+            if (isSortDescending)
+                sortResults = results.OrderByDescending(x => ParseField(x as ExpandoObject, sortField));
             else
-                sortResults = results.OrderBy(x => ObjectHelper.GetNestedProperty((x as ExpandoObject), sortField));
+                sortResults = results.OrderBy(x => ParseField(x as ExpandoObject, sortField));
 
             return sortResults;
         }
@@ -42,12 +42,17 @@ namespace FakeServer.Common
             sortField = RemoveSortDirection(sortField);
             IOrderedEnumerable<dynamic> sortResults;
 
-            if(isSortDescending)
-                sortResults = results.ThenByDescending(x => ObjectHelper.GetNestedProperty((x as ExpandoObject), sortField));
+            if (isSortDescending)
+                sortResults = results.ThenByDescending(x => ParseField(x as ExpandoObject, sortField));
             else
-                sortResults = results.ThenBy(x => ObjectHelper.GetNestedProperty((x as ExpandoObject), sortField));
+                sortResults = results.ThenBy(x => ParseField(x as ExpandoObject, sortField));
 
             return sortResults;
+        }
+
+        private static dynamic ParseField(ExpandoObject s, string field)
+        {
+            return (s as IDictionary<string, object>)[field];
         }
 
         private static bool IsSortDescending(string sortField)
@@ -58,7 +63,7 @@ namespace FakeServer.Common
 
         private static string RemoveSortDirection(string sortField)
         {
-            return sortField.Replace("+", "").Replace("-","");
+            return sortField.Replace("+", "").Replace("-", "");
         }
     }
 }
