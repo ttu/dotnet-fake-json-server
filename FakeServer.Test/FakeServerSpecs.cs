@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -15,7 +16,7 @@ namespace FakeServer.Test
     // Tests in the same collection are not run in parallel
     // After each test data should be in the same state as in the beginning of the test or future tests might fail
     [Collection("Integration collection")]
-    public class FakeServerSpecs
+    public class FakeServerSpecs : IDisposable
     {
         private readonly IntegrationFixture _fixture;
 
@@ -23,6 +24,11 @@ namespace FakeServer.Test
         {
             _fixture = fixture;
             _fixture.StartServer();
+        }
+
+        public void Dispose()
+        {
+            _fixture.Stop();
         }
 
         [Fact]

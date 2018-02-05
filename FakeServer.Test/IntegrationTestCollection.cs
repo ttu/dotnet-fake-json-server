@@ -40,7 +40,13 @@ namespace FakeServer.Test
 
         public void Dispose()
         {
+            Stop();
+        }
+
+        public void Stop()
+        {
             TestServer.Stop();
+            _serverTask = null;
             UTHelpers.Down(_newFilePath);
         }
 

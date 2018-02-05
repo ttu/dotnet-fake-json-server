@@ -9,6 +9,8 @@ namespace FakeServer
 
         public static void Run(string url, string path, string file, string authenticationType = "")
         {
+            Startup.MainConfiguration.Clear();
+
             Startup.MainConfiguration.Add("file", file);
 
             Startup.MainConfiguration.Add("Caching:ETag:Enabled", "true");
@@ -17,6 +19,8 @@ namespace FakeServer
             {
                 Startup.MainConfiguration.Add("Authentication:Enabled", "true");
                 Startup.MainConfiguration.Add("Authentication:AuthenticationType", authenticationType);
+                Startup.MainConfiguration.Add("Authentication:Users:0:Username", "admin");
+                Startup.MainConfiguration.Add("Authentication:Users:0:Password", "root");
             }
 
             _host = new WebHostBuilder()
