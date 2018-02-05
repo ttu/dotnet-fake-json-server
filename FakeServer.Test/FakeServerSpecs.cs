@@ -66,6 +66,44 @@ namespace FakeServer.Test
         }
 
         [Fact]
+        public async Task GetUsers_SortLocationAndAgeDescending()
+        {
+            using (var client = new HttpClient())
+            {
+                var result = await client.GetAsync($"{_fixture.BaseUrl}/api/users?sort=location,age");
+                result.EnsureSuccessStatusCode();
+
+                var items = JsonConvert.DeserializeObject<IEnumerable<JObject>>(await result.Content.ReadAsStringAsync());
+                Assert.Equal(4, items.Count());
+                Assert.Equal("SF", items.ToList()[0]["location"]);
+                Assert.Equal("SF", items.ToList()[1]["location"]);
+                Assert.Equal("NY", items.ToList()[2]["location"]);
+
+                Assert.Equal("52", items.ToList()[0]["age"]);
+                Assert.Equal("30", items.ToList()[1]["age"]);
+            }
+        }
+
+        [Fact]
+        public async Task GetUsers_SortLocationAndAgeAscending()
+        {
+            using (var client = new HttpClient())
+            {
+                var result = await client.GetAsync($"{_fixture.BaseUrl}/api/users?sort=location,+age");
+                result.EnsureSuccessStatusCode();
+
+                var items = JsonConvert.DeserializeObject<IEnumerable<JObject>>(await result.Content.ReadAsStringAsync());
+                Assert.Equal(4, items.Count());
+                Assert.Equal("SF", items.ToList()[0]["location"]);
+                Assert.Equal("SF", items.ToList()[1]["location"]);
+                Assert.Equal("NY", items.ToList()[2]["location"]);
+
+                Assert.Equal("30", items.ToList()[0]["age"]);
+                Assert.Equal("52", items.ToList()[1]["age"]);
+            }
+        }
+
+        [Fact]
         public async Task GetItem_WithId_Found()
         {
             using (var client = new HttpClient())
