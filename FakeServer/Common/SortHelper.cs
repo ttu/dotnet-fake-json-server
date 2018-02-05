@@ -14,11 +14,15 @@ namespace FakeServer.Common
 
             sortFields.ToList().ForEach(x =>
             {
-                if (i == 0)
-                    sortedResults = GetFirstSortResults(results, x, IsSortDescending(x));
-                else
-                    sortedResults = GetRemainingSortResults(sortedResults, x, IsSortDescending(x));
+                bool isSortDescending = IsSortDescending(x);
+                string fieldName = RemoveSortDirection(x);
 
+                if (i == 0)
+                    sortedResults = GetFirstSortResults(results, fieldName, isSortDescending);
+                else
+                    sortedResults = GetRemainingSortResults(sortedResults, fieldName, isSortDescending);
+
+                i++;
             });
 
             return sortedResults.AsEnumerable();
@@ -26,8 +30,7 @@ namespace FakeServer.Common
 
         private static IOrderedEnumerable<dynamic> GetFirstSortResults(IEnumerable<dynamic> results, string sortField, bool isSortDescending)
         {
-            sortField = RemoveSortDirection(sortField);
-            IOrderedEnumerable<dynamic> sortResults;
+            IOrderedEnumerable<dynamic> sortResults = null;
 
             if (isSortDescending)
                 sortResults = results.OrderByDescending(x => ParseField(x as ExpandoObject, sortField));
@@ -39,8 +42,7 @@ namespace FakeServer.Common
 
         private static IOrderedEnumerable<dynamic> GetRemainingSortResults(IOrderedEnumerable<dynamic> results, string sortField, bool isSortDescending)
         {
-            sortField = RemoveSortDirection(sortField);
-            IOrderedEnumerable<dynamic> sortResults;
+            IOrderedEnumerable<dynamic> sortResults = null;
 
             if (isSortDescending)
                 sortResults = results.ThenByDescending(x => ParseField(x as ExpandoObject, sortField));
@@ -57,13 +59,15 @@ namespace FakeServer.Common
 
         private static bool IsSortDescending(string sortField)
         {
-            if (sortField.Contains("+")) return false;
+            if (string.IsNullOrWhiteSpace(sortField[0].ToString()) ||
+                sortField.Contains("+")) return false;
             else return true;
         }
 
         private static string RemoveSortDirection(string sortField)
         {
-            return sortField.Replace("+", "").Replace("-", "");
+            string sField = sortField.Replace("+", "").Replace("-", "");
+            return sField.Trim();
         }
     }
 }
