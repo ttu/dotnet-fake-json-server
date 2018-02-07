@@ -59,7 +59,7 @@ namespace FakeServer.Common
 
         private static bool IsSortDescending(string sortField)
         {
-            if (string.IsNullOrWhiteSpace(sortField[0].ToString()) ||
+            if (char.IsWhiteSpace(sortField[0]) ||
                 sortField.Contains("+")) return false;
             else return true;
         }
