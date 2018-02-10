@@ -107,6 +107,11 @@ namespace FakeServer.Controllers
                 results = ObjectHelper.SelectFields(results, options.Fields);
             }
 
+            if (options.SortFields.Any())
+            {
+                results = SortHelper.SortFields(results, options.SortFields);
+            }
+
             if (_settings.UseResultObject)
             {
                 return Ok(QueryHelper.GetResultObject(results, totalCount, paginationHeader, options));
