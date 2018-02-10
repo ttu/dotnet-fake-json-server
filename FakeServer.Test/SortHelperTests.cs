@@ -43,6 +43,16 @@ namespace FakeServer.Test
             Assert.Equal(3, result.Count());
             Assert.Equal(60, ObjectHelper.GetNestedProperty(result.ToList()[0], "Age"));
             Assert.Equal(20, ObjectHelper.GetNestedProperty(result.ToList()[2], "Age"));
-        }      
+        }
+        
+        [Fact]
+        public void SortFields_EmptySortArray()
+        {
+            var result = SortHelper.SortFields(new dynamic[] { }, new string[] { });
+            Assert.NotNull(result);
+
+            result = SortHelper.SortFields(new dynamic[] { }, new[] { "" });
+            Assert.NotNull(result);
+        }
     }
 }
