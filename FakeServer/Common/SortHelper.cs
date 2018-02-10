@@ -9,20 +9,20 @@ namespace FakeServer.Common
     {
         public static IEnumerable<dynamic> SortFields(IEnumerable<dynamic> results, IEnumerable<string> sortFields)
         {
-            IOrderedEnumerable<dynamic> sortedResults = null;
-            int i = 0;
+            if (sortFields.Where(e => !string.IsNullOrEmpty(e)).Any() == false)
+                return results;
 
-            sortFields.ToList().ForEach(x =>
+            var isSortDescending = IsSortDescending(sortFields.First());
+            var fieldName = RemoveSortDirection(sortFields.First());
+
+            var sortedResults = GetFirstSortResults(results, fieldName, isSortDescending);
+
+            sortFields.Skip(1).ToList().ForEach(x =>
             {
-                bool isSortDescending = IsSortDescending(x);
-                string fieldName = RemoveSortDirection(x);
+                isSortDescending = IsSortDescending(x);
+                fieldName = RemoveSortDirection(x);
 
-                if (i == 0)
-                    sortedResults = GetFirstSortResults(results, fieldName, isSortDescending);
-                else
-                    sortedResults = GetRemainingSortResults(sortedResults, fieldName, isSortDescending);
-
-                i++;
+                sortedResults = GetRemainingSortResults(sortedResults, fieldName, isSortDescending);
             });
 
             return sortedResults.AsEnumerable();
@@ -30,44 +30,24 @@ namespace FakeServer.Common
 
         private static IOrderedEnumerable<dynamic> GetFirstSortResults(IEnumerable<dynamic> results, string sortField, bool isSortDescending)
         {
-            IOrderedEnumerable<dynamic> sortResults = null;
-
             if (isSortDescending)
-                sortResults = results.OrderByDescending(x => ParseField(x as ExpandoObject, sortField));
+                return results.OrderByDescending(x => ParseField(x as ExpandoObject, sortField));
             else
-                sortResults = results.OrderBy(x => ParseField(x as ExpandoObject, sortField));
-
-            return sortResults;
+                return results.OrderBy(x => ParseField(x as ExpandoObject, sortField));
         }
 
         private static IOrderedEnumerable<dynamic> GetRemainingSortResults(IOrderedEnumerable<dynamic> results, string sortField, bool isSortDescending)
         {
-            IOrderedEnumerable<dynamic> sortResults = null;
-
             if (isSortDescending)
-                sortResults = results.ThenByDescending(x => ParseField(x as ExpandoObject, sortField));
+                return results.ThenByDescending(x => ParseField(x as ExpandoObject, sortField));
             else
-                sortResults = results.ThenBy(x => ParseField(x as ExpandoObject, sortField));
-
-            return sortResults;
+                return results.ThenBy(x => ParseField(x as ExpandoObject, sortField));
         }
 
-        private static dynamic ParseField(ExpandoObject s, string field)
-        {
-            return (s as IDictionary<string, object>)[field];
-        }
+        private static dynamic ParseField(ExpandoObject s, string field) => (s as IDictionary<string, object>)[field];
 
-        private static bool IsSortDescending(string sortField)
-        {
-            if (char.IsWhiteSpace(sortField[0]) ||
-                sortField.Contains("+")) return false;
-            else return true;
-        }
+        private static string RemoveSortDirection(string sortField) => sortField.Replace("+", "").Replace("-", "").Trim();
 
-        private static string RemoveSortDirection(string sortField)
-        {
-            string sField = sortField.Replace("+", "").Replace("-", "");
-            return sField.Trim();
-        }
+        private static bool IsSortDescending(string sortField) => !(char.IsWhiteSpace(sortField[0]) || sortField.Contains("+"));        
     }
 }
