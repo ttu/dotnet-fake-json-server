@@ -169,6 +169,8 @@ namespace FakeServer
             app.UseDefaultFiles();
             app.UseStaticFiles();
 
+            app.UseMiddleware<HeadMethodMiddleware>();
+
             if (Configuration.GetValue<bool>("Caching:ETag:Enabled"))
             {
                 app.UseMiddleware<ETagMiddleware>();

@@ -31,6 +31,7 @@ namespace FakeServer.Controllers
         /// </summary>
         /// <returns>List of collections</returns>
         [HttpGet]
+        [HttpHead]
         public IEnumerable<string> GetCollections()
         {
             return _ds.ListCollections();
@@ -64,6 +65,7 @@ namespace FakeServer.Controllers
         /// <response code="400">Invalid query parameters</response>
         /// <response code="404">Collection not found</response>
         [HttpGet("{collectionId}")]
+        [HttpHead("{collectionId}")]
         public IActionResult GetItems(string collectionId, int skip = 0, int take = 512)
         {
             var collection = _ds.GetCollection(collectionId);
@@ -133,6 +135,7 @@ namespace FakeServer.Controllers
         /// <response code="200">Item found</response>
         /// <response code="404">Item not found</response>
         [HttpGet("{collectionId}/{id}")]
+        [HttpHead("{collectionId}/{id}")]
         public IActionResult GetItem(string collectionId, [FromRoute][DynamicBinder]dynamic id)
         {
             var result = _ds.GetCollection(collectionId).Find(e => e.id == id).FirstOrDefault();
@@ -157,6 +160,7 @@ namespace FakeServer.Controllers
         /// <response code="400">Parent item not found</response>
         /// <response code="404">Nested item not found</response>
         [HttpGet("{collectionId}/{id}/{*path}")]
+        [HttpHead("{collectionId}/{id}/{*path}")]
         public IActionResult GetNested(string collectionId, [FromRoute][DynamicBinder]dynamic id, string path)
         {
             var item = _ds.GetCollection(collectionId).AsQueryable().FirstOrDefault(e => e.id == id);
@@ -274,80 +278,80 @@ namespace FakeServer.Controllers
                 return NotFound();
         }
 
-        /// <summary>
-        /// List collections
-        /// </summary>
-        /// <returns></returns>
-        /// <response code="200">Collections found</response>
-        /// <response code="404">Collections is empty</response>
-        [HttpHead]
-        public StatusCodeResult GetCollectionsHead()
-        {
-            if (GetCollections().Any())
-                return Ok();
-            else
-                return NotFound();
-        }
+        ///// <summary>
+        ///// List collections
+        ///// </summary>
+        ///// <returns></returns>
+        ///// <response code="200">Collections found</response>
+        ///// <response code="404">Collections is empty</response>
+        //[HttpHead]
+        //public StatusCodeResult GetCollectionsHead()
+        //{
+        //    if (GetCollections().Any())
+        //        return Ok();
+        //    else
+        //        return NotFound();
+        //}
 
-        /// <summary>
-        /// Get items
-        /// </summary>
-        /// <param name="collectionId">Collection id</param>
-        /// <param name="skip">Items to skip (optional name offset)</param>
-        /// <param name="take">Items to take (optional name limit)</param>
-        /// <returns></returns>
-        /// <response code="200">Collection items found</response>
-        /// <response code="400">Invalid query parameters</response>
-        /// <response code="404">Collection not found</response>
-        [HttpHead("{collectionId}")]
-        public IActionResult GetItemsHead(string collectionId, int skip = 0, int take = 512)
-        {
-            var result = GetItems(collectionId, skip, take);
+        ///// <summary>
+        ///// Get items
+        ///// </summary>
+        ///// <param name="collectionId">Collection id</param>
+        ///// <param name="skip">Items to skip (optional name offset)</param>
+        ///// <param name="take">Items to take (optional name limit)</param>
+        ///// <returns></returns>
+        ///// <response code="200">Collection items found</response>
+        ///// <response code="400">Invalid query parameters</response>
+        ///// <response code="404">Collection not found</response>
+        //[HttpHead("{collectionId}")]
+        //public IActionResult GetItemsHead(string collectionId, int skip = 0, int take = 512)
+        //{
+        //    var result = GetItems(collectionId, skip, take);
 
-            if (result is OkObjectResult)
-                return Ok();
-            else
-                return result;
-        }
+        //    if (result is OkObjectResult)
+        //        return Ok();
+        //    else
+        //        return result;
+        //}
 
-        /// <summary>
-        /// Get single item
-        /// </summary>
-        /// <param name="collectionId">Collection id</param>
-        /// <param name="id">Item id</param>
-        /// <returns></returns>
-        /// <response code="200">Item found</response>
-        /// <response code="404">Item not found</response>
-        [HttpHead("{collectionId}/{id}")]
-        public IActionResult GetItemHead(string collectionId, [FromRoute][DynamicBinder]dynamic id)
-        {
-            var result = GetItem(collectionId, id);
+        ///// <summary>
+        ///// Get single item
+        ///// </summary>
+        ///// <param name="collectionId">Collection id</param>
+        ///// <param name="id">Item id</param>
+        ///// <returns></returns>
+        ///// <response code="200">Item found</response>
+        ///// <response code="404">Item not found</response>
+        //[HttpHead("{collectionId}/{id}")]
+        //public IActionResult GetItemHead(string collectionId, [FromRoute][DynamicBinder]dynamic id)
+        //{
+        //    var result = GetItem(collectionId, id);
 
-            if (result is OkObjectResult)
-                return Ok();
-            else
-                return result;
-        }
+        //    if (result is OkObjectResult)
+        //        return Ok();
+        //    else
+        //        return result;
+        //}
 
-        /// <summary>
-        /// Get nested item
-        /// </summary>
-        /// <param name="collectionId">Collection id</param>
-        /// <param name="id">Item id</param>
-        /// <param name="path">Rest of the path</param>
-        /// <returns></returns>
-        /// <response code="200">Nested item found</response>
-        /// <response code="400">Parent item not found</response>
-        /// <response code="404">Nested item not found</response>
-        [HttpHead("{collectionId}/{id}/{*path}")]
-        public IActionResult GetNestedHead(string collectionId, [FromRoute][DynamicBinder]dynamic id, string path)
-        {
-            var result = GetNested(collectionId, id, path);
+        ///// <summary>
+        ///// Get nested item
+        ///// </summary>
+        ///// <param name="collectionId">Collection id</param>
+        ///// <param name="id">Item id</param>
+        ///// <param name="path">Rest of the path</param>
+        ///// <returns></returns>
+        ///// <response code="200">Nested item found</response>
+        ///// <response code="400">Parent item not found</response>
+        ///// <response code="404">Nested item not found</response>
+        //[HttpHead("{collectionId}/{id}/{*path}")]
+        //public IActionResult GetNestedHead(string collectionId, [FromRoute][DynamicBinder]dynamic id, string path)
+        //{
+        //    var result = GetNested(collectionId, id, path);
 
-            if (result is OkObjectResult)
-                return Ok();
-            else
-                return result;
-        }
+        //    if (result is OkObjectResult)
+        //        return Ok();
+        //    else
+        //        return result;
+        //}
     }
 }

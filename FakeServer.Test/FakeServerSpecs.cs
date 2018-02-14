@@ -679,6 +679,29 @@ namespace FakeServer.Test
         }
 
         [Fact]
+        public async Task GetHead_ETag()
+        {
+            using (var client = new HttpClient())
+            {
+                var requestHead = new HttpRequestMessage(new HttpMethod("HEAD"), $"{_fixture.BaseUrl}/api/families");
+                var resultHead = await client.SendAsync(requestHead);
+                resultHead.EnsureSuccessStatusCode();
+
+                var requestGet = new HttpRequestMessage(new HttpMethod("GET"), $"{_fixture.BaseUrl}/api/families");
+                var resultGet = await client.SendAsync(requestGet);
+                resultGet.EnsureSuccessStatusCode();
+
+                var etagHeaderHead = resultHead.Headers.GetValues("ETag").First();
+                Assert.False(string.IsNullOrEmpty(etagHeaderHead));
+
+                var etagHeaderGet = resultGet.Headers.GetValues("ETag").First();
+                Assert.False(string.IsNullOrEmpty(etagHeaderGet));
+
+                Assert.Equal(etagHeaderHead, etagHeaderGet);
+            }
+        }
+
+        [Fact]
         public async Task GetPaginationHeaders()
         {
             using (var client = new HttpClient())
