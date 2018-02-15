@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace FakeServer.Common
 {
-    // Based on the middleware from: 
+    // Based on the middleware from:
     // https://gist.github.com/madskristensen/36357b1df9ddbfd123162cd4201124c4
 
     public class ETagMiddleware
@@ -26,13 +26,15 @@ namespace FakeServer.Common
             // PUT : Avoiding mid-air collisions
 
             if (context.Request.Path.Value.StartsWith($"/{Config.ApiRoute}") == false ||
-                (context.Request.Method != "GET" && context.Request.Method != "PUT"))
+                (context.Request.Method != HttpMethods.Get && 
+                 context.Request.Method != HttpMethods.Head && 
+                 context.Request.Method != HttpMethods.Put))
             {
                 await _next(context);
                 return;
             }
 
-            if (context.Request.Method == "GET")
+            if (context.Request.Method == HttpMethods.Get || context.Request.Method == HttpMethods.Head)
             {
                 await HandleGet(context);
             }
@@ -80,7 +82,7 @@ namespace FakeServer.Common
                 // Switch request to GET and fetch data that is going to be updated
                 // Compare reveived data's checksum to tag in If-Match header
 
-                context.Request.Method = "GET";
+                context.Request.Method = HttpMethods.Get;
 
                 var response = context.Response;
                 var originalStream = response.Body;
@@ -95,14 +97,14 @@ namespace FakeServer.Common
                     {
                         if (context.Request.Headers.TryGetValue(HeaderNames.IfMatch, out var etag) && CalculateChecksum(ms) != etag)
                         {
-                            context.Request.Method = "PUT";
+                            context.Request.Method = HttpMethods.Put;
                             response.Body = originalStream;
                             response.StatusCode = StatusCodes.Status412PreconditionFailed;
                             return;
                         }
                     }
 
-                    context.Request.Method = "PUT";
+                    context.Request.Method = HttpMethods.Put;
                     response.Body = originalStream;
                 }
             }
@@ -115,8 +117,8 @@ namespace FakeServer.Common
             if (response.StatusCode != StatusCodes.Status200OK)
                 return false;
 
-            // The 20kb length limit is not based in science. Feel free to change
-            if (response.Body.Length > 20 * 1024)
+            // The 2000kb length limit is not based in science. Feel free to change
+            if (response.Body.Length > 2000 * 1024)
                 return false;
 
             if (response.Headers.ContainsKey(HeaderNames.ETag))
