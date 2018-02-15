@@ -26,7 +26,9 @@ namespace FakeServer.Common
             // PUT : Avoiding mid-air collisions
 
             if (context.Request.Path.Value.StartsWith($"/{Config.ApiRoute}") == false ||
-                (context.Request.Method != HttpMethods.Get && context.Request.Method != HttpMethods.Head && context.Request.Method != "PUT"))
+                (context.Request.Method != HttpMethods.Get && 
+                 context.Request.Method != HttpMethods.Head && 
+                 context.Request.Method != HttpMethods.Put))
             {
                 await _next(context);
                 return;
@@ -80,7 +82,7 @@ namespace FakeServer.Common
                 // Switch request to GET and fetch data that is going to be updated
                 // Compare reveived data's checksum to tag in If-Match header
 
-                context.Request.Method = "GET";
+                context.Request.Method = HttpMethods.Get;
 
                 var response = context.Response;
                 var originalStream = response.Body;
@@ -95,14 +97,14 @@ namespace FakeServer.Common
                     {
                         if (context.Request.Headers.TryGetValue(HeaderNames.IfMatch, out var etag) && CalculateChecksum(ms) != etag)
                         {
-                            context.Request.Method = "PUT";
+                            context.Request.Method = HttpMethods.Put;
                             response.Body = originalStream;
                             response.StatusCode = StatusCodes.Status412PreconditionFailed;
                             return;
                         }
                     }
 
-                    context.Request.Method = "PUT";
+                    context.Request.Method = HttpMethods.Put;
                     response.Body = originalStream;
                 }
             }
