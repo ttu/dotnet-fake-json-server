@@ -3,6 +3,7 @@
 ### [Unreleased]
 * JWT blacklist to check token identifier from JWT ID (jti)
 * Add query support for sorting
+* Fix for ETag when using HEAD method 
 
 ### [0.6.0] - 2017-11-30
 * Caching of unchanged resources with ETag and If-None-Match headers
