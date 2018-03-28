@@ -606,10 +606,33 @@ Get all users whose `age` equals to _40_.
 ```sh
 $ curl 'http://localhost:57602/api/users?age=40'
 ```
+
 ```json
 [ 
  { "id": 1, "name": "Phil", "age": 40, "location": "NY" },
  { "id": 3, "name": "Thomas", "age": 40, "location": "London" }
+]
+```
+
+#### Sort
+
+```
+> GET api/{collection}?sort=[+/-]field,[+/-]otherField
+```
+
+Sort contains comma-spearetd list of fields defining the sort. Sort direction can be specified with `+` (_ascending_) or `-` (_descending, default_) prefix.
+
+Get all users sorted by `location` (_descending_) and then by `age` (_ascending_).
+
+```sh
+$ curl 'http://localhost:57602/api/users?sort=location,+age'
+```
+
+```json
+[
+  { "id": 2, "name": "Larry", "age": 37, "location": "London" },
+  { "id": 3, "name": "Thomas", "age": 40, "location": "London" },
+  { "id": 1, "name": "Phil", "age": 40, "location": "NY" }
 ]
 ```
 
