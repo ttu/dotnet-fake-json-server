@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace FakeServer.Common
 {
-    public class OptionsMiddleware
+    public class HttpOptionsMiddleware
     {
         private readonly RequestDelegate _next;
 
@@ -21,7 +21,7 @@ namespace FakeServer.Common
             { $@"^\/{Config.AsyncRoute}\/\w+\/.*", "PUT, PATCH, DELETE, OPTIONS" },                   // /async/{collection}/{id}
         };
 
-        public OptionsMiddleware(RequestDelegate next)
+        public HttpOptionsMiddleware(RequestDelegate next)
         {
             _next = next;
         }

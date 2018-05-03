@@ -138,7 +138,7 @@ namespace FakeServer
 
             app.UseCors("AllowAnyPolicy");
 
-            app.UseMiddleware<OptionsMiddleware>();
+            app.UseMiddleware<HttpOptionsMiddleware>();
 
             if (Configuration.GetValue<bool>("Simulate:Delay:Enabled"))
             {
