@@ -1,4 +1,7 @@
 ﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using System.Collections.Generic;
+using System.IO;
 
 namespace FakeServer
 {
@@ -9,24 +12,31 @@ namespace FakeServer
 
         public static void Run(string url, string path, string file, string authenticationType = "")
         {
-            Startup.MainConfiguration.Clear();
+           var mainConfiguration = new Dictionary<string, string>();
 
-            Startup.MainConfiguration.Add("file", file);
+            mainConfiguration.Add("currentPath", path);
+            mainConfiguration.Add("file", file);
 
-            Startup.MainConfiguration.Add("Caching:ETag:Enabled", "true");
+            mainConfiguration.Add("Caching:ETag:Enabled", "true");
 
             if (!string.IsNullOrEmpty(authenticationType))
             {
-                Startup.MainConfiguration.Add("Authentication:Enabled", "true");
-                Startup.MainConfiguration.Add("Authentication:AuthenticationType", authenticationType);
-                Startup.MainConfiguration.Add("Authentication:Users:0:Username", "admin");
-                Startup.MainConfiguration.Add("Authentication:Users:0:Password", "root");
+                mainConfiguration.Add("Authentication:Enabled", "true");
+                mainConfiguration.Add("Authentication:AuthenticationType", authenticationType);
+                mainConfiguration.Add("Authentication:Users:0:Username", "admin");
+                mainConfiguration.Add("Authentication:Users:0:Password", "root");
             }
+
+            var configuration = new ConfigurationBuilder()
+                       .SetBasePath(path)
+                       .AddInMemoryCollection(mainConfiguration)
+                       .Build();
 
             _host = new WebHostBuilder()
                .UseUrls(url)
                .UseKestrel()
                .UseContentRoot(path)
+               .UseConfiguration(configuration)
                .UseStartup<Startup>()
                .Build();
 
