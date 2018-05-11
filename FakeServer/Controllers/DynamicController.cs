@@ -1,6 +1,7 @@
 ﻿using FakeServer.Common;
 using JsonFlatFileDataStore;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -194,7 +195,7 @@ namespace FakeServer.Controllers
 
             await collection.InsertOneAsync(item);
 
-            return Created($"{Request.Scheme}://{Request.Host.Value}/api/{collectionId}/{item["id"]}", new { id = item["id"] });
+            return Created($"{Request.GetDisplayUrl()}/{item["id"]}", new { id = item["id"] });
         }
 
         /// <summary>
@@ -248,7 +249,7 @@ namespace FakeServer.Controllers
         {
             dynamic sourceData = JsonConvert.DeserializeObject<ExpandoObject>(patchData.ToString());
 
-            if (!((IDictionary<string, Object>)sourceData).Any())
+            if (!((IDictionary<string, object>)sourceData).Any())
                 return BadRequest();
 
             var success = await _ds.GetCollection(collectionId).UpdateOneAsync((Predicate<dynamic>)(e => e.id == id), sourceData);
