@@ -43,7 +43,7 @@ namespace FakeServer.Controllers
             var action = new Func<string>(() =>
             {
                 var collection = _ds.GetCollection(collectionId);
-                collection.InsertOneAsync(item);
+                collection.InsertOne(item);
                 return item["id"].Value<string>();
             });
 
