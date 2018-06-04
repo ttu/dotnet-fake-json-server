@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -35,7 +35,9 @@ namespace FakeServer
             }
 
             MainConfiguration.Add("currentPath", Directory.GetCurrentDirectory());
-            MainConfiguration.Add("file", file ?? "datastore.json");
+
+            if (!MainConfiguration.ContainsKey("file"))
+                MainConfiguration.Add("file", file ?? "datastore.json");
 
             var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production";
 
