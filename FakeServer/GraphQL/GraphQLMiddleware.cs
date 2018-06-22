@@ -3,6 +3,8 @@ using FakeServer.WebSockets;
 using JsonFlatFileDataStore;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -28,7 +30,7 @@ namespace FakeServer.GraphQL
         public async Task Invoke(HttpContext context)
         {
             // POST application/graphql body is query
-            // TODO: POST application/json and { "query": "..." }
+            // POST application/json and { "query": "..." }
             // TODO: POST /graphql?query={users{name}}
             // TODO: GET /graphql?query={users{name}}
 
@@ -44,25 +46,39 @@ namespace FakeServer.GraphQL
                 return;
             }
 
-            if (context.Request.Method != "POST" || !context.Request.ContentType.Contains("application/graphql"))
+            if (context.Request.Method != "POST" ||
+                !context.Request.ContentType.ContainsAny("application/graphql", "application/json"))
             {
                 context.Response.StatusCode = (int)HttpStatusCode.NotImplemented;
                 await context.Response.WriteAsync(JsonConvert.SerializeObject(new { errors = new[] { "Not implemented" } }));
                 return;
             }
 
-            var query = string.Empty;
-
-            using (var streamReader = new StreamReader(context.Request.Body))
+            var result = default(GraphQLResult);
+            try
             {
-                query = await streamReader.ReadToEndAsync().ConfigureAwait(true);
+                string query = await ParseQuery(context);
+
+                var toReplace = new[] { "\r\n", "\\r\\n", "\\n", "\n" };
+
+                query = toReplace.Aggregate(query, (acc, curr) => acc.Replace(curr, ""));
+
+                result = await GraphQL.HandleQuery(query, _datastore);
             }
+            catch (Exception e)
+            {
+                if (result == default(GraphQLResult))
+                {
+                    result = new GraphQLResult() { Errors = new List<string>() };
+                }
+                else if (result.Errors == default(List<string>))
+                {
+                    result.Errors = new List<string>();
+                }
 
-            var toReplace = new[] { "\r\n", "\\r\\n", "\\n", "\n" };
+                result.Errors.Add(e.Message);
 
-            query = toReplace.Aggregate(query, (acc, curr) => acc.Replace(curr, ""));
-
-            var result = await GraphQL.HandleQuery(query, _datastore);
+            }
 
             var json = result.Errors?.Any() == true
                             ? JsonConvert.SerializeObject(new { data = result.Data, errors = result.Errors })
@@ -74,6 +90,29 @@ namespace FakeServer.GraphQL
             context.Response.StatusCode = result.Errors?.Any() == true ? (int)HttpStatusCode.BadRequest : (int)HttpStatusCode.OK;
 
             await context.Response.WriteAsync(json);
+        }
+
+        private static async Task<string> ParseQuery(HttpContext context)
+        {
+            var body = string.Empty;
+
+            using (var streamReader = new StreamReader(context.Request.Body))
+            {
+                body = await streamReader.ReadToEndAsync().ConfigureAwait(true);
+            }
+
+            if (context.Request.ContentType == "application/graphql")
+            {
+                return body;
+            }
+
+            dynamic jsonBody = JsonConvert.DeserializeObject(body);
+            if (jsonBody.query is null)
+            {
+                throw new Exception("Required property 'query' not found in json body.");
+            }
+
+            return jsonBody.query;
         }
     }
 }
