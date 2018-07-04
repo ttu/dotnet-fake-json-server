@@ -25,7 +25,7 @@ namespace FakeServer.Test
 
             var controller = new DynamicController(ds, apiSettings);
 
-            var collections = controller.GetCollections();
+            var collections = controller.GetKeys();
             Assert.Equal(3, collections.Count());
 
             UTHelpers.Down(filePath);

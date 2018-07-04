@@ -28,14 +28,14 @@ namespace FakeServer.Controllers
         }
 
         /// <summary>
-        /// List collections
+        /// List keys
         /// </summary>
-        /// <returns>List of collections</returns>
+        /// <returns>List of keys</returns>
         [HttpGet]
         [HttpHead]
-        public IEnumerable<string> GetCollections()
+        public IEnumerable<string> GetKeys()
         {
-            return _ds.ListCollections();
+            return _ds.GetKeys().Select(e => e.Key);
         }
 
         /// <summary>
