@@ -18,6 +18,7 @@ namespace FakeServer.GraphQL
         private readonly IDataStore _datastore;
         private readonly IMessageBus _bus;
         private readonly bool _authenticationEnabled;
+        private readonly string[] _allowedTypes = new[] { "application/graphql", "application/json" };
 
         public GraphQLMiddleware(RequestDelegate next, IDataStore datastore, IMessageBus bus, bool authenticationEnabled)
         {
@@ -46,40 +47,30 @@ namespace FakeServer.GraphQL
                 return;
             }
 
-            if (context.Request.Method != "POST" ||
-                !context.Request.ContentType.ContainsAny("application/graphql", "application/json"))
+            if (context.Request.Method != "POST" || !_allowedTypes.Any(context.Request.ContentType.Contains))
             {
                 context.Response.StatusCode = (int)HttpStatusCode.NotImplemented;
                 await context.Response.WriteAsync(JsonConvert.SerializeObject(new { errors = new[] { "Not implemented" } }));
                 return;
             }
 
-            var result = default(GraphQLResult);
-            try
-            {
-                string query = await ParseQuery(context);
+            GraphQLResult result = null;
 
+            var (success, query) = await ParseQuery(context);
+
+            if (!success)
+            {
+                result = new GraphQLResult { Errors = new List<string> { "" } };
+            }
+            else
+            {
                 var toReplace = new[] { "\r\n", "\\r\\n", "\\n", "\n" };
 
                 query = toReplace.Aggregate(query, (acc, curr) => acc.Replace(curr, ""));
 
                 result = await GraphQL.HandleQuery(query, _datastore);
             }
-            catch (Exception e)
-            {
-                if (result == default(GraphQLResult))
-                {
-                    result = new GraphQLResult() { Errors = new List<string>() };
-                }
-                else if (result.Errors == default(List<string>))
-                {
-                    result.Errors = new List<string>();
-                }
-
-                result.Errors.Add(e.Message);
-
-            }
-
+            
             var json = result.Errors?.Any() == true
                             ? JsonConvert.SerializeObject(new { data = result.Data, errors = result.Errors })
                             : JsonConvert.SerializeObject(new { data = result.Data });
@@ -92,9 +83,9 @@ namespace FakeServer.GraphQL
             await context.Response.WriteAsync(json);
         }
 
-        private static async Task<string> ParseQuery(HttpContext context)
+        private static async Task<(bool success, string body)> ParseQuery(HttpContext context)
         {
-            var body = string.Empty;
+            string body;
 
             using (var streamReader = new StreamReader(context.Request.Body))
             {
@@ -103,16 +94,16 @@ namespace FakeServer.GraphQL
 
             if (context.Request.ContentType == "application/graphql")
             {
-                return body;
+                return (true, body);
             }
 
             dynamic jsonBody = JsonConvert.DeserializeObject(body);
             if (jsonBody.query is null)
             {
-                throw new Exception("Required property 'query' not found in json body.");
+                return (false, null);
             }
 
-            return jsonBody.query;
+            return (true, jsonBody.query);
         }
     }
 }
