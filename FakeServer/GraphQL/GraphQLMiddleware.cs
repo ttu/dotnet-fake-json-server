@@ -3,7 +3,6 @@ using FakeServer.WebSockets;
 using JsonFlatFileDataStore;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -70,7 +69,7 @@ namespace FakeServer.GraphQL
 
                 result = await GraphQL.HandleQuery(query, _datastore);
             }
-            
+
             var json = result.Errors?.Any() == true
                             ? JsonConvert.SerializeObject(new { data = result.Data, errors = result.Errors })
                             : JsonConvert.SerializeObject(new { data = result.Data });
