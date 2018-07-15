@@ -1046,7 +1046,7 @@ namespace FakeServer.Test
             {
                 var content = new StringContent("{ users }", Encoding.UTF8, "application/json");
                 var result = await client.PostAsync($"{_fixture.BaseUrl}/graphql", content);
-                Assert.Equal(HttpStatusCode.NotImplemented, result.StatusCode);
+                Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
             }
         }
     }

@@ -3,6 +3,7 @@ using FakeServer.WebSockets;
 using JsonFlatFileDataStore;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -55,11 +56,11 @@ namespace FakeServer.GraphQL
 
             GraphQLResult result = null;
 
-            var (success, query) = await ParseQuery(context);
+            var (success, query, error) = await ParseQuery(context);
 
             if (!success)
             {
-                result = new GraphQLResult { Errors = new List<string> { "" } };
+                result = new GraphQLResult { Errors = new List<string> { error } };
             }
             else
             {
@@ -82,7 +83,7 @@ namespace FakeServer.GraphQL
             await context.Response.WriteAsync(json);
         }
 
-        private static async Task<(bool success, string body)> ParseQuery(HttpContext context)
+        private static async Task<(bool success, string body, string error)> ParseQuery(HttpContext context)
         {
             string body;
 
@@ -91,18 +92,28 @@ namespace FakeServer.GraphQL
                 body = await streamReader.ReadToEndAsync().ConfigureAwait(true);
             }
 
-            if (context.Request.ContentType == "application/graphql")
+            if (context.Request.ContentType.StartsWith("application/graphql"))
             {
-                return (true, body);
+                return (true, body, null);
             }
 
-            dynamic jsonBody = JsonConvert.DeserializeObject(body);
+            dynamic jsonBody;
+
+            try
+            {
+                jsonBody = JsonConvert.DeserializeObject(body);
+            }
+            catch (Exception e)
+            {
+                return (false, null, e.Message);
+            }
+
             if (jsonBody.query is null)
             {
-                return (false, null);
-            }
+                return (false, null, "Missing query property in json.");
+            }    
 
-            return (true, jsonBody.query);
+            return (true, jsonBody.query, null);
         }
     }
 }
