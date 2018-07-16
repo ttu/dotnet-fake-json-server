@@ -1040,13 +1040,57 @@ namespace FakeServer.Test
         }
 
         [Fact]
-        public async Task PostGraphQL_Error()
+        public async Task PostGraphQL_Json()
+        {
+            using (var client = new HttpClient())
+            {
+                var content = new StringContent(@"{""query"":""{users}""}", Encoding.UTF8, "application/json");
+                var result = await client.PostAsync($"{_fixture.BaseUrl}/graphql", content);
+
+                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+
+                var data = JsonConvert.DeserializeObject<JObject>(await result.Content.ReadAsStringAsync());
+
+                Assert.NotNull(data["data"]);
+                Assert.Null(data["errors"]);
+            }
+        }
+
+        [Fact]
+        public async Task PostGraphQL_Error_InvalidJson()
         {
             using (var client = new HttpClient())
             {
                 var content = new StringContent("{ users }", Encoding.UTF8, "application/json");
                 var result = await client.PostAsync($"{_fixture.BaseUrl}/graphql", content);
                 Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
+            }
+        }
+
+        [Fact]
+        public async Task PostGraphQL_Error_MissingQuery()
+        {
+            using (var client = new HttpClient())
+            {
+                var content = new StringContent(@"{ }", Encoding.UTF8, "application/json");
+                var result = await client.PostAsync($"{_fixture.BaseUrl}/graphql", content);
+                Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
+            }
+        }
+
+        [Fact]
+        public async Task GetGraphQL_NotImplemented()
+        {
+            using (var client = new HttpClient())
+            {
+                var result = await client.GetAsync($"{_fixture.BaseUrl}/graphql?query={{users}}");
+
+                Assert.Equal(HttpStatusCode.NotImplemented, result.StatusCode);
+
+                var data = JsonConvert.DeserializeObject<JObject>(await result.Content.ReadAsStringAsync());
+
+                Assert.Null(data["data"]);
+                Assert.NotNull(data["errors"]);
             }
         }
     }
