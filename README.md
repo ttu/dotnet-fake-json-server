@@ -926,6 +926,7 @@ Delay value is milliseconds. Default value is 2000ms.
 ### GraphQL
 
 GraphQL implementation is experimental and supports only basic queries and mutations. At the moment this is a good way to compare simple GraphQL and REST queries.
+`/graphql` endpoint accepts requests with `application/graphql` or `application/json` content type. If the first, request body is GraphQL query string, whereas if the latter, request body is expected to be a valid JSON with parameter `query` containing the GraphQL query string.
 
 ```
 > POST /graphql
@@ -933,6 +934,10 @@ GraphQL implementation is experimental and supports only basic queries and mutat
 Content-type: application/graphql
 Body: [query/mutation]
 
+OR
+
+Content-type: application/json
+Body: { "query": "[query/mutation]" }
 
 200 OK              : Query/mutation successful 
 400 Bad Request     : Query/mutation contains errors
