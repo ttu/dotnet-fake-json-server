@@ -437,6 +437,103 @@ namespace FakeServer.Test
         }
 
         [Fact]
+        public async Task Post_SingleItem_ExistingCollection()
+        {
+            using (var client = new HttpClient())
+            {
+                var collection = "configuration";
+                var newConfig = new { value = "Something new" };
+
+                var content = new StringContent(JsonConvert.SerializeObject(newConfig), Encoding.UTF8, "application/json");
+                var result = await client.PostAsync($"{_fixture.BaseUrl}/api/{collection}", content);
+                Assert.Equal(HttpStatusCode.Conflict, result.StatusCode);
+            }
+        }
+
+        [Fact]
+        public async Task Put_SingleItem_ExistingCollection_BadRequest()
+        {
+            using (var client = new HttpClient())
+            {
+                var collection = "configuration";
+                var newConfig = new { value = "Something new" };
+
+                var content = new StringContent(JsonConvert.SerializeObject(newConfig), Encoding.UTF8, "application/json");
+                var result = await client.PutAsync($"{_fixture.BaseUrl}/api/{collection}/0", content);
+                Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
+            }
+        }
+
+        [Fact]
+        public async Task Put_SingleItem_ExistingItem()
+        {
+            using (var client = new HttpClient())
+            {
+                var collection = "configuration";
+                var newConfig = new { value = "Something new" };
+
+                var content = new StringContent(JsonConvert.SerializeObject(newConfig), Encoding.UTF8, "application/json");
+                var result = await client.PutAsync($"{_fixture.BaseUrl}/api/{collection}", content);
+                Assert.Equal(HttpStatusCode.NoContent, result.StatusCode);
+
+                result = await client.GetAsync($"{_fixture.BaseUrl}/api/{collection}");
+                result.EnsureSuccessStatusCode();
+                var item = JsonConvert.DeserializeObject<JObject>(await result.Content.ReadAsStringAsync());
+                Assert.Equal(newConfig.value, item["value"].Value<string>());
+            }
+        }
+
+        [Fact]
+        public async Task Put_CollectionItem_ExistingItem()
+        {
+            using (var client = new HttpClient())
+            {
+                var collection = "users";
+                var newUser = new { id = 1, name = "Newton" };
+
+                var content = new StringContent(JsonConvert.SerializeObject(newUser), Encoding.UTF8, "application/json");
+                var result = await client.PutAsync($"{_fixture.BaseUrl}/api/{collection}", content);
+                Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
+            }
+        }
+
+        [Fact]
+        public async Task Patch_SingleItem()
+        {
+            using (var client = new HttpClient())
+            {
+                var collection = "configuration_for_patch";
+                var newConfig = new { url = "192.168.0.1" };
+
+                var content = new StringContent(JsonConvert.SerializeObject(newConfig), Encoding.UTF8, "application/json");
+                var result = await client.PatchAsync($"{_fixture.BaseUrl}/api/{collection}", content);
+                Assert.Equal(HttpStatusCode.NoContent, result.StatusCode);
+
+                result = await client.GetAsync($"{_fixture.BaseUrl}/api/{collection}");
+                result.EnsureSuccessStatusCode();
+                var item = JsonConvert.DeserializeObject<JObject>(await result.Content.ReadAsStringAsync());
+                Assert.Equal(newConfig.url, item["url"].Value<string>());
+                Assert.Equal("abba", item["password"].Value<string>());
+            }
+        }
+
+        [Fact]
+        public async Task Delete_SingleItem()
+        {
+            using (var client = new HttpClient())
+            {
+                var collection = "configuration_for_delete";
+                var newConfig = new { value = "Something new" };
+
+                var result = await client.DeleteAsync($"{_fixture.BaseUrl}/api/{collection}");
+                Assert.Equal(HttpStatusCode.NoContent, result.StatusCode);
+
+                result = await client.GetAsync($"{_fixture.BaseUrl}/api/{collection}");
+                Assert.Equal(HttpStatusCode.NotFound, result.StatusCode);
+            }
+        }
+
+        [Fact]
         public async Task WebSockets_CalledTwice()
         {
             var are = new AutoResetEvent(false);

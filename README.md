@@ -352,14 +352,17 @@ POST     /admin/reload
 
 GET      /api
 HEAD     /api
-GET      /api/{collection}
-HEAD     /api/{collection}
+GET      /api/{collection/item}
+HEAD     /api/{collection/item}
 POST     /api/{collection}
 GET      /api/{collection}/{id}
 HEAD     /api/{collection}/{id}
 PUT      /api/{collection}/{id}
 PATCH    /api/{collection}/{id}
 DELETE   /api/{collection}/{id}
+PUT      /api/{item}
+PATCH    /api/{item}
+DELETE   /api/{item}
 OPTIONS  /api/*
 
 GET      /async/queue/{id}
@@ -372,6 +375,23 @@ OPTIONS  /async/*
 
 POST     /graphql
 ```
+
+#### Collections and items
+
+Fake JSON Server is made for prototyping, so by default it supports only resources in a collection.
+
+If the JSON-file has a single item on a root level, then the route from that property is handled like a single item.
+
+```json
+{
+  "collection": [],
+  "singleItem": {}
+}
+
+GET /collection "returns a collection"
+GET /singleItem "returns a single item"
+```
+
 
 #### Routes
 
@@ -803,6 +823,7 @@ $ curl http://localhost:57602/api/company/0/employees/1/address
 
 201 Created     : New item is created
 400 Bad Request : New item is null
+409 Conflict    : Collection is a single item
 ```
 
 Add _{ "name": "Phil", "age": 40, "location": "NY" }_ to users.
