@@ -69,6 +69,7 @@ Fake JSON Server is a Fake REST API that can be used as a Back End for prototypi
     + [Avoiding mid-air collisions](#avoiding-mid-air-collisions)
 - [Routes, Functionalities and Examples](#routes--functionalities-and-examples)
     + [Routes](#routes)
+    + [Collections and items](#collections-and-items)
     + [Identifiers](#identifiers)
     + [Return codes](#return-codes)
     + [OPTIONS method](#options-method)
@@ -378,7 +379,7 @@ POST     /graphql
 
 #### Collections and items
 
-Fake JSON Server is made for prototyping, so by default it supports only resources in a collection.
+Fake JSON Server is designed for prototyping, so by default it supports only resources in a collection.
 
 If the JSON-file has a single item on a root level, then the route from that property is handled like a single item.
 
@@ -513,7 +514,8 @@ Data used in example requests, unless otherwise stated:
     { "id": 2, "name": "Larry", "age": 37, "location": "London" },
     { "id": 3, "name": "Thomas", "age": 40, "location": "London" }
   ],
-  "movies": []
+  "movies": [],
+  "configuration": { "ip": "192.168.0.1" }
 }
 ```
 
@@ -534,13 +536,13 @@ $ curl http://localhost:57602/api
 ```
 
 ```json
-[ "users", "movies" ]
+[ "users", "movies", "configuration" ]
 ```
 
 #### Query
 
 ```
-> GET /api/{collection}
+> GET /api/{collection/item}
 
 200 OK          : Collection is found
 400 Bad Request : Invalid query parameters
@@ -594,6 +596,16 @@ JSON object has items in results array in result field, link object has the pagi
   "limit": 5,
   "count": 20
 }
+```
+
+Single item doesn't support result object. If the endpoint is a single item, only item object is returned. 
+
+```sh
+$ curl http://localhost:57602/api/configuration
+```
+
+```json
+{ "ip": "192.168.0.1" }
 ```
 
 ##### Slice
