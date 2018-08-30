@@ -216,7 +216,7 @@ namespace FakeServer.Controllers
         /// <returns>Created item id</returns>
         /// <response code="201">Item created</response>
         /// <response code="400">Item is null</response>
-        /// <response code="409">Collection is a single item</response>
+        /// <response code="409">Collection is an object</response>
         [HttpPost("{collectionId}")]
         public async Task<IActionResult> AddNewItem(string collectionId, [FromBody]JToken item)
         {
@@ -319,24 +319,24 @@ namespace FakeServer.Controllers
         }
 
         /// <summary>
-        /// Replace single item
+        /// Replace object
         /// </summary>
-        /// <param name="itemId">Item id</param>
-        /// <param name="item">Item's new content</param>
+        /// <param name="objectId">Object id</param>
+        /// <param name="item">Object's new content</param>
         /// <returns></returns>
-        /// <response code="204">Item found and replaced</response>
+        /// <response code="204">Object found and replaced</response>
         /// <response code="400">Replace data is null or item is in a collection</response>
-        /// <response code="404">Item not found</response>
-        [HttpPut("{itemId}")]
-        public async Task<IActionResult> ReplaceSingleItem(string itemId, [FromBody]dynamic item)
+        /// <response code="404">Object not found</response>
+        [HttpPut("{objectId}")]
+        public async Task<IActionResult> ReplaceSingleItem(string objectId, [FromBody]dynamic item)
         {
-            if (_ds.IsCollection(itemId))
+            if (_ds.IsCollection(objectId))
                 return BadRequest();
 
             if (item == null)
                 return BadRequest();
 
-            var success = await _ds.ReplaceItemAsync(itemId, item, _settings.UpsertOnPut);
+            var success = await _ds.ReplaceItemAsync(objectId, item, _settings.UpsertOnPut);
 
             if (success)
                 return NoContent();
@@ -345,7 +345,7 @@ namespace FakeServer.Controllers
         }
 
         /// <summary>
-        /// Update single item's content
+        /// Update single object's content
         /// </summary>
         /// <remarks>
         /// Patch data contains fields to be updated.
@@ -356,21 +356,21 @@ namespace FakeServer.Controllers
         ///        "boolField": true
         ///     }
         /// </remarks>
-        /// <param name="itemId">Single item id</param>
+        /// <param name="objectId">Object id</param>
         /// <param name="patchData">Patch data</param>
         /// <returns></returns>
-        /// <response code="204">Item found and updated</response>
+        /// <response code="204">Object found and updated</response>
         /// <response code="400">Patch data is empty</response>
-        /// <response code="404">Item not found</response>
-        [HttpPatch("{itemId}")]
-        public async Task<IActionResult> UpdateSingleItem(string itemId, [FromBody]JToken patchData)
+        /// <response code="404">Object not found</response>
+        [HttpPatch("{objectId}")]
+        public async Task<IActionResult> UpdateSingleItem(string objectId, [FromBody]JToken patchData)
         {
             dynamic sourceData = JsonConvert.DeserializeObject<ExpandoObject>(patchData.ToString());
 
-            if (!((IDictionary<string, object>)sourceData).Any() || _ds.IsCollection(itemId))
+            if (!((IDictionary<string, object>)sourceData).Any() || _ds.IsCollection(objectId))
                 return BadRequest();
 
-            var success = await _ds.UpdateItemAsync(itemId, sourceData);
+            var success = await _ds.UpdateItemAsync(objectId, sourceData);
 
             if (success)
                 return NoContent();
@@ -379,20 +379,20 @@ namespace FakeServer.Controllers
         }
 
         /// <summary>
-        /// Remove single item
+        /// Remove single object
         /// </summary>
-        /// <param name="itemId">Single item id</param>
+        /// <param name="objectId">Single object id</param>
         /// <returns></returns>
-        /// <response code="204">Item found and removed</response>
-        /// <response code="400">Item is a collection</response>
-        /// <response code="404">Item not found</response>
-        [HttpDelete("{itemId}")]
-        public async Task<IActionResult> DeleteSingleItem(string itemId)
+        /// <response code="204">Object found and removed</response>
+        /// <response code="400">Object is a collection</response>
+        /// <response code="404">Object not found</response>
+        [HttpDelete("{objectId}")]
+        public async Task<IActionResult> DeleteSingleItem(string objectId)
         {
-            if (_ds.IsCollection(itemId))
+            if (_ds.IsCollection(objectId))
                 return BadRequest();
 
-            var success = await _ds.DeleteItemAsync(itemId);
+            var success = await _ds.DeleteItemAsync(objectId);
 
             if (success)
                 return NoContent();
