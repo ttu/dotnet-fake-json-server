@@ -68,7 +68,7 @@ namespace FakeServer.GraphQL
 
                 query = toReplace.Aggregate(query, (acc, curr) => acc.Replace(curr, ""));
 
-                result = await GraphQL.HandleQuery(query, _datastore);
+                result = GraphQL.HandleQuery(query, _datastore);
             }
 
             var json = result.Errors?.Any() == true

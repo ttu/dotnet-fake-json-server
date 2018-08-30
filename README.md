@@ -832,7 +832,7 @@ $ curl http://localhost:57602/api/company/0/employees/1/address
 
 201 Created     : New item is created
 400 Bad Request : New item is null
-409 Conflict    : Collection is a single item
+409 Conflict    : Collection is an object
 ```
 
 Add _{ "name": "Phil", "age": 40, "location": "NY" }_ to users.
