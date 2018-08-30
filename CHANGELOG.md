@@ -5,6 +5,7 @@
 * Add query support for sorting
 * Fix for HEAD method use and ETag to support HEAD method
 * .NET Core version to 2.1
+* Support for objects
 
 ### [0.6.0] - 2017-11-30
 * Caching of unchanged resources with ETag and If-None-Match headers

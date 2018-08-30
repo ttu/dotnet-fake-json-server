@@ -26,7 +26,7 @@ namespace FakeServer.Test
             var controller = new DynamicController(ds, apiSettings);
 
             var collections = controller.GetKeys();
-            Assert.Equal(3, collections.Count());
+            Assert.Equal(6, collections.Count());
 
             UTHelpers.Down(filePath);
         }
@@ -176,7 +176,7 @@ namespace FakeServer.Test
         {
             var filePath = UTHelpers.Up();
             var ds = new DataStore(filePath);
-            var apiSettings = Options.Create(new ApiSettings {  UseResultObject = true });
+            var apiSettings = Options.Create(new ApiSettings { UseResultObject = true });
 
             var controller = new DynamicController(ds, apiSettings);
             controller.ControllerContext = new ControllerContext();
@@ -215,6 +215,72 @@ namespace FakeServer.Test
             Assert.Equal(5, resultObject.offset.Value);
             Assert.Equal(12, resultObject.limit.Value);
             Assert.Equal(20, resultObject.count.Value);
+
+            UTHelpers.Down(filePath);
+        }
+
+        [Fact]
+        public void GetItems_Single()
+        {
+            var filePath = UTHelpers.Up();
+            var ds = new DataStore(filePath);
+            var apiSettings = Options.Create(new ApiSettings { UpsertOnPut = true });
+
+            var controller = new DynamicController(ds, apiSettings);
+
+            var itemResult = controller.GetItems("configuration");
+            Assert.IsType<OkObjectResult>(itemResult);
+
+            var okObjectResult = itemResult as OkObjectResult;
+            dynamic item = okObjectResult.Value as ExpandoObject;
+            Assert.Equal("abba", item.password);
+
+            UTHelpers.Down(filePath);
+        }
+
+        [Fact]
+        public void GetItem_Single_BadRequest()
+        {
+            var filePath = UTHelpers.Up();
+            var ds = new DataStore(filePath);
+            var apiSettings = Options.Create(new ApiSettings { UpsertOnPut = true });
+
+            var controller = new DynamicController(ds, apiSettings);
+
+            var itemResult = controller.GetItem("configuration", "0");
+            Assert.IsType<BadRequestResult>(itemResult);
+
+            UTHelpers.Down(filePath);
+        }
+
+        [Fact]
+        public void GetNested_Single_BadRequest()
+        {
+            var filePath = UTHelpers.Up();
+            var ds = new DataStore(filePath);
+            var apiSettings = Options.Create(new ApiSettings());
+
+            var controller = new DynamicController(ds, apiSettings);
+
+            var result = controller.GetNested("configuration", 0, "ip");
+            Assert.IsType<BadRequestResult>(result);
+
+            UTHelpers.Down(filePath);
+        }
+
+        [Fact]
+        public async Task AddItem_Single_Conflict()
+        {
+            var filePath = UTHelpers.Up();
+            var ds = new DataStore(filePath);
+            var apiSettings = Options.Create(new ApiSettings());
+
+            var controller = new DynamicController(ds, apiSettings);
+
+            var item = new { value = "hello" };
+
+            var result = await controller.AddNewItem("configuration", JToken.FromObject(item));
+            Assert.IsType<ConflictResult>(result);
 
             UTHelpers.Down(filePath);
         }

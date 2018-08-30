@@ -69,6 +69,7 @@ Fake JSON Server is a Fake REST API that can be used as a Back End for prototypi
     + [Avoiding mid-air collisions](#avoiding-mid-air-collisions)
 - [Routes, Functionalities and Examples](#routes--functionalities-and-examples)
     + [Routes](#routes)
+    + [Collections and objects](#collections-and-objects)
     + [Identifiers](#identifiers)
     + [Return codes](#return-codes)
     + [OPTIONS method](#options-method)
@@ -352,14 +353,17 @@ POST     /admin/reload
 
 GET      /api
 HEAD     /api
-GET      /api/{collection}
-HEAD     /api/{collection}
+GET      /api/{collection/object}
+HEAD     /api/{collection/object}
 POST     /api/{collection}
 GET      /api/{collection}/{id}
 HEAD     /api/{collection}/{id}
 PUT      /api/{collection}/{id}
 PATCH    /api/{collection}/{id}
 DELETE   /api/{collection}/{id}
+PUT      /api/{object}
+PATCH    /api/{object}
+DELETE   /api/{object}
 OPTIONS  /api/*
 
 GET      /async/queue/{id}
@@ -372,6 +376,20 @@ OPTIONS  /async/*
 
 POST     /graphql
 ```
+
+#### Collections and objects
+
+Fake JSON Server is designed for prototyping, so by default it supports only resources in a collection.
+
+If the JSON-file has a single object on a root level, then the route from that property is handled like a single object.
+
+```json
+{
+  "collection": [],
+  "object": {}
+}
+```
+
 
 #### Routes
 
@@ -493,7 +511,8 @@ Data used in example requests, unless otherwise stated:
     { "id": 2, "name": "Larry", "age": 37, "location": "London" },
     { "id": 3, "name": "Thomas", "age": 40, "location": "London" }
   ],
-  "movies": []
+  "movies": [],
+  "configuration": { "ip": "192.168.0.1" }
 }
 ```
 
@@ -514,13 +533,13 @@ $ curl http://localhost:57602/api
 ```
 
 ```json
-[ "users", "movies" ]
+[ "users", "movies", "configuration" ]
 ```
 
 #### Query
 
 ```
-> GET /api/{collection}
+> GET /api/{collection/item}
 
 200 OK          : Collection is found
 400 Bad Request : Invalid query parameters
@@ -574,6 +593,16 @@ JSON object has items in results array in result field, link object has the pagi
   "limit": 5,
   "count": 20
 }
+```
+
+Single object doesn't support result object. If the endpoint is a single object, only item object is returned. 
+
+```sh
+$ curl http://localhost:57602/api/configuration
+```
+
+```json
+{ "ip": "192.168.0.1" }
 ```
 
 ##### Slice
@@ -803,6 +832,7 @@ $ curl http://localhost:57602/api/company/0/employees/1/address
 
 201 Created     : New item is created
 400 Bad Request : New item is null
+409 Conflict    : Collection is a single item
 ```
 
 Add _{ "name": "Phil", "age": 40, "location": "NY" }_ to users.
