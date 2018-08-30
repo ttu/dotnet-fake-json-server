@@ -69,7 +69,7 @@ Fake JSON Server is a Fake REST API that can be used as a Back End for prototypi
     + [Avoiding mid-air collisions](#avoiding-mid-air-collisions)
 - [Routes, Functionalities and Examples](#routes--functionalities-and-examples)
     + [Routes](#routes)
-    + [Collections and items](#collections-and-items)
+    + [Collections and objects](#collections-and-objects)
     + [Identifiers](#identifiers)
     + [Return codes](#return-codes)
     + [OPTIONS method](#options-method)
@@ -353,17 +353,17 @@ POST     /admin/reload
 
 GET      /api
 HEAD     /api
-GET      /api/{collection/item}
-HEAD     /api/{collection/item}
+GET      /api/{collection/object}
+HEAD     /api/{collection/object}
 POST     /api/{collection}
 GET      /api/{collection}/{id}
 HEAD     /api/{collection}/{id}
 PUT      /api/{collection}/{id}
 PATCH    /api/{collection}/{id}
 DELETE   /api/{collection}/{id}
-PUT      /api/{item}
-PATCH    /api/{item}
-DELETE   /api/{item}
+PUT      /api/{object}
+PATCH    /api/{object}
+DELETE   /api/{object}
 OPTIONS  /api/*
 
 GET      /async/queue/{id}
@@ -377,20 +377,17 @@ OPTIONS  /async/*
 POST     /graphql
 ```
 
-#### Collections and items
+#### Collections and objects
 
 Fake JSON Server is designed for prototyping, so by default it supports only resources in a collection.
 
-If the JSON-file has a single item on a root level, then the route from that property is handled like a single item.
+If the JSON-file has a single object on a root level, then the route from that property is handled like a single object.
 
 ```json
 {
   "collection": [],
-  "singleItem": {}
+  "object": {}
 }
-
-GET /collection "returns a collection"
-GET /singleItem "returns a single item"
 ```
 
 
@@ -598,7 +595,7 @@ JSON object has items in results array in result field, link object has the pagi
 }
 ```
 
-Single item doesn't support result object. If the endpoint is a single item, only item object is returned. 
+Single object doesn't support result object. If the endpoint is a single object, only item object is returned. 
 
 ```sh
 $ curl http://localhost:57602/api/configuration
