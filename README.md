@@ -516,7 +516,7 @@ Data used in example requests, unless otherwise stated:
 }
 ```
 
-Example JSON generation guide for data used in unit tests [CreateJSON.md](CreateJson.md).
+Example JSON generation guide for data used in unit tests [CreateJSON.md](docs/CreateJson.md).
 
 ####  List collections 
 
@@ -1307,7 +1307,7 @@ API follows best practices and recommendations from these guides:
 
 ## Other Links
 
-* [Benchmark with wrk](BenchmarkWrk.md)
+* [Benchmark with wrk](docs/BenchmarkWrk.md)
 
 ## Releases
 
