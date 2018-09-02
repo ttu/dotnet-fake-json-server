@@ -10,7 +10,7 @@ namespace FakeServer.Test
     public class GraphQLTests
     {
         [Fact]
-        public async Task Query_Families()
+        public void Query_Families()
         {
             var filePath = UTHelpers.Up();
 
@@ -27,7 +27,7 @@ namespace FakeServer.Test
                           }
                     }";
 
-            var results = await GraphQL.GraphQL.HandleQuery(q, ds);
+            var results = GraphQL.GraphQL.HandleQuery(q, ds);
 
             var js = JsonConvert.SerializeObject(results);
 
@@ -40,12 +40,12 @@ namespace FakeServer.Test
         [InlineData("query { users { name }}")]
         [InlineData("query someName { users { name }}")]
         [InlineData("{ users { name }}")]
-        public async Task Query_Users(string q)
+        public void Query_Users(string q)
         {
             var filePath = UTHelpers.Up();
 
             var ds = new DataStore(filePath);
-            var results = await GraphQL.GraphQL.HandleQuery(q, ds);
+            var results = GraphQL.GraphQL.HandleQuery(q, ds);
 
             Assert.Equal(4, results.Data["users"].Count);
 
@@ -53,7 +53,7 @@ namespace FakeServer.Test
         }
 
         [Fact]
-        public async Task Query_Errors()
+        public void Query_Errors()
         {
             var filePath = UTHelpers.Up();
 
@@ -61,7 +61,7 @@ namespace FakeServer.Test
 
             var q = @" {  }";
 
-            var results = await GraphQL.GraphQL.HandleQuery(q, ds);
+            var results = GraphQL.GraphQL.HandleQuery(q, ds);
 
             Assert.Single(results.Errors);
 
@@ -69,7 +69,7 @@ namespace FakeServer.Test
         }
 
         [Fact]
-        public async Task Mutation_Add_User()
+        public void Mutation_Add_User()
         {
             var filePath = UTHelpers.Up();
 
@@ -91,7 +91,7 @@ namespace FakeServer.Test
                           }
                     }";
 
-            var results = await GraphQL.GraphQL.HandleQuery(muation, ds);
+            var results = GraphQL.GraphQL.HandleQuery(muation, ds);
 
             var id = ((dynamic)results.Data["users"]).id;
             var item = ds.GetCollection("users").AsQueryable().First(e => e.id == id);
@@ -103,7 +103,7 @@ namespace FakeServer.Test
         }
 
         [Fact]
-        public async Task Mutation_Add_User_With_Child()
+        public void Mutation_Add_User_With_Child()
         {
             var filePath = UTHelpers.Up();
 
@@ -131,7 +131,7 @@ namespace FakeServer.Test
                           }
                     }";
 
-            var results = await GraphQL.GraphQL.HandleQuery(muation, ds);
+            var results = GraphQL.GraphQL.HandleQuery(muation, ds);
 
             var id = ((dynamic)results.Data["users"]).id;
             var item = ds.GetCollection("users").AsQueryable().First(e => e.id == id);
@@ -144,7 +144,7 @@ namespace FakeServer.Test
         }
 
         [Fact]
-        public async Task Mutation_Add_User_With_ChildList()
+        public void Mutation_Add_User_With_ChildList()
         {
             var filePath = UTHelpers.Up();
 
@@ -179,7 +179,7 @@ namespace FakeServer.Test
                           }
                     }";
 
-            var results = await GraphQL.GraphQL.HandleQuery(muation, ds);
+            var results = GraphQL.GraphQL.HandleQuery(muation, ds);
 
             var id = ((dynamic)results.Data["families"]).id;
             var item = ds.GetCollection("families").AsQueryable().First(e => e.id == id);
@@ -193,7 +193,7 @@ namespace FakeServer.Test
         }
 
         [Fact]
-        public async Task Mutation_Update_User()
+        public void Mutation_Update_User()
         {
             var filePath = UTHelpers.Up();
 
@@ -216,7 +216,7 @@ namespace FakeServer.Test
                           }
                     }";
 
-            var results = await GraphQL.GraphQL.HandleQuery(muation, ds);
+            var results = GraphQL.GraphQL.HandleQuery(muation, ds);
 
             var id = ((dynamic)results.Data["users"]).id;
             Assert.Equal(2, id);
@@ -235,7 +235,7 @@ namespace FakeServer.Test
         }
 
         [Fact]
-        public async Task Mutation_Replace_User_With_Child()
+        public void Mutation_Replace_User_With_Child()
         {
             var filePath = UTHelpers.Up();
 
@@ -268,7 +268,7 @@ namespace FakeServer.Test
                           }
                     }";
 
-            var results = await GraphQL.GraphQL.HandleQuery(muation, ds);
+            var results = GraphQL.GraphQL.HandleQuery(muation, ds);
 
             var item = ds.GetCollection("users").AsQueryable().First(e => e.id == 2);
 
@@ -283,7 +283,7 @@ namespace FakeServer.Test
         }
 
         [Fact]
-        public async Task Mutation_Delete_User()
+        public void Mutation_Delete_User()
         {
             var filePath = UTHelpers.Up();
 
@@ -299,7 +299,7 @@ namespace FakeServer.Test
                           })
                     }";
 
-            var results = await GraphQL.GraphQL.HandleQuery(muation, ds);
+            var results = GraphQL.GraphQL.HandleQuery(muation, ds);
 
             var success = results.Data["Result"];
             Assert.True(success);
