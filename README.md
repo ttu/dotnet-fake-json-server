@@ -1057,7 +1057,7 @@ Example: get `familyName` and `age` of the `children` from `families` where `id`
 Execute query with curl:
 
 ```sh
-$ curl -H "Content-type: application/graphql" -X POST -d '{ families(id: 1) { familyName children { age } } users { name } }' http://localhost:57602/graphql
+$ curl -H "Content-type: application/graphql" -X POST -d "{ families(id: 1) { familyName children { age } } users { name } }" http://localhost:57602/graphql
 ```
 
 Respose:
@@ -1129,7 +1129,7 @@ mutation {
 Execute mutation with curl:
 
 ```sh
-$ curl -H "Content-type: application/graphql" -X POST -d 'mutation { addUsers(input: { users: { name: James work: { name: ACME } } }) { users { id name } } }' http://localhost:57602/graphql
+$ curl -H "Content-type: application/graphql" -X POST -d "mutation { addUsers(input: { users: { name: James work: { name: ACME } } }) { users { id name } } }" http://localhost:57602/graphql
 ```
 
 Response:
@@ -1167,7 +1167,7 @@ mutation {
 Execute mutation with curl:
 
 ```sh
-$ curl -H "Content-type: application/graphql" -X POST -d 'mutation { updateUsers(input: { id: 2 patch:{ name: Timothy } }) { users { id name age }}}' http://localhost:57602/graphql
+$ curl -H "Content-type: application/graphql" -X POST -d "mutation { updateUsers(input: { id: 2 patch:{ name: Timothy } }) { users { id name age }}}" http://localhost:57602/graphql
 ```
 
 Response:
@@ -1215,7 +1215,7 @@ mutation {
 Execute mutation with curl:
 
 ```sh
-$ curl -H "Content-type: application/graphql" -X POST -d 'mutation { replaceUsers(input: { id: 1 users: { name: Rick age: 44 workplace: { name: ACME } } }) {users {id name age}}}' http://localhost:57602/graphql
+$ curl -H "Content-type: application/graphql" -X POST -d "mutation { replaceUsers(input: { id: 1 users: { name: Rick age: 44 workplace: { name: ACME } } }) {users {id name age}}}" http://localhost:57602/graphql
 ```
 
 Response:
@@ -1248,7 +1248,7 @@ mutation {
 Execute mutation with curl:
 
 ```sh
-$ curl -H "Content-type: application/graphql" -X POST -d 'mutation { deleteUsers(input: { id: 4 }) }' http://localhost:57602/graphql
+$ curl -H "Content-type: application/graphql" -X POST -d "mutation { deleteUsers(input: { id: 4 }) }" http://localhost:57602/graphql
 ```
 
 Response:
