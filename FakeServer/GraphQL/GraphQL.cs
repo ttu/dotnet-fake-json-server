@@ -284,7 +284,7 @@ namespace FakeServer.GraphQL
                         var r = ResolveField(item, rootObject, i.Value);
                         rootObject = r.Data;
                     }
-
+                    
                     if (rootObject != null)
                         result.Add(rootObject);
                 }
@@ -332,6 +332,9 @@ namespace FakeServer.GraphQL
                         if (rootObject != null)
                             newArray.Add(rootObject);
                     }
+
+                    if (f.Arguments.Any() && newArray.Count == 0)
+                        target = null;
                 }
                 else
                 {

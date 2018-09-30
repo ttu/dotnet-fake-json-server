@@ -33,6 +33,8 @@ namespace FakeServer.Test
 
             Assert.NotEmpty(js);
 
+            Assert.Equal(4, results.Data["families"].Count);
+
             UTHelpers.Down(filePath);
         }
 
