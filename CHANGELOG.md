@@ -1,6 +1,8 @@
 # Changelog
 
 ### [Unreleased]
+
+### [0.7.0] - 2018-09-30
 * JWT blacklist to check token identifier from JWT ID (jti)
 * Add query support for sorting
 * Fix for HEAD method use and ETag to support HEAD method
