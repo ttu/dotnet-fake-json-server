@@ -42,7 +42,6 @@ namespace FakeServer
             var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production";
 
             Configuration = new ConfigurationBuilder()
-                       .SetBasePath(Directory.GetCurrentDirectory())
                        .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                        .AddJsonFile($"appsettings.{env}.json", optional: true)
                        .AddJsonFile("authentication.json", optional: true, reloadOnChange: true)

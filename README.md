@@ -41,6 +41,7 @@ Fake JSON Server is a Fake REST API that can be used as a Back End for prototypi
  
 * ASP.NET Core 2.1 / C# 7
 * Uses [JSON Flat File Data Store](https://github.com/ttu/json-flatfile-datastore) to store data
+* Can be installed as a dotnet global tool [#](#install-as-a-dotnet-global-tool)
 * Can be used without .NET
   * Docker [#](#docker) 
   * Self-contained Application [#](#self-contained-application)
@@ -52,6 +53,7 @@ Fake JSON Server is a Fake REST API that can be used as a Back End for prototypi
 
 - [Get started](#get-started)
     + [Start with .NET CLI](#start-with-net-cli)
+    + [Install as a dotnet global tool](#install-as-a-dotnet-global-tool)
     + [Docker](#docker)
     + [Self-contained Application](#self-contained-application)
     + [Quick example](#quick-example)
@@ -133,6 +135,18 @@ $ dotnet run [--file] [--urls]
 
 # Example: Start server
 $ dotnet run --file data.json --urls http://localhost:57602
+```
+
+#### Install as a dotnet global tool
+ 
+Server can be installed as a [dotnet global tool](https://docs.microsoft.com/en-us/dotnet/core/tools/global-tools). Settings files are then located at `%USERPROFILE%\.dotnet\tools` (_Windows_) and `$HOME/.dotnet/tools` (_Linux/macOS_). By default data stores's JSON file will be created to execution directory.
+
+```sh
+# install as a global tool
+$ dotnet install --global FakeServer
+
+# Example: Start server
+$ fake-server --file data.json --urls http://localhost:57602
 ```
 
 #### Docker
