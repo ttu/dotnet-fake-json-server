@@ -16,6 +16,8 @@ namespace FakeServer
 
         public static IConfiguration Configuration { get; set; }
 
+        private static string _defaultStoreFile = "datastore.json";
+
         public static void Main(string[] args)
         {
             var dictionary = new Dictionary<string, string>();
@@ -27,7 +29,7 @@ namespace FakeServer
 
             dictionary.TryGetValue("--file", out string file);
 
-            Console.WriteLine($"File: {file ?? "use default"}");
+            Console.WriteLine($"File: {file ?? _defaultStoreFile}");
 
             foreach (var kvp in dictionary)
             {
@@ -37,7 +39,7 @@ namespace FakeServer
             MainConfiguration.Add("currentPath", Directory.GetCurrentDirectory());
 
             if (!MainConfiguration.ContainsKey("file"))
-                MainConfiguration.Add("file", file ?? "datastore.json");
+                MainConfiguration.Add("file", file ?? _defaultStoreFile);
 
             var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production";
 
