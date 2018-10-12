@@ -63,7 +63,7 @@ namespace FakeServer
 
             try
             {
-                Log.Information("Starting Clark Account API web host.");
+                Log.Information("Starting Fake JSON Server");
                 BuildWebHost(args).Run();
             }
             catch (Exception ex)
