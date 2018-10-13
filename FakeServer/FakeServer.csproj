@@ -5,7 +5,7 @@
     <RuntimeIdentifiers>win-x64;osx-x64;linux-x64</RuntimeIdentifiers>
 	<PackAsTool>true</PackAsTool>
 	<IsPackable>true</IsPackable>
-    <ToolCommandName>fake-server</ToolCommandName>
+	<ToolCommandName>fake-server</ToolCommandName>
 	<PackageId>FakeServer</PackageId>
     <Authors>Tomi Tuhkanen</Authors>
     <Company />
