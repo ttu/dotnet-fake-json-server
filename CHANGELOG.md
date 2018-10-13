@@ -1,6 +1,8 @@
 # Changelog
 
 ### [Unreleased]
+* Release as a dotnet tool
+* Use executable location as a base path for settings files
 
 ### [0.7.0] - 2018-09-30
 * JWT blacklist to check token identifier from JWT ID (jti)

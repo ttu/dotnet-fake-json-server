@@ -3,10 +3,14 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <RuntimeIdentifiers>win-x64;osx-x64;linux-x64</RuntimeIdentifiers>
+	<PackAsTool>true</PackAsTool>
+	<IsPackable>true</IsPackable>
+	<ToolCommandName>fake-server</ToolCommandName>
+	<PackageId>FakeServer</PackageId>
     <Authors>Tomi Tuhkanen</Authors>
     <Company />
     <Description>Fake JSON Server</Description>
-    <Version>0.7.0</Version>
+    <Version>0.8.0-rc</Version>
     <PackageProjectUrl>https://github.com/ttu/dotnet-fake-json-server</PackageProjectUrl>
     <RepositoryUrl>https://github.com/ttu/dotnet-fake-json-server</RepositoryUrl>
     <PackageLicenseUrl>https://raw.githubusercontent.com/ttu/dotnet-fake-json-server/master/LICENSE</PackageLicenseUrl>
@@ -28,22 +32,22 @@
     <Content Include="wwwroot\index.html" />
   </ItemGroup>-->
   <ItemGroup>
-    <PackageReference Include="GraphQL" Version="2.0.0" />
+    <PackageReference Include="GraphQL" Version="2.1.0" />
     <PackageReference Include="JsonFlatFileDataStore" Version="2.0.0" />
-    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.4.1" />
-    <PackageReference Include="Microsoft.AspNetCore" Version="2.1.3" />
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.5.0" />
+    <PackageReference Include="Microsoft.AspNetCore" Version="2.1.4" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="2.1.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.1.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.1.3" />
     <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.WebSockets" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.1.1" />
     <PackageReference Include="Serilog.AspNetCore" Version="2.1.1" />
     <PackageReference Include="Serilog.Extensions.Logging" Version="2.0.2" />
-    <PackageReference Include="Serilog.Settings.Configuration" Version="2.6.1" />
+    <PackageReference Include="Serilog.Settings.Configuration" Version="3.0.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
     <PackageReference Include="Serilog.Sinks.RollingFile" Version="3.3.0" />
-    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.0.8.17" />
+    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.0.8.18" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="3.0.0" />
     <PackageReference Include="System.Reflection.TypeExtensions" Version="4.5.1" />
   </ItemGroup>
@@ -51,6 +55,12 @@
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="1.0.0" />
   </ItemGroup>
   <ItemGroup>
+    <Content Update="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="authentication.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Update="datastore.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
