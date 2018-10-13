@@ -1,8 +1,11 @@
 # Changelog
 
 ### [Unreleased]
+
+### [0.8.0] - 2018-10-14
 * Release as a dotnet tool
 * Use executable location as a base path for settings files
+* Add Serilog to appsettings and required package for console logging
 
 ### [0.7.0] - 2018-09-30
 * JWT blacklist to check token identifier from JWT ID (jti)
