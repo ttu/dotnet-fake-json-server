@@ -58,6 +58,7 @@ Fake JSON Server is a Fake REST API that can be used as a Back End for prototypi
     + [Self-contained Application](#self-contained-application)
     + [Quick example](#quick-example)
     + [Example project](#example-project)
+    + [Example queries](#example-queries)
 - [Features](#features-1)
   * [Authentication](#authentication)
     + [Token Authentication](#token-authentication)
@@ -235,6 +236,10 @@ $ curl http://localhost:57602/api/users/
 #### Example project
 
 [Redux TodoMVC example](https://github.com/ttu/todomvc-fake-server) modified to use Fake JSON Server as a Back End.
+
+#### Example queries
+
+Example queries are in [Insomnia](https://insomnia.rest/) workspace format in [FakeServer_Insomnia_Workspace.json](https://github.com/ttu/dotnet-fake-json-server/blob/master/docs/FakeServer_Insomnia_Workspace.json). 
 
 ## Features
 
