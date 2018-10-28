@@ -47,6 +47,24 @@ namespace FakeServer.Common
     {
         public static PaginationHeader GetPaginationHeader(string url, int totalCount, int skip, int take, string skipWord, string takeWord)
         {
+            if (skipWord == "page" && takeWord == "per_page")
+            {
+                int totalPages = totalCount / take;
+                if (totalCount % take != 0)
+                {
+                    totalPages += 1;
+                }
+                
+                int page = (skip / take) + 1;
+                return new PaginationHeader
+                {
+                    Prev = page > 1 ? $"{url}?{skipWord}={(page - 1)}&{takeWord}={take}" : string.Empty,
+                    Next = page < totalPages ? $"{url}?{skipWord}={(page + 1)}&{takeWord}={take}" : string.Empty,
+                    First = page != 1 ? $"{url}?{skipWord}=1&{takeWord}={take}" : string.Empty,
+                    Last = page != totalPages ? $"{url}?{skipWord}={totalPages}&{takeWord}={take}" : string.Empty
+                };
+            }
+
             return new PaginationHeader
             {
                 Prev = skip > 0 ? $"{url}?{skipWord}={(skip - take > 0 ? skip - take : 0)}&{takeWord}={(take - skip < 0 ? take : skip)}" : string.Empty,
@@ -79,7 +97,7 @@ namespace FakeServer.Common
                 ["results"] = results,
                 ["link"] = pg,
                 ["count"] = totalCount,
-                [options.SkipWord] = options.Skip,
+                [options.SkipWord] = options.SkipWord == "page" ? (options.Skip / options.Take) + 1 : options.Skip,
                 [options.TakeWord] = options.Take
             };
 
@@ -108,6 +126,18 @@ namespace FakeServer.Common
                 take = Convert.ToInt32(query["limit"]);
                 queryParams.Remove("limit");
                 takeWord = "limit";
+            }
+
+            if (queryParams.Contains("per_page"))
+            {
+                queryParams.Remove("per_page");
+                takeWord = "per_page";
+            }
+
+            if (queryParams.Contains("page"))
+            {
+                queryParams.Remove("page");
+                skipWord = "page";
             }
 
             if (queryParams.Contains("q"))

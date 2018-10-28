@@ -54,20 +54,23 @@ namespace FakeServer.Controllers
         /// <remarks>
         /// Add filtering with query parameters. E.q. /api/users?age=22&amp;name=Phil (not possible with Swagger)
         ///
-        /// Optional parameter names skip/take and offset/limit:
+        /// Optional parameter names skip/take and offset/limit and page/per_page:
         /// /api/users?skip=10&amp;take=20
         /// /api/users?offset=10&amp;limit=20
-        /// </remarks>
+        /// /api/users?page=2&amp;per_page=20
+        ///  </remarks>
         /// <param name="collectionId">Collection id</param>
         /// <param name="skip">Items to skip (optional name offset)</param>
         /// <param name="take">Items to take (optional name limit)</param>
+        /// <param name="page">Page number of items to get</param>
+        /// <param name="per_page">Number of items to get per page</param>
         /// <returns>List of items</returns>
         /// <response code="200">Collection item array</response>
         /// <response code="400">Invalid query parameters</response>
         /// <response code="404">Collection not found</response>
         [HttpGet("{collectionId}")]
         [HttpHead("{collectionId}")]
-        public IActionResult GetItems(string collectionId, int skip = 0, int take = 512)
+        public IActionResult GetItems(string collectionId, int skip = 0, int take = 512, int? page = null, int? per_page = null)
         {
             var found = _ds.GetKeys().TryGetValue(collectionId, out var itemType);
 
@@ -77,7 +80,19 @@ namespace FakeServer.Controllers
             if (itemType == JsonFlatFileDataStore.ValueType.Item)
                 return GetSingleItem(collectionId);
             else
+            {
+                if (per_page != null)
+                {
+                    take = per_page.Value;
+                }
+
+                if (page != null && per_page != null)
+                {
+                    skip = (page.Value - 1) * take;
+                }
+
                 return GetCollectionItem(collectionId, skip, take);
+            }
         }
 
         private IActionResult GetSingleItem(string itemId)
