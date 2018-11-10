@@ -49,13 +49,8 @@ namespace FakeServer.Common
         {
             if (skipWord == "page" && takeWord == "per_page")
             {
-                int totalPages = totalCount / take;
-                if (totalCount % take != 0)
-                {
-                    totalPages += 1;
-                }
-                
-                int page = (skip / take) + 1;
+                var totalPages = totalCount / take + (totalCount % take != 0 ? 1 : 0);
+                var page = (skip / take) + 1;
                 return new PaginationHeader
                 {
                     Prev = page > 1 ? $"{url}?{skipWord}={(page - 1)}&{takeWord}={take}" : string.Empty,
@@ -130,12 +125,16 @@ namespace FakeServer.Common
 
             if (queryParams.Contains("per_page"))
             {
+                take = Convert.ToInt32(query["per_page"]);
                 queryParams.Remove("per_page");
                 takeWord = "per_page";
             }
 
             if (queryParams.Contains("page"))
             {
+                var page = Convert.ToInt32(query["page"]);
+                skip = (page - 1) * take;
+
                 queryParams.Remove("page");
                 skipWord = "page";
             }
@@ -163,6 +162,38 @@ namespace FakeServer.Common
 
             return new QueryOptions { Skip = skip, Take = take, SkipWord = skipWord, TakeWord = takeWord, IsTextSearch = isTextSearch, 
                 Fields = fields, SortFields = sortFields, QueryParams = queryParams };
+        }
+
+        public static bool IsQueryValid(IQueryCollection query)
+        {
+            if ((query.ContainsKey("skip") || query.ContainsKey("take"))
+                && (query.ContainsKey("offset") 
+                    || query.ContainsKey("limit")
+                    || query.ContainsKey("page") 
+                    || query.ContainsKey("per_page")))
+            {
+                return false;
+            }
+
+            if ((query.ContainsKey("offset") || query.ContainsKey("limit"))
+                && (query.ContainsKey("skip") 
+                    || query.ContainsKey("take")
+                    || query.ContainsKey("page") 
+                    || query.ContainsKey("per_page")))
+            {
+                return false;
+            }
+
+            if ((query.ContainsKey("page") || query.ContainsKey("per_page"))
+                && (query.ContainsKey("skip") 
+                    || query.ContainsKey("take")
+                    || query.ContainsKey("offset") 
+                    || query.ContainsKey("limit")))
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }

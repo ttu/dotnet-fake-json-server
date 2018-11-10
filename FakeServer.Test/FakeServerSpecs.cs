@@ -72,6 +72,76 @@ namespace FakeServer.Test
         }
 
         [Fact]
+        public async Task GetUsers_Skip()
+        {
+            using (var client = new HttpClient())
+            {
+                var result = await client.GetAsync($"{_fixture.BaseUrl}/api/users?skip=1");
+                result.EnsureSuccessStatusCode();
+
+                var items = JsonConvert.DeserializeObject<IEnumerable<JObject>>(await result.Content.ReadAsStringAsync());
+                Assert.Equal(3, items.Count());
+                Assert.Equal("2", items.First()["id"]);
+            }
+        }
+
+        [Fact]
+        public async Task GetUsers_Take()
+        {
+            using (var client = new HttpClient())
+            {
+                var result = await client.GetAsync($"{_fixture.BaseUrl}/api/users?take=2");
+                result.EnsureSuccessStatusCode();
+
+                var items = JsonConvert.DeserializeObject<IEnumerable<JObject>>(await result.Content.ReadAsStringAsync());
+                Assert.Equal(2, items.Count());
+                Assert.Equal("1", items.First()["id"]);
+            }
+        }
+
+        [Fact]
+        public async Task GetUsers_OffsetLimit()
+        {
+            using (var client = new HttpClient())
+            {
+                var result = await client.GetAsync($"{_fixture.BaseUrl}/api/users?offset=1&limit=2");
+                result.EnsureSuccessStatusCode();
+
+                var items = JsonConvert.DeserializeObject<IEnumerable<JObject>>(await result.Content.ReadAsStringAsync());
+                Assert.Equal(2, items.Count());
+                Assert.Equal("2", items.First()["id"]);
+            }
+        }
+
+        [Fact]
+        public async Task GetUsers_Offset()
+        {
+            using (var client = new HttpClient())
+            {
+                var result = await client.GetAsync($"{_fixture.BaseUrl}/api/users?offset=1");
+                result.EnsureSuccessStatusCode();
+
+                var items = JsonConvert.DeserializeObject<IEnumerable<JObject>>(await result.Content.ReadAsStringAsync());
+                Assert.Equal(3, items.Count());
+                Assert.Equal("2", items.First()["id"]);
+            }
+        }
+
+        [Fact]
+        public async Task GetUsers_Limit()
+        {
+            using (var client = new HttpClient())
+            {
+                var result = await client.GetAsync($"{_fixture.BaseUrl}/api/users?limit=2");
+                result.EnsureSuccessStatusCode();
+
+                var items = JsonConvert.DeserializeObject<IEnumerable<JObject>>(await result.Content.ReadAsStringAsync());
+                Assert.Equal(2, items.Count());
+                Assert.Equal("1", items.First()["id"]);
+            }
+        }
+
+        [Fact]
         public async Task GetUsers_Page_And_Per_Page()
         {
             using (var client = new HttpClient())
@@ -82,6 +152,78 @@ namespace FakeServer.Test
                 var items = JsonConvert.DeserializeObject<IEnumerable<JObject>>(await result.Content.ReadAsStringAsync());
                 Assert.Equal(2, items.Count());
                 Assert.Equal("3", items.First()["id"]);
+            }
+        }
+
+        [Fact]
+        public async Task GetUsers_Page()
+        {
+            using (var client = new HttpClient())
+            {
+                var result = await client.GetAsync($"{_fixture.BaseUrl}/api/users?page=1");
+                result.EnsureSuccessStatusCode();
+
+                var items = JsonConvert.DeserializeObject<IEnumerable<JObject>>(await result.Content.ReadAsStringAsync());
+                Assert.Equal(4, items.Count());
+                Assert.Equal("1", items.First()["id"]);
+            }
+        }
+
+        [Fact]
+        public async Task GetUsers_Per_Page()
+        {
+            using (var client = new HttpClient())
+            {
+                var result = await client.GetAsync($"{_fixture.BaseUrl}/api/users?per_page=2");
+                result.EnsureSuccessStatusCode();
+
+                var items = JsonConvert.DeserializeObject<IEnumerable<JObject>>(await result.Content.ReadAsStringAsync());
+                Assert.Equal(2, items.Count());
+                Assert.Equal("1", items.First()["id"]);
+            }
+        }
+
+        [Fact]
+        public async Task GetUsers_PageDoesNotExist_ReturnsEmptyList()
+        {
+            using (var client = new HttpClient())
+            {
+                var result = await client.GetAsync($"{_fixture.BaseUrl}/api/users?page=4");
+                result.EnsureSuccessStatusCode();
+
+                var items = JsonConvert.DeserializeObject<IEnumerable<JObject>>(await result.Content.ReadAsStringAsync());
+                Assert.Empty(items);
+            }
+        }
+
+        [Theory]
+        [InlineData("skip=2&limit=10")]
+        [InlineData("skip=2&per_page=10")]
+        [InlineData("offset=2&take=10")]
+        [InlineData("offset=2&per_page=10")]
+        [InlineData("page=2&take=10")]
+        [InlineData("page=2&limit=10")]
+        [InlineData("take=10&limit=10")]
+        [InlineData("take=10&per_page=10")]
+        [InlineData("skip=2&offset=2&limit=10")]
+        [InlineData("take=10&offset=2&limit=10")]
+        [InlineData("skip=2&page=2&per_page=10")]
+        [InlineData("take=10&page=2&per_page=10")]
+        [InlineData("offset=2&page=2&per_page=10")]
+        [InlineData("limit=10&page=2&per_page=10")]
+        [InlineData("page=1&skip=2&take=10")]
+        [InlineData("per_page=10&skip=2&take=10")]
+        [InlineData("page=1&offset=2&limit=10")]
+        [InlineData("per_page=10&offset=2&limit=10")]
+        [InlineData("skip=2&take=2&offset=2&limit=10")]
+        [InlineData("offset=2&limit=10&page=2&per_page=10")]
+        [InlineData("skip=2&take=2&offset=2&limit=10&page=2&per_page=10")]
+        public async Task GetUsers_InvalidPagingCombinations_BadRequest(string queryParams)
+        {
+            using (var client = new HttpClient())
+            {
+                var result = await client.GetAsync($"{_fixture.BaseUrl}/api/users?{queryParams}");
+                Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
             }
         }
 

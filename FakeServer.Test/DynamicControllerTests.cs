@@ -231,7 +231,7 @@ namespace FakeServer.Test
             controller.ControllerContext.HttpContext = new DefaultHttpContext();
             controller.ControllerContext.HttpContext.Request.QueryString = new QueryString("?page=1&per_page=12");
 
-            var result = controller.GetItems("families", page: 1, per_page: 12) as OkObjectResult;
+            var result = controller.GetItems("families", 1, 12) as OkObjectResult;
 
             var resultObject = JsonConvert.DeserializeObject<dynamic>(JsonConvert.SerializeObject(result.Value));
 

@@ -62,15 +62,13 @@ namespace FakeServer.Controllers
         /// <param name="collectionId">Collection id</param>
         /// <param name="skip">Items to skip (optional name offset)</param>
         /// <param name="take">Items to take (optional name limit)</param>
-        /// <param name="page">Page number of items to get</param>
-        /// <param name="per_page">Number of items to get per page</param>
         /// <returns>List of items</returns>
         /// <response code="200">Collection item array</response>
         /// <response code="400">Invalid query parameters</response>
         /// <response code="404">Collection not found</response>
         [HttpGet("{collectionId}")]
         [HttpHead("{collectionId}")]
-        public IActionResult GetItems(string collectionId, int skip = 0, int take = 512, int? page = null, int? per_page = null)
+        public IActionResult GetItems(string collectionId, int skip = 0, int take = 512)
         {
             var found = _ds.GetKeys().TryGetValue(collectionId, out var itemType);
 
@@ -81,16 +79,9 @@ namespace FakeServer.Controllers
                 return GetSingleItem(collectionId);
             else
             {
-                if (per_page != null)
-                {
-                    take = per_page.Value;
-                }
-
-                if (page != null && per_page != null)
-                {
-                    skip = (page.Value - 1) * take;
-                }
-
+                if (!QueryHelper.IsQueryValid(Request.Query))
+                    return BadRequest();
+                
                 return GetCollectionItem(collectionId, skip, take);
             }
         }
