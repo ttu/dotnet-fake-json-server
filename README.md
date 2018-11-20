@@ -106,6 +106,7 @@ Fake JSON Server is a Fake REST API that can be used as a Back End for prototypi
       - [Replace item](#replace-item-1)
       - [Delete item](#delete-item-1)
   * [Simulate Delay and Random Errors](#simulate-delay-and-random-errors)
+- [Logging](#logging)
 - [Guidelines](#guidelines)
 - [Other Links](#other-links)
 - [Releases](#releases)
@@ -1310,6 +1311,21 @@ Random errors can be simulated by setting `Simulate.Error.Enabled` to _true_. Er
 ```
 
 Error simulation is always skipped for Swagger, WebSocket (ws) and for any html file.
+
+## Logging
+
+Fake JSON Server writes a log file to the application base path (execution folder).
+
+Console logging can be enabled from `appsettings.json` by adding a new item to _Serilog.WriteTo_-array.
+
+```json
+"Serilog": {
+  "WriteTo": [
+    { "Name": "File" },
+    { "Name": "Console" }
+  ]
+}
+```
 
 ## Guidelines
 

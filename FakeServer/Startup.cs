@@ -12,9 +12,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.PlatformAbstractions;
-using Serilog;
 using Swashbuckle.AspNetCore.Swagger;
 using System.IO;
 
@@ -93,21 +91,8 @@ namespace FakeServer
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IApplicationLifetime appLifetime)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IApplicationLifetime appLifetime)
         {
-            loggerFactory.AddConsole(Configuration.GetSection("Logging"));
-            loggerFactory.AddDebug();
-
-            loggerFactory.AddSerilog();
-            // Ensure any buffered events are sent at shutdown
-            appLifetime.ApplicationStopped.Register(Log.CloseAndFlush);
-
-            // Server is used as an API, so we rarely need exception page
-            //if (env.IsDevelopment())
-            //{
-            //    app.UseDeveloperExceptionPage();
-            //}
-
             app.UseCors("AllowAnyPolicy");
 
             app.UseMiddleware<HttpOptionsMiddleware>();
