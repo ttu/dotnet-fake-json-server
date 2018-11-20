@@ -12,13 +12,51 @@ namespace FakeServer
 {
     public class Program
     {
-        public static Dictionary<string, string> MainConfiguration = new Dictionary<string, string>();
+        public static int Main(string[] args)
+        {
+            var inMemoryCollection = ParseInMemoryCollection(args);
 
-        public static IConfiguration Configuration { get; set; }
+            Console.WriteLine($"File: {inMemoryCollection["file"]}");
 
-        private static string _defaultStoreFile = "datastore.json";
+            var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production";
 
-        public static void Main(string[] args)
+            var config = new ConfigurationBuilder()
+                       .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                       .AddJsonFile($"appsettings.{env}.json", optional: true)
+                       .AddJsonFile("authentication.json", optional: true, reloadOnChange: true)
+                       .AddInMemoryCollection(inMemoryCollection)
+                       .AddEnvironmentVariables()
+                       .Build();
+
+            Log.Logger = new LoggerConfiguration()
+                .ReadFrom.Configuration(config)
+                .WriteTo.RollingFile(Path.Combine(PlatformServices.Default.Application.ApplicationBasePath, "log-{Date}.txt"))
+                .CreateLogger();
+
+            try
+            {
+                Log.Information("Starting Fake JSON Server");
+                BuildWebHost(args, config).Build().Run();
+                return 0;
+            }
+            catch (Exception ex)
+            {
+                Log.Fatal(ex, "Host terminated unexpectedly");
+                return 1;
+            }
+            finally
+            {
+                Log.CloseAndFlush();
+            }
+        }
+
+        public static IWebHostBuilder BuildWebHost(string[] args, IConfigurationRoot config) =>
+           WebHost.CreateDefaultBuilder(args)
+               .UseConfiguration(config)
+               .UseStartup<Startup>()
+               .UseSerilog();
+
+        private static Dictionary<string, string> ParseInMemoryCollection(string[] args)
         {
             var dictionary = new Dictionary<string, string>();
 
@@ -27,77 +65,22 @@ namespace FakeServer
                 dictionary.Add(args[idx], args[idx + 1]);
             }
 
-            dictionary.TryGetValue("--file", out string file);
-
-            Console.WriteLine($"File: {file ?? _defaultStoreFile}");
+            var inMemoryCollection = new Dictionary<string, string>();
 
             foreach (var kvp in dictionary)
             {
-                MainConfiguration.Add(kvp.Key.Replace("-", ""), kvp.Value);
+                inMemoryCollection.Add(kvp.Key.Replace("-", ""), kvp.Value);
             }
 
-            MainConfiguration.Add("currentPath", Directory.GetCurrentDirectory());
+            inMemoryCollection.TryAdd("currentPath", Directory.GetCurrentDirectory());
 
-            if (!MainConfiguration.ContainsKey("file"))
-                MainConfiguration.Add("file", file ?? _defaultStoreFile);
-
-            var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production";
-
-            Configuration = new ConfigurationBuilder()
-                       .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                       .AddJsonFile($"appsettings.{env}.json", optional: true)
-                       .AddJsonFile("authentication.json", optional: true, reloadOnChange: true)
-                       .AddInMemoryCollection(MainConfiguration)
-                       .AddEnvironmentVariables()
-                       .Build();
-
-            var logConfig = new LoggerConfiguration()
-                .ReadFrom.Configuration(Configuration)
-                .WriteTo.RollingFile(Path.Combine(PlatformServices.Default.Application.ApplicationBasePath, "log-{Date}.txt"));
-
-            if (env == "Production")
-                logConfig = logConfig.MinimumLevel.Error();
-            else
-                logConfig = logConfig.MinimumLevel.Information();
-
-            Log.Logger = logConfig.CreateLogger();
-
-            try
+            if (!inMemoryCollection.ContainsKey("file"))
             {
-                Log.Information("Starting Fake JSON Server");
-                BuildWebHost(args).Run();
+                dictionary.TryGetValue("--file", out string file);
+                inMemoryCollection.Add("file", file ?? "datastore.json");
             }
-            catch (Exception ex)
-            {
-                Log.Fatal(ex, "Host terminated unexpectedly");
-            }
-            finally
-            {
-                Log.CloseAndFlush();
-            }
+
+            return inMemoryCollection;
         }
-
-        public static IWebHost BuildWebHost(string[] args) =>
-           WebHost.CreateDefaultBuilder(args)
-               .UseConfiguration(Configuration)
-               .UseStartup<Startup>()
-               .UseSerilog()
-               .Build();
     }
-
-    //var config = new ConfigurationBuilder()
-    //           .AddCommandLine(args)
-    //           .Build();
-
-    //        var builder = new WebHostBuilder()
-    //            .UseKestrel()
-    //            .UseContentRoot(Directory.GetCurrentDirectory())
-    //            .UseConfiguration(config)
-    //            .UseIISIntegration()
-    //            .UseStartup<Startup>()
-    //            .UseApplicationInsights();
-
-    //        var host = builder.Build();
-    //        host.Run();
-    //    }
 }
