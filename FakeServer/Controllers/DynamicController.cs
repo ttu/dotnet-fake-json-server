@@ -54,10 +54,11 @@ namespace FakeServer.Controllers
         /// <remarks>
         /// Add filtering with query parameters. E.q. /api/users?age=22&amp;name=Phil (not possible with Swagger)
         ///
-        /// Optional parameter names skip/take and offset/limit:
+        /// Optional parameter names skip/take and offset/limit and page/per_page:
         /// /api/users?skip=10&amp;take=20
         /// /api/users?offset=10&amp;limit=20
-        /// </remarks>
+        /// /api/users?page=2&amp;per_page=20
+        ///  </remarks>
         /// <param name="collectionId">Collection id</param>
         /// <param name="skip">Items to skip (optional name offset)</param>
         /// <param name="take">Items to take (optional name limit)</param>
@@ -77,7 +78,12 @@ namespace FakeServer.Controllers
             if (itemType == JsonFlatFileDataStore.ValueType.Item)
                 return GetSingleItem(collectionId);
             else
+            {
+                if (!QueryHelper.IsQueryValid(Request.Query))
+                    return BadRequest();
+                
                 return GetCollectionItem(collectionId, skip, take);
+            }
         }
 
         private IActionResult GetSingleItem(string itemId)

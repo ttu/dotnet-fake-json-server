@@ -1,6 +1,7 @@
 # Changelog
 
 ### [Unreleased]
+* Add support for paging with page and per_page
 
 ### [0.8.0] - 2018-10-14
 * Release as a dotnet tool

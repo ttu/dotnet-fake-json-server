@@ -627,15 +627,17 @@ $ curl http://localhost:57602/api/configuration
 
 ##### Slice
 
-Slicing can be defined with `skip`/`take` or with `offset`/`limit` parameters. By default request returns the first 512 items.
+Slicing can be defined with `skip`/`take`, `offset`/`limit` or `page`/`per_page` parameters. By default request returns the first 512 items.
 
-Example request returns items from 6 to 26.
+Example request returns items from 11 to 20.
 
 ```sh
 # skip and take
-$ curl 'http://localhost:57602/api/users?skip=5&take=20'
+$ curl 'http://localhost:57602/api/users?skip=10&take=10'
 # offset and limit
-$ curl 'http://localhost:57602/api/users?offset=5&limit=20'
+$ curl 'http://localhost:57602/api/users?offset=10&limit=10'
+# page and per_page
+$ curl 'http://localhost:57602/api/users?page=2&per_page=10'
 ```
 
 ##### Pagination headers

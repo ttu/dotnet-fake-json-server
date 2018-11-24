@@ -90,7 +90,7 @@ namespace FakeServer.Test
         }
 
         [Fact]
-        public void GetItems_FavouriteMoveiWithQueryString()
+        public void GetItems_FavouriteMovieWithQueryString()
         {
             var filePath = UTHelpers.Up();
             var ds = new DataStore(filePath);
@@ -214,6 +214,30 @@ namespace FakeServer.Test
             Assert.Equal(12, resultObject.results.Count);
             Assert.Equal(5, resultObject.offset.Value);
             Assert.Equal(12, resultObject.limit.Value);
+            Assert.Equal(20, resultObject.count.Value);
+
+            UTHelpers.Down(filePath);
+        }
+
+        [Fact]
+        public void GetItems_UseResultObject_page_and_per_page()
+        {
+            var filePath = UTHelpers.Up();
+            var ds = new DataStore(filePath);
+            var apiSettings = Options.Create(new ApiSettings { UseResultObject = true });
+
+            var controller = new DynamicController(ds, apiSettings);
+            controller.ControllerContext = new ControllerContext();
+            controller.ControllerContext.HttpContext = new DefaultHttpContext();
+            controller.ControllerContext.HttpContext.Request.QueryString = new QueryString("?page=1&per_page=12");
+
+            var result = controller.GetItems("families", 1, 12) as OkObjectResult;
+
+            var resultObject = JsonConvert.DeserializeObject<dynamic>(JsonConvert.SerializeObject(result.Value));
+
+            Assert.Equal(12, resultObject.results.Count);
+            Assert.Equal(1, resultObject.page.Value);
+            Assert.Equal(12, resultObject.per_page.Value);
             Assert.Equal(20, resultObject.count.Value);
 
             UTHelpers.Down(filePath);

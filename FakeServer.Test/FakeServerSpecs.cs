@@ -71,6 +71,162 @@ namespace FakeServer.Test
             }
         }
 
+        [Fact]
+        public async Task GetUsers_Skip()
+        {
+            using (var client = new HttpClient())
+            {
+                var result = await client.GetAsync($"{_fixture.BaseUrl}/api/users?skip=1");
+                result.EnsureSuccessStatusCode();
+
+                var items = JsonConvert.DeserializeObject<IEnumerable<JObject>>(await result.Content.ReadAsStringAsync());
+                Assert.Equal(3, items.Count());
+                Assert.Equal("2", items.First()["id"]);
+            }
+        }
+
+        [Fact]
+        public async Task GetUsers_Take()
+        {
+            using (var client = new HttpClient())
+            {
+                var result = await client.GetAsync($"{_fixture.BaseUrl}/api/users?take=2");
+                result.EnsureSuccessStatusCode();
+
+                var items = JsonConvert.DeserializeObject<IEnumerable<JObject>>(await result.Content.ReadAsStringAsync());
+                Assert.Equal(2, items.Count());
+                Assert.Equal("1", items.First()["id"]);
+            }
+        }
+
+        [Fact]
+        public async Task GetUsers_OffsetLimit()
+        {
+            using (var client = new HttpClient())
+            {
+                var result = await client.GetAsync($"{_fixture.BaseUrl}/api/users?offset=1&limit=2");
+                result.EnsureSuccessStatusCode();
+
+                var items = JsonConvert.DeserializeObject<IEnumerable<JObject>>(await result.Content.ReadAsStringAsync());
+                Assert.Equal(2, items.Count());
+                Assert.Equal("2", items.First()["id"]);
+            }
+        }
+
+        [Fact]
+        public async Task GetUsers_Offset()
+        {
+            using (var client = new HttpClient())
+            {
+                var result = await client.GetAsync($"{_fixture.BaseUrl}/api/users?offset=1");
+                result.EnsureSuccessStatusCode();
+
+                var items = JsonConvert.DeserializeObject<IEnumerable<JObject>>(await result.Content.ReadAsStringAsync());
+                Assert.Equal(3, items.Count());
+                Assert.Equal("2", items.First()["id"]);
+            }
+        }
+
+        [Fact]
+        public async Task GetUsers_Limit()
+        {
+            using (var client = new HttpClient())
+            {
+                var result = await client.GetAsync($"{_fixture.BaseUrl}/api/users?limit=2");
+                result.EnsureSuccessStatusCode();
+
+                var items = JsonConvert.DeserializeObject<IEnumerable<JObject>>(await result.Content.ReadAsStringAsync());
+                Assert.Equal(2, items.Count());
+                Assert.Equal("1", items.First()["id"]);
+            }
+        }
+
+        [Fact]
+        public async Task GetUsers_Page_And_Per_Page()
+        {
+            using (var client = new HttpClient())
+            {
+                var result = await client.GetAsync($"{_fixture.BaseUrl}/api/users?page=2&per_page=2");
+                result.EnsureSuccessStatusCode();
+
+                var items = JsonConvert.DeserializeObject<IEnumerable<JObject>>(await result.Content.ReadAsStringAsync());
+                Assert.Equal(2, items.Count());
+                Assert.Equal("3", items.First()["id"]);
+            }
+        }
+
+        [Fact]
+        public async Task GetUsers_Page()
+        {
+            using (var client = new HttpClient())
+            {
+                var result = await client.GetAsync($"{_fixture.BaseUrl}/api/users?page=1");
+                result.EnsureSuccessStatusCode();
+
+                var items = JsonConvert.DeserializeObject<IEnumerable<JObject>>(await result.Content.ReadAsStringAsync());
+                Assert.Equal(4, items.Count());
+                Assert.Equal("1", items.First()["id"]);
+            }
+        }
+
+        [Fact]
+        public async Task GetUsers_Per_Page()
+        {
+            using (var client = new HttpClient())
+            {
+                var result = await client.GetAsync($"{_fixture.BaseUrl}/api/users?per_page=2");
+                result.EnsureSuccessStatusCode();
+
+                var items = JsonConvert.DeserializeObject<IEnumerable<JObject>>(await result.Content.ReadAsStringAsync());
+                Assert.Equal(2, items.Count());
+                Assert.Equal("1", items.First()["id"]);
+            }
+        }
+
+        [Fact]
+        public async Task GetUsers_PageDoesNotExist_ReturnsEmptyList()
+        {
+            using (var client = new HttpClient())
+            {
+                var result = await client.GetAsync($"{_fixture.BaseUrl}/api/users?page=4");
+                result.EnsureSuccessStatusCode();
+
+                var items = JsonConvert.DeserializeObject<IEnumerable<JObject>>(await result.Content.ReadAsStringAsync());
+                Assert.Empty(items);
+            }
+        }
+
+        [Theory]
+        [InlineData("skip=2&limit=10")]
+        [InlineData("skip=2&per_page=10")]
+        [InlineData("offset=2&take=10")]
+        [InlineData("offset=2&per_page=10")]
+        [InlineData("page=2&take=10")]
+        [InlineData("page=2&limit=10")]
+        [InlineData("take=10&limit=10")]
+        [InlineData("take=10&per_page=10")]
+        [InlineData("skip=2&offset=2&limit=10")]
+        [InlineData("take=10&offset=2&limit=10")]
+        [InlineData("skip=2&page=2&per_page=10")]
+        [InlineData("take=10&page=2&per_page=10")]
+        [InlineData("offset=2&page=2&per_page=10")]
+        [InlineData("limit=10&page=2&per_page=10")]
+        [InlineData("page=1&skip=2&take=10")]
+        [InlineData("per_page=10&skip=2&take=10")]
+        [InlineData("page=1&offset=2&limit=10")]
+        [InlineData("per_page=10&offset=2&limit=10")]
+        [InlineData("skip=2&take=2&offset=2&limit=10")]
+        [InlineData("offset=2&limit=10&page=2&per_page=10")]
+        [InlineData("skip=2&take=2&offset=2&limit=10&page=2&per_page=10")]
+        public async Task GetUsers_InvalidPagingCombinations_BadRequest(string queryParams)
+        {
+            using (var client = new HttpClient())
+            {
+                var result = await client.GetAsync($"{_fixture.BaseUrl}/api/users?{queryParams}");
+                Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
+            }
+        }
+
         [Theory]
         [InlineData("sort=location")]
         [InlineData("sort=-location")]
@@ -178,6 +334,18 @@ namespace FakeServer.Test
             using (var client = new HttpClient())
             {
                 var result = await client.GetAsync($"{_fixture.BaseUrl}/api/users?name=Phil&age=25&take=5");
+                var allUsers = JsonConvert.DeserializeObject<JArray>(await result.Content.ReadAsStringAsync());
+                Assert.Equal("Phil", allUsers[0]["name"].Value<string>());
+                Assert.Equal("Box Company", allUsers[0]["work"]["name"].Value<string>());
+            }
+        }
+
+        [Fact]
+        public async Task GetItem_QueryParamsWithPer_Page()
+        {
+            using (var client = new HttpClient())
+            {
+                var result = await client.GetAsync($"{_fixture.BaseUrl}/api/users?name=Phil&age=25&per_page=5");
                 var allUsers = JsonConvert.DeserializeObject<JArray>(await result.Content.ReadAsStringAsync());
                 Assert.Equal("Phil", allUsers[0]["name"].Value<string>());
                 Assert.Equal("Box Company", allUsers[0]["work"]["name"].Value<string>());
@@ -851,6 +1019,60 @@ namespace FakeServer.Test
             }
         }
 
+        [Fact]
+        public async Task GetPaginationHeaders_page_per_page()
+        {
+            using (var client = new HttpClient())
+            {
+                var result = await client.GetAsync($"{_fixture.BaseUrl}/api/families?page=2&per_page=5");
+
+                var countHeader = result.Headers.GetValues("X-Total-Count").First();
+                Assert.Equal("20", countHeader);
+
+                var linksHeaders = result.Headers.GetValues("Link").First();
+                Assert.Contains(@"<http://localhost:5001/api/families?page=1&per_page=5>; rel=""prev""", linksHeaders);
+                Assert.Contains(@"<http://localhost:5001/api/families?page=3&per_page=5>; rel=""next""", linksHeaders);
+                Assert.Contains(@"<http://localhost:5001/api/families?page=1&per_page=5>; rel=""first""", linksHeaders);
+                Assert.Contains(@"<http://localhost:5001/api/families?page=4&per_page=5>; rel=""last""", linksHeaders);
+            }
+        }
+
+        [Fact]
+        public async Task GetPaginationHeaders_page_per_page_no_next_and_last()
+        {
+            using (var client = new HttpClient())
+            {
+                var result = await client.GetAsync($"{_fixture.BaseUrl}/api/families?page=2&per_page=17");
+
+                var countHeader = result.Headers.GetValues("X-Total-Count").First();
+                Assert.Equal("20", countHeader);
+
+                var linksHeaders = result.Headers.GetValues("Link").First();
+                Assert.Contains(@"<http://localhost:5001/api/families?page=1&per_page=17>; rel=""prev""", linksHeaders);
+                Assert.Contains(@"<http://localhost:5001/api/families?page=1&per_page=17>; rel=""first""", linksHeaders);
+                Assert.DoesNotContain(@"rel=""next""", linksHeaders);
+                Assert.DoesNotContain(@"rel=""last""", linksHeaders);
+            }
+        }
+
+        [Fact]
+        public async Task GetPaginationHeaders_page_per_page_no_first_and_prev()
+        {
+            using (var client = new HttpClient())
+            {
+                var result = await client.GetAsync($"{_fixture.BaseUrl}/api/families?page=1&per_page=17");
+
+                var countHeader = result.Headers.GetValues("X-Total-Count").First();
+                Assert.Equal("20", countHeader);
+
+                var linksHeaders = result.Headers.GetValues("Link").First();
+                Assert.Contains(@"<http://localhost:5001/api/families?page=2&per_page=17>; rel=""next""", linksHeaders);
+                Assert.Contains(@"<http://localhost:5001/api/families?page=2&per_page=17>; rel=""last""", linksHeaders);
+                Assert.DoesNotContain(@"rel=""first""", linksHeaders);
+                Assert.DoesNotContain(@"rel=""prev""", linksHeaders);
+            }
+        }
+        
         [Fact]
         public async Task GetItem_ETag_Cached_NoHeader()
         {
