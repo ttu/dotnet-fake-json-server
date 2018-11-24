@@ -134,7 +134,6 @@ namespace FakeServer.Common
             {
                 var page = Convert.ToInt32(query["page"]);
                 skip = (page - 1) * take;
-
                 queryParams.Remove("page");
                 skipWord = "page";
             }
@@ -166,34 +165,18 @@ namespace FakeServer.Common
 
         public static bool IsQueryValid(IQueryCollection query)
         {
-            if ((query.ContainsKey("skip") || query.ContainsKey("take"))
-                && (query.ContainsKey("offset") 
-                    || query.ContainsKey("limit")
-                    || query.ContainsKey("page") 
-                    || query.ContainsKey("per_page")))
-            {
-                return false;
-            }
+            List<List<string>> validQuerySets = new List<List<string>>{
+                new List<string> { "skip", "take" },
+                new List<string> { "offset", "limit" },
+                new List<string> { "page", "per_page" }
+            };
 
-            if ((query.ContainsKey("offset") || query.ContainsKey("limit"))
-                && (query.ContainsKey("skip") 
-                    || query.ContainsKey("take")
-                    || query.ContainsKey("page") 
-                    || query.ContainsKey("per_page")))
-            {
-                return false;
-            }
+            var usedQuerySet = validQuerySets.FirstOrDefault(q => q.Any(query.ContainsKey));
+            if (usedQuerySet == null)
+                return true;
 
-            if ((query.ContainsKey("page") || query.ContainsKey("per_page"))
-                && (query.ContainsKey("skip") 
-                    || query.ContainsKey("take")
-                    || query.ContainsKey("offset") 
-                    || query.ContainsKey("limit")))
-            {
-                return false;
-            }
-
-            return true;
+            var notValidKeys = validQuerySets.Where(q => q != usedQuerySet).SelectMany(q => q);
+            return notValidKeys.Any(query.ContainsKey) == false;
         }
     }
 }
