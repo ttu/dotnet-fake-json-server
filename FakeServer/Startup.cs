@@ -14,6 +14,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.PlatformAbstractions;
 using Swashbuckle.AspNetCore.Swagger;
+using Swashbuckle.AspNetCore.SwaggerUI;
 using System.IO;
 
 namespace FakeServer
@@ -30,7 +31,7 @@ namespace FakeServer
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var jsonFilePath = Path.Combine(Configuration.GetValue<string>("currentPath"), Configuration.GetValue<string>("file"));
+            var jsonFilePath = Path.Combine(Configuration["currentPath"], Configuration["file"]);
             services.AddSingleton<IDataStore>(new DataStore(jsonFilePath, reloadBeforeGetCollection: Configuration.GetValue<bool>("Common:EagerDataReload")));
             services.AddSingleton<IMessageBus, MessageBus>();
             services.AddSingleton(typeof(JobsService));
@@ -53,7 +54,7 @@ namespace FakeServer
 
             if (useAuthentication)
             {
-                if (Configuration.GetValue<string>("Authentication:AuthenticationType") == "token")
+                if (Configuration["Authentication:AuthenticationType"] == "token")
                 {
                     var blacklistService = new TokenBlacklistService();
                     services.AddSingleton(blacklistService);
@@ -84,7 +85,7 @@ namespace FakeServer
                 {
                     c.OperationFilter<AddAuthorizationHeaderParameterOperationFilter>();
 
-                    if (Configuration.GetValue<string>("Authentication:AuthenticationType") == "token")
+                    if (Configuration["Authentication:AuthenticationType"] == "token")
                         c.DocumentFilter<AuthTokenOperation>();
                 }
             });
@@ -118,7 +119,7 @@ namespace FakeServer
 
             var useAuthentication = Configuration.GetValue<bool>("Authentication:Enabled");
 
-            if (useAuthentication && Configuration.GetValue<string>("Authentication:AuthenticationType") == "token")
+            if (useAuthentication && Configuration["Authentication:AuthenticationType"] == "token")
             {
                 TokenConfiguration.UseTokenProviderMiddleware(app);
             }

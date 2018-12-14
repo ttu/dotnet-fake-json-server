@@ -204,7 +204,7 @@ namespace FakeServer.GraphQL
                 var listItemType = listType.ResolvedType;
                 var list = input as ListValue;
                 return list != null
-                    ? list.Values.Map(item => CoerceValue(listItemType, item, variables)).ToArray()
+                    ? list.Values.Select(item => CoerceValue(listItemType, item, variables)).ToArray()
                     : new[] { CoerceValue(listItemType, input, variables) };
             }
 
