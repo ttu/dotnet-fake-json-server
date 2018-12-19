@@ -37,7 +37,7 @@ namespace FakeServer.Authentication.Jwt
             ClockSkew = TimeSpan.Zero
         };
 
-        public static void Configure(IServiceCollection services, TokenBlacklistService blacklist)
+        public static void Configure(IServiceCollection services)
         {
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                     .AddJwtBearer(options =>
@@ -51,6 +51,7 @@ namespace FakeServer.Authentication.Jwt
                                         {
                                             var header = context.Request.Headers["Authorization"];
 
+                                            var blacklist = context.HttpContext.RequestServices.GetService<TokenBlacklistService>();
                                             if (blacklist.IsBlacklisted(header.ToString()))
                                             {
                                                 context.Response.StatusCode = 401;

@@ -28,13 +28,12 @@ namespace FakeServer
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             var jsonFilePath = Path.Combine(Configuration["currentPath"], Configuration["file"]);
             services.AddSingleton<IDataStore>(new DataStore(jsonFilePath, reloadBeforeGetCollection: Configuration.GetValue<bool>("Common:EagerDataReload")));
             services.AddSingleton<IMessageBus, MessageBus>();
-            services.AddSingleton(typeof(JobsService));
+            services.AddSingleton<JobsService>();
 
             services.Configure<AuthenticationSettings>(Configuration.GetSection("Authentication"));
             services.Configure<ApiSettings>(Configuration.GetSection("Api"));
@@ -59,7 +58,7 @@ namespace FakeServer
                     var blacklistService = new TokenBlacklistService();
                     services.AddSingleton(blacklistService);
 
-                    TokenConfiguration.Configure(services, blacklistService);
+                    TokenConfiguration.Configure(services);
                 }
                 else
                 {
@@ -91,7 +90,6 @@ namespace FakeServer
             });
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, IApplicationLifetime appLifetime)
         {
             app.UseCors("AllowAnyPolicy");
