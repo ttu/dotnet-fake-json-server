@@ -145,7 +145,7 @@ Server can be installed as a [dotnet global tool](https://docs.microsoft.com/en-
 
 ```sh
 # install as a global tool
-$ dotnet install --global FakeServer
+$ dotnet tool install --global FakeServer
 
 # Example: Start server
 $ fake-server --file data.json --urls http://localhost:57602
