@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.PlatformAbstractions;
 using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerUI;
@@ -123,7 +124,20 @@ namespace FakeServer
             }
 
             app.UseDefaultFiles();
-            app.UseStaticFiles();
+
+            var folder = Configuration["staticFolder"];
+
+            if (string.IsNullOrEmpty(folder))
+            {
+                app.UseStaticFiles();
+            }
+            else
+            {
+                app.UseStaticFiles(new StaticFileOptions
+                {
+                    FileProvider = new PhysicalFileProvider(folder)
+                });
+            }
 
             if (Configuration.GetValue<bool>("Caching:ETag:Enabled"))
             {
