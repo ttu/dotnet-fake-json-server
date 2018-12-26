@@ -71,6 +71,16 @@ namespace FakeServer
                 AllowAllAuthenticationConfiguration.Configure(services);
             }
 
+            var folder = Configuration["staticFolder"];
+
+            if (!string.IsNullOrEmpty(folder))
+            {
+                services.AddSpaStaticFiles((spa) =>
+                {
+                    spa.RootPath = folder;
+                });
+            }
+
             services.AddMvc();
 
             services.AddSwaggerGen(c =>
@@ -123,9 +133,9 @@ namespace FakeServer
                 TokenConfiguration.UseTokenProviderMiddleware(app);
             }
 
-            app.UseDefaultFiles();
-
             var folder = Configuration["staticFolder"];
+
+            app.UseDefaultFiles();
 
             if (string.IsNullOrEmpty(folder))
             {
@@ -133,9 +143,12 @@ namespace FakeServer
             }
             else
             {
-                app.UseStaticFiles(new StaticFileOptions
+                app.UseSpa(spa =>
                 {
-                    FileProvider = new PhysicalFileProvider(folder)
+                    spa.ApplicationBuilder.UseSpaStaticFiles(new StaticFileOptions
+                    {
+                        FileProvider = new PhysicalFileProvider(folder)
+                    });
                 });
             }
 
