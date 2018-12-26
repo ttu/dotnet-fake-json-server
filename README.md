@@ -56,6 +56,7 @@ Fake JSON Server is a Fake REST API that can be used as a Back End for prototypi
     + [Install as a dotnet global tool](#install-as-a-dotnet-global-tool)
     + [Docker](#docker)
     + [Self-contained Application](#self-contained-application)
+    + [Serve static files](#serve-static-files)
     + [Quick example](#quick-example)
     + [Example project](#example-project)
     + [Example queries](#example-queries)
@@ -202,6 +203,23 @@ $ chmod +x FakeServer
 $ ./FakeServer
 ```
 
+#### Serve static files
+
+Fake Server can serve static files. Location of files can be absolute or relative to the current location.
+
+```sh
+$ dotnet run -s/--serve [fullpath/relative path]
+# e.g.
+$ dotnet run -s build
+
+# Use Fake Server as a global tool
+$ fake-server -s/--serve [fullpath/relative path]]
+# e.g.
+$ fake-server --serve c:\temp\react_app\build
+$ fake-server --serve /home/timmy/app/dist
+$ fake-server --serve ./build
+```
+
 #### Quick example
 
 ```sh
@@ -316,7 +334,7 @@ CORS is enabled and it allows everything.
 
 `GET /`
 
-Returns static files from wwwroot. Default file is `index.html`.
+Returns static files from wwwroot or defined location. Default file is `index.html`.
 
 ### Swagger
 
