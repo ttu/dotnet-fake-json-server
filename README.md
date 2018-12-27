@@ -216,7 +216,7 @@ $ dotnet run -s build
 $ fake-server -s/--serve [fullpath/relative path]]
 # e.g.
 $ fake-server --serve c:\temp\react_app\build
-$ fake-server --serve /home/timmy/app/dist
+$ fake-server --serve /home/user/app/dist
 $ fake-server --serve ./build
 ```
 
