@@ -338,7 +338,7 @@ CORS is enabled and it allows everything.
 
 Returns static files from wwwroot or defined location. Default file is `index.html`.
 
-Check [how to serve static files](#serve-static-files).
+Check [how to serve static files](#serve-static-files) from defined location.
 
 ### Swagger
 
