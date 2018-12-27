@@ -2,7 +2,7 @@
 
 ### [Unreleased]
 * ADDED: Support for paging with page and per_page
-* ADDED: Support to define location for static files (including SPAs)
+* ADDED: User defined location for the static files (including SPAs)
  
 ### [0.8.0] - 2018-10-14
 * Release as a dotnet tool
