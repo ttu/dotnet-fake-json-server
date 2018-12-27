@@ -338,6 +338,8 @@ CORS is enabled and it allows everything.
 
 Returns static files from wwwroot or defined location. Default file is `index.html`.
 
+Check [how to serve static files](#serve-static-files).
+
 ### Swagger
 
 Swagger is configured to endpoint `/swagger` and Swagger UI opens when project is started from IDE.
