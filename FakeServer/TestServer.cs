@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
-using System.IO;
 
 namespace FakeServer
 {
@@ -12,7 +11,7 @@ namespace FakeServer
 
         public static void Run(string url, string path, string file, string authenticationType = "")
         {
-           var mainConfiguration = new Dictionary<string, string>();
+            var mainConfiguration = new Dictionary<string, string>();
 
             mainConfiguration.Add("currentPath", path);
             mainConfiguration.Add("file", file);

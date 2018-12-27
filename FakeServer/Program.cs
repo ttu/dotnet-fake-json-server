@@ -23,10 +23,16 @@ namespace FakeServer
                     Console.WriteLine($"Folder doesn't exist: {inMemoryCollection["staticFolder"]}");
                     return 1;
                 }
-            }
 
-            Console.WriteLine($"Datastore file: {inMemoryCollection["file"]}");
-            Console.WriteLine($"Static files: {(inMemoryCollection.ContainsKey("staticFolder") ? inMemoryCollection["staticFolder"] : "default wwwroot")}");
+                Console.WriteLine($"Static files: {inMemoryCollection["staticFolder"]}");
+                // When user defines static files, fake server is used only to server static files
+            }
+            else
+            {
+                Console.WriteLine($"Datastore file: {inMemoryCollection["file"]}");
+                Console.WriteLine($"Datastore location: {inMemoryCollection["currentPath"]}");
+                Console.WriteLine($"Static files: default wwwroot");
+            }
 
             var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production";
 

@@ -31,6 +31,19 @@ namespace FakeServer
 
         public void ConfigureServices(IServiceCollection services)
         {
+            var folder = Configuration["staticFolder"];
+
+            if (!string.IsNullOrEmpty(folder))
+            {
+                services.AddSpaStaticFiles((spa) =>
+                {
+                    spa.RootPath = folder;
+                });
+
+                // No need to define anything else as this can only be used as a SPA server
+                return;
+            }
+
             var jsonFilePath = Path.Combine(Configuration["currentPath"], Configuration["file"]);
             services.AddSingleton<IDataStore>(new DataStore(jsonFilePath, reloadBeforeGetCollection: Configuration.GetValue<bool>("Common:EagerDataReload")));
             services.AddSingleton<IMessageBus, MessageBus>();
@@ -71,16 +84,6 @@ namespace FakeServer
                 AllowAllAuthenticationConfiguration.Configure(services);
             }
 
-            var folder = Configuration["staticFolder"];
-
-            if (!string.IsNullOrEmpty(folder))
-            {
-                services.AddSpaStaticFiles((spa) =>
-                {
-                    spa.RootPath = folder;
-                });
-            }
-
             services.AddMvc();
 
             services.AddSwaggerGen(c =>
@@ -103,6 +106,28 @@ namespace FakeServer
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, IApplicationLifetime appLifetime)
         {
+            var folder = Configuration["staticFolder"];
+
+            app.UseDefaultFiles();
+
+            if (string.IsNullOrEmpty(folder))
+            {
+                app.UseStaticFiles();
+            }
+            else
+            {
+                app.UseSpa(spa =>
+                {
+                    spa.ApplicationBuilder.UseSpaStaticFiles(new StaticFileOptions
+                    {
+                        FileProvider = new PhysicalFileProvider(folder)
+                    });
+                });
+
+                // No need to define anything else as this can only be used as a SPA server
+                return;
+            }
+
             app.UseCors("AllowAnyPolicy");
 
             app.UseMiddleware<HttpOptionsMiddleware>();
@@ -131,25 +156,6 @@ namespace FakeServer
             if (useAuthentication && Configuration["Authentication:AuthenticationType"] == "token")
             {
                 TokenConfiguration.UseTokenProviderMiddleware(app);
-            }
-
-            var folder = Configuration["staticFolder"];
-
-            app.UseDefaultFiles();
-
-            if (string.IsNullOrEmpty(folder))
-            {
-                app.UseStaticFiles();
-            }
-            else
-            {
-                app.UseSpa(spa =>
-                {
-                    spa.ApplicationBuilder.UseSpaStaticFiles(new StaticFileOptions
-                    {
-                        FileProvider = new PhysicalFileProvider(folder)
-                    });
-                });
             }
 
             if (Configuration.GetValue<bool>("Caching:ETag:Enabled"))

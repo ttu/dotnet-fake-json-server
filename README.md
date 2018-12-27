@@ -220,6 +220,8 @@ $ fake-server --serve /home/timmy/app/dist
 $ fake-server --serve ./build
 ```
 
+When user defines static files, it is assumed that user is serving a single page app and then REST API is not working. If API is needed, start other instance of Fake Server.
+
 #### Quick example
 
 ```sh
