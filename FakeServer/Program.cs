@@ -16,7 +16,23 @@ namespace FakeServer
         {
             var inMemoryCollection = ParseInMemoryCollection(args);
 
-            Console.WriteLine($"File: {inMemoryCollection["file"]}");
+            if (inMemoryCollection.ContainsKey("staticFolder"))
+            {
+                if (!Directory.Exists(inMemoryCollection["staticFolder"]))
+                {
+                    Console.WriteLine($"Folder doesn't exist: {inMemoryCollection["staticFolder"]}");
+                    return 1;
+                }
+
+                Console.WriteLine($"Static files: {inMemoryCollection["staticFolder"]}");
+                // When user defines static files, fake server is used only to server static files
+            }
+            else
+            {
+                Console.WriteLine($"Datastore file: {inMemoryCollection["file"]}");
+                Console.WriteLine($"Datastore location: {inMemoryCollection["currentPath"]}");
+                Console.WriteLine($"Static files: default wwwroot");
+            }
 
             var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production";
 
@@ -78,6 +94,18 @@ namespace FakeServer
             {
                 dictionary.TryGetValue("--file", out string file);
                 inMemoryCollection.Add("file", file ?? "datastore.json");
+            }
+
+            if (!inMemoryCollection.ContainsKey("staticFolder"))
+            {
+                dictionary.TryGetValue("-s", out string folder);
+                if (string.IsNullOrEmpty(folder))
+                    dictionary.TryGetValue("--serve", out folder);
+
+                if (!string.IsNullOrEmpty(folder))
+                {
+                    inMemoryCollection.Add("staticFolder", Path.GetFullPath(folder));
+                }
             }
 
             return inMemoryCollection;
