@@ -6,7 +6,9 @@ using Microsoft.Extensions.PlatformAbstractions;
 using Serilog;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 
 namespace FakeServer
 {
@@ -14,6 +16,8 @@ namespace FakeServer
     {
         public static int Main(string[] args)
         {
+            CheckForVersionFlag(args);
+
             var inMemoryCollection = ParseInMemoryCollection(args);
 
             if (inMemoryCollection.ContainsKey("staticFolder"))
@@ -71,6 +75,23 @@ namespace FakeServer
                .UseConfiguration(config)
                .UseStartup<Startup>()
                .UseSerilog();
+
+        private static void CheckForVersionFlag(string[] args)
+        {
+            for (var i = 0; i < args.Length; i++)
+            {
+                if (args[i] == "--version")
+                {
+                    Console.WriteLine(GetAssemblyVersion());
+                    Environment.Exit(0);
+                }
+            }
+        }
+        
+        private static string GetAssemblyVersion()
+        {
+            return FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion;
+        }
 
         private static Dictionary<string, string> ParseInMemoryCollection(string[] args)
         {
