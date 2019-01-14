@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 
 namespace FakeServer
@@ -16,7 +17,11 @@ namespace FakeServer
     {
         public static int Main(string[] args)
         {
-            CheckForVersionFlag(args);
+            if (args.Any(arg => arg == "--version"))
+            {
+                Console.WriteLine(GetAssemblyVersion());
+                return 0;
+            }
 
             var inMemoryCollection = ParseInMemoryCollection(args);
 
@@ -75,18 +80,6 @@ namespace FakeServer
                .UseConfiguration(config)
                .UseStartup<Startup>()
                .UseSerilog();
-
-        private static void CheckForVersionFlag(string[] args)
-        {
-            for (var i = 0; i < args.Length; i++)
-            {
-                if (args[i] == "--version")
-                {
-                    Console.WriteLine(GetAssemblyVersion());
-                    Environment.Exit(0);
-                }
-            }
-        }
         
         private static string GetAssemblyVersion()
         {
