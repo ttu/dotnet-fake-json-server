@@ -1,3 +1,4 @@
+using McMaster.Extensions.CommandLineUtils;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -17,12 +18,21 @@ namespace FakeServer
     {
         public static int Main(string[] args)
         {
-            return BuildCommandLineApp(() => Run(args));
+            var app = BuildCommandLineApp(() => Run(args));
+            return app.Execute(args);
         }
 
-        private static int BuildCommandLineApp(Func<int> invoke)
+        private static CommandLineApplication BuildCommandLineApp(Func<int> invoke)
         {
-            return invoke();
+            var app = new CommandLineApplication(throwOnUnexpectedArg: false)
+            {
+                AllowArgumentSeparator = true,
+            };
+            app.OnExecute(() =>
+            {
+                invoke();
+            });
+            return app;
         }
 
         private static int Run(string[] args)
