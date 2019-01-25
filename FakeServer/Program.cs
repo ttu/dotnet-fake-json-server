@@ -17,6 +17,16 @@ namespace FakeServer
     {
         public static int Main(string[] args)
         {
+            return BuildCommandLineApp(() => Run(args));
+        }
+
+        private static int BuildCommandLineApp(Func<int> invoke)
+        {
+            return invoke();
+        }
+
+        private static int Run(string[] args)
+        {
             if (args.Any(arg => arg == "--version"))
             {
                 Console.WriteLine(GetAssemblyVersion());
@@ -80,7 +90,7 @@ namespace FakeServer
                .UseConfiguration(config)
                .UseStartup<Startup>()
                .UseSerilog();
-        
+
         private static string GetAssemblyVersion()
         {
             return FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion;
