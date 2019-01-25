@@ -18,17 +18,18 @@ namespace FakeServer
     {
         public static int Main(string[] args)
         {
-            var app = BuildCommandLineApp(() => Run(args));
+            var app = BuildCommandLineApp(Run);
             return app.Execute(args);
         }
 
-        private static CommandLineApplication BuildCommandLineApp(Func<int> invoke)
+        private static CommandLineApplication BuildCommandLineApp(Func<string[], AppOptions, int> invoke)
         {
             var app = new CommandLineApplication(throwOnUnexpectedArg: false)
             {
                 AllowArgumentSeparator = true,
             };
             var optionVersion = app.Option("--version", "Prints the version of the app", CommandOptionType.NoValue);
+            var optionFile = app.Option("--file", "Data store's JSON file (default datastore.json)", CommandOptionType.SingleOrNoValue);
             app.OnExecute(() =>
             {
                 if (optionVersion.HasValue())
@@ -36,14 +37,15 @@ namespace FakeServer
                     Console.WriteLine(GetAssemblyVersion());
                     return 0;
                 }
-                return invoke();
+                var options = new AppOptions { File = optionFile.HasValue() ? optionFile.Value() : "datastore.json" };
+                return invoke(app.RemainingArguments.ToArray(), options);
             });
             return app;
         }
 
-        private static int Run(string[] args)
+        private static int Run(string[] args, AppOptions options)
         {
-            var inMemoryCollection = ParseInMemoryCollection(args);
+            var inMemoryCollection = ParseInMemoryCollection(args, options);
 
             if (inMemoryCollection.ContainsKey("staticFolder"))
             {
@@ -106,7 +108,7 @@ namespace FakeServer
             return FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion;
         }
 
-        private static Dictionary<string, string> ParseInMemoryCollection(string[] args)
+        private static Dictionary<string, string> ParseInMemoryCollection(string[] args, AppOptions options)
         {
             var dictionary = new Dictionary<string, string>();
 
@@ -124,11 +126,7 @@ namespace FakeServer
 
             inMemoryCollection.TryAdd("currentPath", Directory.GetCurrentDirectory());
 
-            if (!inMemoryCollection.ContainsKey("file"))
-            {
-                dictionary.TryGetValue("--file", out string file);
-                inMemoryCollection.Add("file", file ?? "datastore.json");
-            }
+            inMemoryCollection.Add("file", options.File);
 
             if (!inMemoryCollection.ContainsKey("staticFolder"))
             {
@@ -144,5 +142,10 @@ namespace FakeServer
 
             return inMemoryCollection;
         }
+    }
+
+    public class AppOptions
+    {
+        public string File { get; set; }
     }
 }
