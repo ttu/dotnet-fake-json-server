@@ -28,21 +28,21 @@ namespace FakeServer
             {
                 AllowArgumentSeparator = true,
             };
+            var optionVersion = app.Option("--version", "Prints the version of the app", CommandOptionType.NoValue);
             app.OnExecute(() =>
             {
-                invoke();
+                if (optionVersion.HasValue())
+                {
+                    Console.WriteLine(GetAssemblyVersion());
+                    return 0;
+                }
+                return invoke();
             });
             return app;
         }
 
         private static int Run(string[] args)
         {
-            if (args.Any(arg => arg == "--version"))
-            {
-                Console.WriteLine(GetAssemblyVersion());
-                return 0;
-            }
-
             var inMemoryCollection = ParseInMemoryCollection(args);
 
             if (inMemoryCollection.ContainsKey("staticFolder"))
