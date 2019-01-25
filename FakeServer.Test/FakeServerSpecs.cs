@@ -16,6 +16,7 @@ namespace FakeServer.Test
     // Tests in the same collection are not run in parallel
     // After each test data should be in the same state as in the beginning of the test or future tests might fail
     [Collection("Integration collection")]
+    [Trait("category", "integration")]
     public class FakeServerSpecs : IDisposable
     {
         private readonly IntegrationFixture _fixture;
@@ -1072,7 +1073,7 @@ namespace FakeServer.Test
                 Assert.DoesNotContain(@"rel=""prev""", linksHeaders);
             }
         }
-        
+
         [Fact]
         public async Task GetItem_ETag_Cached_NoHeader()
         {
