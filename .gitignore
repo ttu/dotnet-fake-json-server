@@ -4,6 +4,9 @@
 FakeServer.xml
 releases/
 
+# Visual Studio Code
+.vscode
+
 # User-specific files
 *.suo
 *.user
