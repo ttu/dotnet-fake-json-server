@@ -1,6 +1,5 @@
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.PlatformAbstractions;
@@ -9,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 
 namespace FakeServer
@@ -62,15 +60,18 @@ namespace FakeServer
                .UseStartup<Startup>()
                .UseSerilog();
 
-        private static CommandLineApplication BuildCommandLineApp(Func<string[], Dictionary<string, string>, int> invoke)
+        private static CommandLineApplication BuildCommandLineApp(
+            Func<string[], Dictionary<string, string>, int> invoke)
         {
             var app = new CommandLineApplication(throwOnUnexpectedArg: false);
             app.HelpOption();
 
             var optionVersion = app.Option("--version", "Prints the version of the app", CommandOptionType.NoValue);
-            var optionFile = app.Option<string>("--file <FILE>", "Data store's JSON file (default datastore.json)", CommandOptionType.SingleValue);
-            var optionServe = app.Option("-s|--serve <PATH>", "Static files (default wwwroot)", CommandOptionType.SingleValue);
-            var optionUrls = app.Option("--urls <URLS>", "Server url (default http://localhost:57602)", CommandOptionType.SingleValue);
+            var optionFile = app.Option<string>("--file <FILE>", "Data store's JSON file (default datastore.json)",
+                CommandOptionType.SingleValue);
+            var optionServe = app.Option("-s|--serve <PATH>", "Static files (default wwwroot)",
+                CommandOptionType.SingleValue);
+            app.Option("--urls <URLS>", "Server url (default http://localhost:57602)", CommandOptionType.SingleValue);
 
             app.OnExecute(() =>
             {
@@ -82,7 +83,7 @@ namespace FakeServer
 
                 var initialData = new Dictionary<string, string>()
                 {
-                    { "file", optionFile.HasValue() ? optionFile.Value() : "datastore.json" }
+                    {"file", optionFile.HasValue() ? optionFile.Value() : "datastore.json"}
                 };
 
                 initialData.TryAdd("currentPath", Directory.GetCurrentDirectory());
