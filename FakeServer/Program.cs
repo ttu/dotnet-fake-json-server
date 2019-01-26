@@ -67,8 +67,8 @@ namespace FakeServer
             var app = new CommandLineApplication(throwOnUnexpectedArg: false);
             app.HelpOption();
             var optionVersion = app.Option("--version", "Prints the version of the app", CommandOptionType.NoValue);
-            var optionFile = app.Option("--file", "Data store's JSON file (default datastore.json)", CommandOptionType.SingleOrNoValue);
-            var optionServe = app.Option("-s|--serve", "Static files (default wwwroot)", CommandOptionType.SingleOrNoValue);
+            var optionFile = app.Option<string>("--file <FILE>", "Data store's JSON file (default datastore.json)", CommandOptionType.SingleValue);
+            var optionServe = app.Option("-s|--serve <PATH>", "Static files (default wwwroot)", CommandOptionType.SingleValue);
             app.OnExecute(() =>
             {
                 if (optionVersion.HasValue())
