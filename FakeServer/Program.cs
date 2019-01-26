@@ -66,9 +66,11 @@ namespace FakeServer
         {
             var app = new CommandLineApplication(throwOnUnexpectedArg: false);
             app.HelpOption();
+
             var optionVersion = app.Option("--version", "Prints the version of the app", CommandOptionType.NoValue);
             var optionFile = app.Option<string>("--file <FILE>", "Data store's JSON file (default datastore.json)", CommandOptionType.SingleValue);
             var optionServe = app.Option("-s|--serve <PATH>", "Static files (default wwwroot)", CommandOptionType.SingleValue);
+
             app.OnExecute(() =>
             {
                 if (optionVersion.HasValue())
@@ -76,11 +78,14 @@ namespace FakeServer
                     Console.WriteLine(GetAssemblyVersion());
                     return 0;
                 }
+
                 var initialData = new Dictionary<string, string>()
                 {
                     { "file", optionFile.HasValue() ? optionFile.Value() : "datastore.json" }
                 };
+
                 initialData.TryAdd("currentPath", Directory.GetCurrentDirectory());
+
                 if (optionServe.HasValue() && !string.IsNullOrEmpty(optionServe.Value()))
                 {
                     if (!Directory.Exists(optionServe.Value()))
@@ -88,6 +93,7 @@ namespace FakeServer
                         Console.WriteLine($"Folder doesn't exist: {optionServe.Value()}");
                         return 1;
                     }
+
                     initialData.Add("staticFolder", Path.GetFullPath(optionServe.Value()));
                     Console.WriteLine($"Static files: {initialData["staticFolder"]}");
                     // When user defines static files, fake server is used only to server static files
@@ -98,8 +104,10 @@ namespace FakeServer
                     Console.WriteLine($"Datastore location: {initialData["currentPath"]}");
                     Console.WriteLine($"Static files: default wwwroot");
                 }
+
                 return invoke(app.RemainingArguments.ToArray(), initialData);
             });
+
             return app;
         }
 
