@@ -30,6 +30,7 @@ namespace FakeServer
             };
             var optionVersion = app.Option("--version", "Prints the version of the app", CommandOptionType.NoValue);
             var optionFile = app.Option("--file", "Data store's JSON file (default datastore.json)", CommandOptionType.SingleOrNoValue);
+            var optionServe = app.Option("-s|--serve", "Static files (default wwwroot)", CommandOptionType.SingleOrNoValue);
             app.OnExecute(() =>
             {
                 if (optionVersion.HasValue())
@@ -37,7 +38,11 @@ namespace FakeServer
                     Console.WriteLine(GetAssemblyVersion());
                     return 0;
                 }
-                var options = new AppOptions { File = optionFile.HasValue() ? optionFile.Value() : "datastore.json" };
+                var options = new AppOptions
+                {
+                    File = optionFile.HasValue() ? optionFile.Value() : "datastore.json",
+                    StaticFile = optionServe.HasValue() ? optionServe.Value() : ""
+                };
                 return invoke(app.RemainingArguments.ToArray(), options);
             });
             return app;
@@ -130,13 +135,9 @@ namespace FakeServer
 
             if (!inMemoryCollection.ContainsKey("staticFolder"))
             {
-                dictionary.TryGetValue("-s", out string folder);
-                if (string.IsNullOrEmpty(folder))
-                    dictionary.TryGetValue("--serve", out folder);
-
-                if (!string.IsNullOrEmpty(folder))
+                if (!string.IsNullOrEmpty(options.StaticFile))
                 {
-                    inMemoryCollection.Add("staticFolder", Path.GetFullPath(folder));
+                    inMemoryCollection.Add("staticFolder", Path.GetFullPath(options.StaticFile));
                 }
             }
 
@@ -147,5 +148,6 @@ namespace FakeServer
     public class AppOptions
     {
         public string File { get; set; }
+        public string StaticFile { get; set; }
     }
 }
