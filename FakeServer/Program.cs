@@ -24,10 +24,8 @@ namespace FakeServer
 
         private static CommandLineApplication BuildCommandLineApp(Func<string[], AppOptions, int> invoke)
         {
-            var app = new CommandLineApplication(throwOnUnexpectedArg: false)
-            {
-                AllowArgumentSeparator = true,
-            };
+            var app = new CommandLineApplication(throwOnUnexpectedArg: false);
+            app.HelpOption();
             var optionVersion = app.Option("--version", "Prints the version of the app", CommandOptionType.NoValue);
             var optionFile = app.Option("--file", "Data store's JSON file (default datastore.json)", CommandOptionType.SingleOrNoValue);
             var optionServe = app.Option("-s|--serve", "Static files (default wwwroot)", CommandOptionType.SingleOrNoValue);
@@ -41,7 +39,7 @@ namespace FakeServer
                 var options = new AppOptions
                 {
                     File = optionFile.HasValue() ? optionFile.Value() : "datastore.json",
-                    StaticFile = optionServe.HasValue() ? optionServe.Value() : ""
+                    StaticFile = optionServe.HasValue() ? optionServe.Value() : string.Empty
                 };
                 return invoke(app.RemainingArguments.ToArray(), options);
             });
