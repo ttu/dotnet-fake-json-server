@@ -1,5 +1,5 @@
+using McMaster.Extensions.CommandLineUtils;
 using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.PlatformAbstractions;
@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 
 namespace FakeServer
@@ -17,39 +16,19 @@ namespace FakeServer
     {
         public static int Main(string[] args)
         {
-            if (args.Any(arg => arg == "--version"))
-            {
-                Console.WriteLine(GetAssemblyVersion());
-                return 0;
-            }
+            var app = BuildCommandLineApp(Run);
+            return app.Execute(args);
+        }
 
-            var inMemoryCollection = ParseInMemoryCollection(args);
-
-            if (inMemoryCollection.ContainsKey("staticFolder"))
-            {
-                if (!Directory.Exists(inMemoryCollection["staticFolder"]))
-                {
-                    Console.WriteLine($"Folder doesn't exist: {inMemoryCollection["staticFolder"]}");
-                    return 1;
-                }
-
-                Console.WriteLine($"Static files: {inMemoryCollection["staticFolder"]}");
-                // When user defines static files, fake server is used only to server static files
-            }
-            else
-            {
-                Console.WriteLine($"Datastore file: {inMemoryCollection["file"]}");
-                Console.WriteLine($"Datastore location: {inMemoryCollection["currentPath"]}");
-                Console.WriteLine($"Static files: default wwwroot");
-            }
-
+        private static int Run(string[] args, Dictionary<string, string> initialData)
+        {
             var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production";
 
             var config = new ConfigurationBuilder()
                        .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                        .AddJsonFile($"appsettings.{env}.json", optional: true)
                        .AddJsonFile("authentication.json", optional: true, reloadOnChange: true)
-                       .AddInMemoryCollection(inMemoryCollection)
+                       .AddInMemoryCollection(initialData)
                        .AddEnvironmentVariables()
                        .Build();
 
@@ -80,49 +59,63 @@ namespace FakeServer
                .UseConfiguration(config)
                .UseStartup<Startup>()
                .UseSerilog();
-        
+
+        private static CommandLineApplication BuildCommandLineApp(
+            Func<string[], Dictionary<string, string>, int> invoke)
+        {
+            var app = new CommandLineApplication(throwOnUnexpectedArg: false);
+            app.HelpOption();
+
+            var optionVersion = app.Option("--version", "Prints the version of the app", CommandOptionType.NoValue);
+            var optionFile = app.Option<string>("--file <FILE>", "Data store's JSON file (default datastore.json)",
+                CommandOptionType.SingleValue);
+            var optionServe = app.Option("-s|--serve <PATH>", "Static files (default wwwroot)",
+                CommandOptionType.SingleValue);
+            app.Option("--urls <URLS>", "Server url (default http://localhost:57602)", CommandOptionType.SingleValue);
+
+            app.OnExecute(() =>
+            {
+                if (optionVersion.HasValue())
+                {
+                    Console.WriteLine(GetAssemblyVersion());
+                    return 0;
+                }
+
+                var initialData = new Dictionary<string, string>()
+                {
+                    {"file", optionFile.HasValue() ? optionFile.Value() : "datastore.json"}
+                };
+
+                initialData.TryAdd("currentPath", Directory.GetCurrentDirectory());
+
+                if (optionServe.HasValue() && !string.IsNullOrEmpty(optionServe.Value()))
+                {
+                    if (!Directory.Exists(optionServe.Value()))
+                    {
+                        Console.WriteLine($"Folder doesn't exist: {optionServe.Value()}");
+                        return 1;
+                    }
+
+                    initialData.Add("staticFolder", Path.GetFullPath(optionServe.Value()));
+                    Console.WriteLine($"Static files: {initialData["staticFolder"]}");
+                    // When user defines static files, fake server is used only to server static files
+                }
+                else
+                {
+                    Console.WriteLine($"Datastore file: {initialData["file"]}");
+                    Console.WriteLine($"Datastore location: {initialData["currentPath"]}");
+                    Console.WriteLine($"Static files: default wwwroot");
+                }
+
+                return invoke(app.RemainingArguments.ToArray(), initialData);
+            });
+
+            return app;
+        }
+
         private static string GetAssemblyVersion()
         {
             return FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion;
-        }
-
-        private static Dictionary<string, string> ParseInMemoryCollection(string[] args)
-        {
-            var dictionary = new Dictionary<string, string>();
-
-            for (int idx = 0; idx < args.Length; idx += 2)
-            {
-                dictionary.Add(args[idx], args[idx + 1]);
-            }
-
-            var inMemoryCollection = new Dictionary<string, string>();
-
-            foreach (var kvp in dictionary)
-            {
-                inMemoryCollection.Add(kvp.Key.Replace("-", ""), kvp.Value);
-            }
-
-            inMemoryCollection.TryAdd("currentPath", Directory.GetCurrentDirectory());
-
-            if (!inMemoryCollection.ContainsKey("file"))
-            {
-                dictionary.TryGetValue("--file", out string file);
-                inMemoryCollection.Add("file", file ?? "datastore.json");
-            }
-
-            if (!inMemoryCollection.ContainsKey("staticFolder"))
-            {
-                dictionary.TryGetValue("-s", out string folder);
-                if (string.IsNullOrEmpty(folder))
-                    dictionary.TryGetValue("--serve", out folder);
-
-                if (!string.IsNullOrEmpty(folder))
-                {
-                    inMemoryCollection.Add("staticFolder", Path.GetFullPath(folder));
-                }
-            }
-
-            return inMemoryCollection;
         }
     }
 }

@@ -10,6 +10,7 @@ using Xunit;
 namespace FakeServer.Test
 {
     [Collection("Integration collection")]
+    [Trait("category", "integration")]
     public class FakeServerAuthenticationSpecs : IDisposable
     {
         private readonly IntegrationFixture _fixture;
