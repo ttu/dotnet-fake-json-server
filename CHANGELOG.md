@@ -3,7 +3,8 @@
 ### [Unreleased]
 * ADDED: Support for paging with page and per_page
 * ADDED: User defined location for the static files (including SPAs)
- 
+* ADDED: Console parameter for help and version
+
 ### [0.8.0] - 2018-10-14
 * Release as a dotnet tool
 * Use executable location as a base path for settings files
