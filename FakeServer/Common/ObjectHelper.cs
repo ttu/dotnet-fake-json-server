@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Dynamic;
+using System.Globalization;
 using System.Linq;
 
 namespace FakeServer.Common
@@ -116,8 +117,8 @@ namespace FakeServer.Common
         {
             x => Convert.ToBoolean(x),
             x => Convert.ToInt32(x),
-            x => Convert.ToDouble(x),
-            x => Convert.ToDateTime(x)
+            x => double.TryParse(x, NumberStyles.Any, CultureInfo.InvariantCulture, out var result) ? result : throw new Exception(),
+            x => DateTime.Parse(x, CultureInfo.InvariantCulture)
         };
 
         /// <summary>

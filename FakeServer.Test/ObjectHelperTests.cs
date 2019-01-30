@@ -44,7 +44,7 @@ namespace FakeServer.Test
             Assert.Equal("POST", msg.Method.Value);
         }
 
-        [Fact(Skip = "DateTime parsing fails when current culture is not en-US")]
+        [Fact]
         public void GetValueAsCorrectType()
         {
             Assert.IsType<int>(ObjectHelper.GetValueAsCorrectType("2"));

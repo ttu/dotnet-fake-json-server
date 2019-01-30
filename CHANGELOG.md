@@ -5,6 +5,7 @@
 * ADDED: User defined location for the static files (including SPAs)
 * ADDED: Console parameter for help and version
 * FIXED: Adding to the empty collection will use the value of the id-field if it is set
+* FIXED: Value parsing for DateTime and double to culture invariant
  
 ### [0.8.0] - 2018-10-14
 * Release as a dotnet tool
