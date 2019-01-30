@@ -571,7 +571,46 @@ namespace FakeServer.Test
         {
             using (var client = new HttpClient())
             {
-                var newUser = new { id = 1, name = "Newton" };
+                var newUser = new { id = 256, name = "Newton" };
+
+                var result = await client.GetAsync($"{_fixture.BaseUrl}/api/");
+                result.EnsureSuccessStatusCode();
+                var collections = JsonConvert.DeserializeObject<IEnumerable<string>>(await result.Content.ReadAsStringAsync());
+                var originalAmount = collections.Count();
+
+                var content = new StringContent(JsonConvert.SerializeObject(newUser), Encoding.UTF8, "application/json");
+                result = await client.PostAsync($"{_fixture.BaseUrl}/api/hello", content);
+                result.EnsureSuccessStatusCode();
+
+                result = await client.GetAsync($"{_fixture.BaseUrl}/api");
+                result.EnsureSuccessStatusCode();
+                collections = JsonConvert.DeserializeObject<IEnumerable<string>>(await result.Content.ReadAsStringAsync());
+                Assert.Equal(originalAmount + 1, collections.Count());
+
+                result = await client.GetAsync($"{_fixture.BaseUrl}/api/hello/256");
+                result.EnsureSuccessStatusCode();
+                var item = JsonConvert.DeserializeObject<JObject>(await result.Content.ReadAsStringAsync());
+                Assert.Equal(newUser.name, item["name"].Value<string>());
+
+                result = await client.GetAsync($"{_fixture.BaseUrl}/api/hello");
+                result.EnsureSuccessStatusCode();
+                var items = JsonConvert.DeserializeObject<IEnumerable<JObject>>(await result.Content.ReadAsStringAsync());
+                Assert.Single(items);
+
+                result = await client.DeleteAsync($"{_fixture.BaseUrl}/api/hello/256");
+                result.EnsureSuccessStatusCode();
+
+                result = await client.GetAsync($"{_fixture.BaseUrl}/api/hello");
+                Assert.Equal(HttpStatusCode.NotFound, result.StatusCode);
+            }
+        }
+
+        [Fact]
+        public async Task PostAndDeleteItem_NewCollection_NoId()
+        {
+            using (var client = new HttpClient())
+            {
+                var newUser = new { name = "Newton" };
 
                 var result = await client.GetAsync($"{_fixture.BaseUrl}/api/");
                 result.EnsureSuccessStatusCode();

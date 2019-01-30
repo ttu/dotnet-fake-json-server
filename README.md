@@ -894,6 +894,7 @@ Headers:
 Location=http://localhost:57602/api/users/6
 ```
 
+If collection is empty and new item has an _id-field_ set, it will be used a first _id-value_. If _id-field_ is not set, _id-value_ will start from `0`.
 #### Replace item 
 
 ``` 
