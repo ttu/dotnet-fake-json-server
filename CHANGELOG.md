@@ -1,6 +1,8 @@
 # Changelog
 
 ### [Unreleased]
+
+### [0.9.0] - 2019-01-31
 * ADDED: Support for paging with page and per_page
 * ADDED: User defined location for the static files (including SPAs)
 * ADDED: Console parameter for help and version
@@ -8,9 +10,9 @@
 * FIXED: Value parsing for DateTime and double to culture invariant
  
 ### [0.8.0] - 2018-10-14
-* Release as a dotnet tool
-* Use executable location as a base path for settings files
-* Add Serilog to appsettings and required package for console logging
+* ADDED: Release as a dotnet tool
+* CHANGED: Use executable location as a base path for settings files
+* CHANGED: Add Serilog to appsettings and required package for console logging
 
 ### [0.7.0] - 2018-09-30
 * JWT blacklist to check token identifier from JWT ID (jti)

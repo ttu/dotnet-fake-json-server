@@ -115,10 +115,7 @@ Fake JSON Server is a Fake REST API that can be used as a Back End for prototypi
 - [Contributing](#contributing)
 - [License](#license)
 
-
 </details>
-
-
 
 
 ## Get started
@@ -193,11 +190,11 @@ The self-contained application archive contains Fake JSON Server, .NET Core runt
 1) Download correct archive matching your OS
 1) Extract files and execute
 
-E.g. download and execute version _0.8.0_ for _macOS_
+E.g. download and execute version _0.9.0_ for _macOS_
 
 ```sh
 $ mkdir FakeServer && cd FakeServer
-$ wget https://github.com/ttu/dotnet-fake-json-server/releases/download/0.8.0/fakeserver-osx-x64.tar.gz
+$ wget https://github.com/ttu/dotnet-fake-json-server/releases/download/0.9.0/fakeserver-osx-x64.tar.gz
 $ tar -zxvf fakeserver-osx-x64.tar.gz
 $ chmod +x FakeServer
 $ ./FakeServer
