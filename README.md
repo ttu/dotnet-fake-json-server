@@ -1,6 +1,8 @@
 .NET Fake JSON Server
 --------------------------
 
+[![NuGet](https://img.shields.io/nuget/v/FakeServer.svg)](https://www.nuget.org/packages/FakeServer/)
+
 | Build server| Platform       | Build status |
 |-------------|----------------|-------------|
 | Travis      | Linux / macOS  |[![Build Status](https://travis-ci.org/ttu/dotnet-fake-json-server.svg?branch=master)](https://travis-ci.org/ttu/dotnet-fake-json-server)| 
@@ -117,7 +119,6 @@ Fake JSON Server is a Fake REST API that can be used as a Back End for prototypi
 
 </details>
 
-
 ## Get started
 
 #### Start with .NET CLI
@@ -130,8 +131,10 @@ $ cd dotnet-fake-json-server/FakeServer
 $ dotnet run [--file] [--urls]
 
 # Optional arguments:
-#   --file     Data store's JSON file (default datastore.json)
-#   --urls     Server url (default http://localhost:57602)      
+#   --file <FILE>    Data store's JSON file (default datastore.json)
+#   --urls <URL>     Server url (default http://localhost:57602)      
+#   --serve <PATH>   Serve static files (default wwwroot)
+#   --version        Prints the version of the app
 
 # Example: Start server
 $ dotnet run --file data.json --urls http://localhost:57602
@@ -147,6 +150,9 @@ $ dotnet tool install --global FakeServer
 
 # Example: Start server
 $ fake-server --file data.json --urls http://localhost:57602
+
+# Update to the newest version
+$ dotnet tool update --global FakeServer
 ```
 
 #### Docker
