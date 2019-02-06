@@ -1,13 +1,18 @@
-FROM microsoft/aspnetcore-build
+# https://docs.docker.com/engine/examples/dotnetcore/
+FROM microsoft/dotnet:sdk AS build-env
+WORKDIR /app
 
 COPY ./FakeServer /app
 
-WORKDIR /app
-
 RUN dotnet restore
 
-RUN dotnet build
+RUN dotnet publish -c Release -o out
 
-EXPOSE 57602/tcp
+# Build runtime image
+FROM microsoft/dotnet:aspnetcore-runtime
+WORKDIR /app
+COPY --from=build-env /app/out .
 
-CMD ["dotnet", "run", "--file", "datastore.json", "--urls", "http://*:57602"]
+#ENV ASPNETCORE_ENVIRONMENT Development
+
+ENTRYPOINT ["dotnet", "FakeServer.dll", "--file", "datastore.json", "--urls", "http://*:57602"]
