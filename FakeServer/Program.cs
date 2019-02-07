@@ -71,7 +71,7 @@ namespace FakeServer
                 CommandOptionType.SingleValue);
             var optionServe = app.Option("-s|--serve <PATH>", "Static files (default wwwroot)",
                 CommandOptionType.SingleValue);
-            app.Option("--urls <URLS>", "Server url (default http://localhost:57602)", CommandOptionType.SingleValue);
+            var optionsUrls = app.Option("--urls <URLS>", "Server url (default http://localhost:57602)", CommandOptionType.SingleValue);
 
             app.OnExecute(() =>
             {
@@ -105,6 +105,13 @@ namespace FakeServer
                     Console.WriteLine($"Datastore file: {initialData["file"]}");
                     Console.WriteLine($"Datastore location: {initialData["currentPath"]}");
                     Console.WriteLine($"Static files: default wwwroot");
+                }
+
+                if (optionsUrls.HasValue())
+                {
+                    // Add urls back to arguments that are passed to WebHost builder
+                    app.RemainingArguments.Add("--urls");
+                    app.RemainingArguments.Add(optionsUrls.Value());
                 }
 
                 return invoke(app.RemainingArguments.ToArray(), initialData);

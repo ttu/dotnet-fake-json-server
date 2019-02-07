@@ -1,6 +1,7 @@
 # Changelog
 
 ### [Unreleased]
+* FIXED: urls command line parameter is not ignored
 
 ### [0.9.0] - 2019-01-31
 * ADDED: Support for paging with page and per_page
