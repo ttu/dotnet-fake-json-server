@@ -1,7 +1,8 @@
 # Changelog
 
 ### [Unreleased]
-* FIXED: urls command line parameter is not ignored
+* CHANGED: Target framework to .NET Core 2.2
+* FIXED: urls command line parameter
 
 ### [0.9.0] - 2019-01-31
 * ADDED: Support for paging with page and per_page
