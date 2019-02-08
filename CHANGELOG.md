@@ -1,6 +1,8 @@
 # Changelog
 
 ### [Unreleased]
+
+### [0.9.1] - 2019-02-08
 * CHANGED: Target framework to .NET Core 2.2
 * FIXED: urls command line parameter
 
