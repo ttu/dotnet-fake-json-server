@@ -37,8 +37,10 @@ namespace FakeServer.Authentication.Jwt
             ClockSkew = TimeSpan.Zero
         };
 
-        public static void Configure(IServiceCollection services)
+        public static void AddJwtBearerAuthentication(this IServiceCollection services)
         {
+            services.AddSingleton<TokenBlacklistService>();
+
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                     .AddJwtBearer(options =>
                                 {
@@ -64,7 +66,7 @@ namespace FakeServer.Authentication.Jwt
                                 });
         }
 
-        public static void UseTokenProviderMiddleware(IApplicationBuilder app)
+        public static void UseTokenProviderMiddleware(this IApplicationBuilder app)
         {
             // Add JWT generation endpoint
             var options = new TokenProviderOptions

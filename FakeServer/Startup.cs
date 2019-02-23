@@ -69,19 +69,16 @@ namespace FakeServer
             {
                 if (Configuration["Authentication:AuthenticationType"] == "token")
                 {
-                    var blacklistService = new TokenBlacklistService();
-                    services.AddSingleton(blacklistService);
-
-                    TokenConfiguration.Configure(services);
+                    services.AddJwtBearerAuthentication();
                 }
                 else
                 {
-                    BasicAuthenticationConfiguration.Configure(services);
+                    services.AddBasicAuthentication();
                 }
             }
             else
             {
-                AllowAllAuthenticationConfiguration.Configure(services);
+                services.AddAllowAllAuthentication();
             }
 
             services.AddMvc();
@@ -106,11 +103,9 @@ namespace FakeServer
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, IApplicationLifetime appLifetime)
         {
-            var folder = Configuration["staticFolder"];
-
             app.UseDefaultFiles();
 
-            if (string.IsNullOrEmpty(folder))
+            if (string.IsNullOrEmpty(Configuration["staticFolder"]))
             {
                 app.UseStaticFiles();
             }
@@ -120,7 +115,7 @@ namespace FakeServer
                 {
                     spa.ApplicationBuilder.UseSpaStaticFiles(new StaticFileOptions
                     {
-                        FileProvider = new PhysicalFileProvider(folder)
+                        FileProvider = new PhysicalFileProvider(Configuration["staticFolder"])
                     });
                 });
 
@@ -155,7 +150,7 @@ namespace FakeServer
 
             if (useAuthentication && Configuration["Authentication:AuthenticationType"] == "token")
             {
-                TokenConfiguration.UseTokenProviderMiddleware(app);
+                app.UseTokenProviderMiddleware();
             }
 
             if (Configuration.GetValue<bool>("Caching:ETag:Enabled"))
