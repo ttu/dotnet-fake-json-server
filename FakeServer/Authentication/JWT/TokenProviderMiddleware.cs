@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.IdentityModel.Tokens.Jwt;
+using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -22,29 +24,80 @@ namespace FakeServer.Authentication.Jwt
             _options = options.Value;
         }
 
-        public Task Invoke(HttpContext context)
+        public async Task Invoke(HttpContext context)
         {
             // If the request path doesn't match, skip
             if (!context.Request.Path.Equals(_options.Path, StringComparison.Ordinal))
             {
-                return _next(context);
+                await _next(context);
+                return;
             }
 
-            // Request must be POST with Content-Type: application/x-www-form-urlencoded
-            if (!context.Request.Method.Equals("POST") || !context.Request.HasFormContentType)
+            // Request must be POST with Content-Type: application/x-www-form-urlencoded or application/json
+            if (!context.Request.Method.Equals("POST"))
             {
                 context.Response.StatusCode = 400;
-                return context.Response.WriteAsync("Bad request.");
+                await context.Response.WriteAsync("Only POST method allowed.");
+                return;
             }
 
-            return GenerateToken(context);
+            string username;
+            string password;
+            bool validData;
+
+            if (context.Request.HasFormContentType)
+            {
+                (username, password, validData) = GetFromFormData(context);
+            }
+            else if (context.Request.ContentType.StartsWith("application/json"))
+            {
+                (username, password, validData) = await GetFromJson(context);
+            }
+            else
+            {
+                context.Response.StatusCode = 400;
+                await context.Response.WriteAsync("Only Content-Type: application/x-www-form-urlencoded or application/json allowed.");
+                return;
+            }
+
+            if (!validData)
+            {
+                context.Response.StatusCode = 400;
+                await context.Response.WriteAsync("Password must be defined with username and password fields");
+                return;
+            }
+
+            await GenerateToken(context, username, password);
+            return;
         }
 
-        private async Task GenerateToken(HttpContext context)
+        private async Task<(string username, string password, bool validData)> GetFromJson(HttpContext context)
         {
-            var username = context.Request.Form["username"];
-            var password = context.Request.Form["password"];
+            string body;
 
+            using (var streamReader = new StreamReader(context.Request.Body))
+            {
+                body = await streamReader.ReadToEndAsync().ConfigureAwait(true);
+            }
+
+            var jsonBody = JObject.Parse(body);
+
+            if (!jsonBody.ContainsKey("username") || !jsonBody.ContainsKey("password"))
+                return (string.Empty, string.Empty, false);
+
+            return (jsonBody["username"].Value<string>(), jsonBody["password"].Value<string>(), true);
+        }
+
+        private (string username, string password, bool validData) GetFromFormData(HttpContext context)
+        {
+            if (!context.Request.Form.ContainsKey("username") || !context.Request.Form.ContainsKey("password"))
+                return (string.Empty, string.Empty, false);
+
+            return (context.Request.Form["username"], context.Request.Form["password"], true);
+        }
+
+        private async Task GenerateToken(HttpContext context, string username, string password)
+        {
             var authenticationSettings = context.RequestServices.GetService(typeof(IOptions<AuthenticationSettings>)) as IOptions<AuthenticationSettings>;
 
             var identity = await GetIdentity(username, password, authenticationSettings.Value);
