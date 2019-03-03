@@ -1,7 +1,7 @@
 # Changelog
 
 ### [Unreleased]
-* ADDED: Token/login endpoint to support username/password in JSON content
+* ADDED: Token endpoint to support username/password in JSON content
 
 ### [0.9.1] - 2019-02-08
 * CHANGED: Target framework to .NET Core 2.2
