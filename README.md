@@ -294,6 +294,7 @@ Get token:
 ```sh
 # content-type: multipart/form-data
 $ curl -X POST -H 'content-type: multipart/form-data' -F username=admin -F password=root http://localhost:57602/token
+
 # content-type: application/json
 $ curl -X POST -H 'content-type: application/json' -d '{ "username": "admin", "password": "root" }' http://localhost:57602/token
 ```
