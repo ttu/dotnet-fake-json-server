@@ -43,27 +43,27 @@ namespace FakeServer.Authentication.Jwt
 
             string username;
             string password;
-            bool validData;
+            bool isDataValid;
 
             if (context.Request.HasFormContentType)
             {
-                (username, password, validData) = GetFromFormData(context);
+                (username, password, isDataValid) = GetFromFormData(context);
             }
             else if (context.Request.ContentType.StartsWith("application/json"))
             {
-                (username, password, validData) = await GetFromJson(context);
+                (username, password, isDataValid) = await GetFromJson(context);
             }
             else
             {
                 context.Response.StatusCode = 400;
-                await context.Response.WriteAsync("Only Content-Type: application/x-www-form-urlencoded or application/json allowed.");
+                await context.Response.WriteAsync("Only Content-Type: application/x-www-form-urlencoded or application/json are allowed.");
                 return;
             }
 
-            if (!validData)
+            if (!isDataValid)
             {
                 context.Response.StatusCode = 400;
-                await context.Response.WriteAsync("Password must be defined with username and password fields");
+                await context.Response.WriteAsync("Authentication must be defined with username and password fields");
                 return;
             }
 
