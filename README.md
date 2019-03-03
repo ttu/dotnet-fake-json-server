@@ -287,7 +287,7 @@ Add allowed usernames/passwords to `Users`-array.
 
 #### Token Authentication
 
-API has a token provider middleware which provides an endpoint for token generation `/token`. Endpoint supports `'content-type: multipart/form-data` and `content-type: application/json`. Username and password must be in `username`and `password` fields.
+API has a token provider middleware which provides an endpoint for token generation `/token`. Endpoint supports `'content-type: multipart/form-data` and `content-type: application/json`. Username and password must be in `username` and `password` fields.
 
 Get token:
 
