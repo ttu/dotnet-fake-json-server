@@ -1,4 +1,4 @@
-.NET Fake JSON Server
+Fake JSON Server
 --------------------------
 
 [![NuGet](https://img.shields.io/nuget/v/FakeServer.svg)](https://www.nuget.org/packages/FakeServer/)
