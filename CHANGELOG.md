@@ -1,6 +1,7 @@
 # Changelog
 
 ### [Unreleased]
+* ADDED: Token/login endpoint to support JSON content-type
 
 ### [0.9.1] - 2019-02-08
 * CHANGED: Target framework to .NET Core 2.2
