@@ -1,4 +1,4 @@
-.NET Fake JSON Server
+Fake JSON Server
 --------------------------
 
 [![NuGet](https://img.shields.io/nuget/v/FakeServer.svg)](https://www.nuget.org/packages/FakeServer/)
@@ -287,12 +287,16 @@ Add allowed usernames/passwords to `Users`-array.
 
 #### Token Authentication
 
-API has a token provider middleware which provides an endpoint for token generation `/token`.
+API has a token provider middleware which provides an endpoint for token generation `/token`. Endpoint supports `'content-type: multipart/form-data` and `content-type: application/json`. Username and password must be in `username` and `password` fields.
 
 Get token:
 
 ```sh
+# content-type: multipart/form-data
 $ curl -X POST -H 'content-type: multipart/form-data' -F username=admin -F password=root http://localhost:57602/token
+
+# content-type: application/json
+$ curl -X POST -H 'content-type: application/json' -d '{ "username": "admin", "password": "root" }' http://localhost:57602/token
 ```
 
 Add token to Authorization header:
