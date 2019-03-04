@@ -40,25 +40,16 @@ namespace FakeServer.Authentication.Jwt
                 await context.Response.WriteAsync("Only POST method allowed.");
                 return;
             }
-
-            string username;
-            string password;
-            bool isDataValid;
-
-            if (context.Request.HasFormContentType)
-            {
-                (username, password, isDataValid) = GetFromFormData(context);
-            }
-            else if (context.Request.ContentType.StartsWith("application/json"))
-            {
-                (username, password, isDataValid) = await GetFromJson(context);
-            }
-            else
+            else if (!context.Request.HasFormContentType && !context.Request.ContentType.StartsWith("application/json"))
             {
                 context.Response.StatusCode = 400;
                 await context.Response.WriteAsync("Only Content-Type: application/x-www-form-urlencoded or application/json are allowed.");
                 return;
             }
+
+            (string username, string password, bool isDataValid) = context.Request.HasFormContentType 
+                                                                    ? GetFromFormData(context)
+                                                                    : await GetFromJson(context);
 
             if (!isDataValid)
             {
@@ -68,7 +59,6 @@ namespace FakeServer.Authentication.Jwt
             }
 
             await GenerateToken(context, username, password);
-            return;
         }
 
         private async Task<(string username, string password, bool validData)> GetFromJson(HttpContext context)
