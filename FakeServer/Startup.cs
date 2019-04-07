@@ -45,7 +45,7 @@ namespace FakeServer
             }
 
             var jsonFilePath = Path.Combine(Configuration["currentPath"], Configuration["file"]);
-            services.AddSingleton<IDataStore>(new DataStore(jsonFilePath, reloadBeforeGetCollection: Configuration.GetValue<bool>("Common:EagerDataReload")));
+            services.AddSingleton<IDataStore>(new DataStore(jsonFilePath, keyProperty: Config.IdField,  reloadBeforeGetCollection: Configuration.GetValue<bool>("Common:EagerDataReload")));
             services.AddSingleton<IMessageBus, MessageBus>();
             services.AddSingleton<JobsService>();
 

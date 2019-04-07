@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Globalization;
@@ -72,9 +73,9 @@ namespace FakeServer.Common
                 tail = tail.Contains('/') ? tail.Substring(tail.IndexOf('/') + 1) : string.Empty;
 
                 if (currentValue is IEnumerable<dynamic> valueEnumerable)
-                    returnValue = valueEnumerable.FirstOrDefault(e => e.id == parsedInteger);
+                    returnValue = valueEnumerable.FirstOrDefault(e => GetFieldValue(e, Config.IdField) == parsedInteger);
                 else
-                    returnValue = ((dynamic)currentValue).id == parsedInteger ? currentValue as ExpandoObject : null;
+                    returnValue = GetFieldValue(((dynamic)currentValue), Config.IdField) == parsedInteger ? currentValue as ExpandoObject : null;
             }
             else
             {
@@ -85,6 +86,47 @@ namespace FakeServer.Common
                 return returnValue;
             else
                 return GetNestedProperty(returnValue, tail);
+        }
+
+        public static dynamic GetFieldValue(object source, string fieldName)
+        {
+            if (source is ExpandoObject sourceExpando)
+            {
+                var sourceExpandoDict = new Dictionary<string, dynamic>(sourceExpando, StringComparer.OrdinalIgnoreCase);
+                return sourceExpandoDict.ContainsKey(fieldName) ? sourceExpandoDict[fieldName] : null;
+            }
+
+            var srcProp = source.GetType().GetProperties().FirstOrDefault(p => string.Equals(p.Name, fieldName, StringComparison.OrdinalIgnoreCase));
+            return srcProp?.GetValue(source, null);
+        }
+
+        public static void SetFieldValue(object item, string fieldName, dynamic data)
+        {
+            if (item is JToken)
+            {
+                dynamic jTokenItem = item;
+                jTokenItem[fieldName] = data;
+            }
+            else if (item is ExpandoObject)
+            {
+                dynamic expandoItem = item;
+                var expandoDict = expandoItem as IDictionary<string, object>;
+                expandoDict[fieldName] = data;
+            }
+            else
+            {
+                var idProperty = item.GetType().GetProperties().FirstOrDefault(p => string.Equals(p.Name, fieldName, StringComparison.OrdinalIgnoreCase));
+
+                if (idProperty != null && idProperty.CanWrite)
+                    idProperty.SetValue(item, data);
+            }
+        }
+
+        private static object GetValue(object source, dynamic srcProp)
+        {
+            return source.GetType() == typeof(ExpandoObject)
+                        ? srcProp.Value
+                        : srcProp.GetValue(source, null);
         }
 
         public static dynamic GetWebSocketMessage(string method, string path)

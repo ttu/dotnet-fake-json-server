@@ -1,4 +1,5 @@
-﻿using GraphQL;
+﻿using FakeServer.Common;
+using GraphQL;
 using GraphQL.Execution;
 using GraphQL.Language.AST;
 using GraphQL.Types;
@@ -378,7 +379,7 @@ namespace FakeServer.GraphQL
                         dynamic id = GraphQL.GetInputId(pair);
                         ExpandoObject newItem = ResolveMutationField("patch", target, pair.Value, isRoot);
 
-                        var success = collection.UpdateOne(e => e.id == id, newItem);
+                        var success = collection.UpdateOne(id, newItem);
 
                         dynamic updateData = success ? new { Method = "PATCH", Path = $"{collectionName}/{id}", Collection = collectionName, ItemId = id } : null;
 
@@ -392,9 +393,10 @@ namespace FakeServer.GraphQL
                         dynamic newItem = ResolveMutationField(collectionName, target, pair.Value, isRoot);
 
                         // Make sure that new data has id field correctly
-                        newItem.id = id;
+                        ObjectHelper.SetFieldValue(newItem, Config.IdField, id);
+                        //newItem.id = id;
 
-                        var success = collection.ReplaceOne(e => e.id == id, newItem as ExpandoObject);
+                        var success = collection.ReplaceOne(id, newItem as ExpandoObject);
 
                         dynamic updateData = success ? new { Method = "PUT", Path = $"{collectionName}/{id}", Collection = collectionName, ItemId = id } : null;
 
@@ -406,7 +408,7 @@ namespace FakeServer.GraphQL
                     {
                         dynamic id = GraphQL.GetInputId(pair);
 
-                        var success = collection.DeleteOne(e => e.id == id);
+                        var success = collection.DeleteOne(id);
 
                         dynamic updateData = success ? new { Method = "DELETE", Path = $"{collectionName}/{id}", Collection = collectionName, ItemId = id } : null;
                         var item = new ExecutionResult { Data = success };
@@ -433,7 +435,7 @@ namespace FakeServer.GraphQL
                                         .Children.First(e => e is Arguments)
                                         .Children.First(e => ((dynamic)e).Name == "input")
                                         .Children.First()
-                                        .Children.First(e => ((dynamic)e).Name == "id")
+                                        .Children.First(e => ((dynamic)e).Name == Config.IdField)
                                         .Children.First()).Value;
         }
 
@@ -442,8 +444,9 @@ namespace FakeServer.GraphQL
             // Get all items and then select one with newly added id
             ExecutionResult value = ResolveField(source, null, fieldsToUse.First().Value, true);
             var items = value.Data as List<dynamic>;
-            var item = new ExecutionResult() { Data = items.First(e => ((dynamic)e).id == id) };
+            var item = new ExecutionResult() { Data = items.First(e => ObjectHelper.GetFieldValue(e, Config.IdField) == id) };
             return item;
+            
         }
 
         private static ExpandoObject ResolveMutationField(string nameToProcess, dynamic newItem, Fields fields, bool isRoot = false)
