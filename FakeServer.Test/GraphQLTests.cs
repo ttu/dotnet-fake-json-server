@@ -9,6 +9,8 @@ namespace FakeServer.Test
 {
     public class GraphQLTests
     {
+        private const string _idFieldName = "id";
+
         [Fact]
         public void Query_Families()
         {
@@ -27,7 +29,7 @@ namespace FakeServer.Test
                           }
                     }";
 
-            var results = GraphQL.GraphQL.HandleQuery(q, ds);
+            var results = GraphQL.GraphQL.HandleQuery(q, ds, _idFieldName);
 
             var js = JsonConvert.SerializeObject(results);
 
@@ -47,7 +49,7 @@ namespace FakeServer.Test
             var filePath = UTHelpers.Up();
 
             var ds = new DataStore(filePath);
-            var results = GraphQL.GraphQL.HandleQuery(q, ds);
+            var results = GraphQL.GraphQL.HandleQuery(q, ds, _idFieldName);
 
             Assert.Equal(4, results.Data["users"].Count);
 
@@ -63,7 +65,7 @@ namespace FakeServer.Test
 
             var q = @" {  }";
 
-            var results = GraphQL.GraphQL.HandleQuery(q, ds);
+            var results = GraphQL.GraphQL.HandleQuery(q, ds, _idFieldName);
 
             Assert.Single(results.Errors);
 
@@ -93,7 +95,7 @@ namespace FakeServer.Test
                           }
                     }";
 
-            var results = GraphQL.GraphQL.HandleQuery(muation, ds);
+            var results = GraphQL.GraphQL.HandleQuery(muation, ds, _idFieldName);
 
             var id = ((dynamic)results.Data["users"]).id;
             var item = ds.GetCollection("users").AsQueryable().First(e => e.id == id);
@@ -133,7 +135,7 @@ namespace FakeServer.Test
                           }
                     }";
 
-            var results = GraphQL.GraphQL.HandleQuery(muation, ds);
+            var results = GraphQL.GraphQL.HandleQuery(muation, ds, _idFieldName);
 
             var id = ((dynamic)results.Data["users"]).id;
             var item = ds.GetCollection("users").AsQueryable().First(e => e.id == id);
@@ -181,7 +183,7 @@ namespace FakeServer.Test
                           }
                     }";
 
-            var results = GraphQL.GraphQL.HandleQuery(muation, ds);
+            var results = GraphQL.GraphQL.HandleQuery(muation, ds, _idFieldName);
 
             var id = ((dynamic)results.Data["families"]).id;
             var item = ds.GetCollection("families").AsQueryable().First(e => e.id == id);
@@ -218,7 +220,7 @@ namespace FakeServer.Test
                           }
                     }";
 
-            var results = GraphQL.GraphQL.HandleQuery(muation, ds);
+            var results = GraphQL.GraphQL.HandleQuery(muation, ds, _idFieldName);
 
             var id = ((dynamic)results.Data["users"]).id;
             Assert.Equal(2, id);
@@ -270,7 +272,7 @@ namespace FakeServer.Test
                           }
                     }";
 
-            var results = GraphQL.GraphQL.HandleQuery(muation, ds);
+            var results = GraphQL.GraphQL.HandleQuery(muation, ds, _idFieldName);
 
             var item = ds.GetCollection("users").AsQueryable().First(e => e.id == 2);
 
@@ -301,7 +303,7 @@ namespace FakeServer.Test
                           })
                     }";
 
-            var results = GraphQL.GraphQL.HandleQuery(muation, ds);
+            var results = GraphQL.GraphQL.HandleQuery(muation, ds, _idFieldName);
 
             var success = results.Data["Result"];
             Assert.True(success);

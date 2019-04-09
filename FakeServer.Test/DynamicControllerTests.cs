@@ -22,8 +22,9 @@ namespace FakeServer.Test
             var filePath = UTHelpers.Up();
             var ds = new DataStore(filePath);
             var apiSettings = Options.Create(new ApiSettings());
+            var dsSettings = Options.Create(new DataStoreSettings());
 
-            var controller = new DynamicController(ds, apiSettings);
+            var controller = new DynamicController(ds, apiSettings, dsSettings);
 
             var collections = controller.GetKeys();
             Assert.Equal(6, collections.Count());
@@ -37,8 +38,9 @@ namespace FakeServer.Test
             var filePath = UTHelpers.Up();
             var ds = new DataStore(filePath);
             var apiSettings = Options.Create(new ApiSettings { UpsertOnPut = false });
+            var dsSettings = Options.Create(new DataStoreSettings());
 
-            var controller = new DynamicController(ds, apiSettings);
+            var controller = new DynamicController(ds, apiSettings, dsSettings);
 
             var result = await controller.ReplaceItem("my_test", "2", JToken.Parse("{ 'id': 2, 'name': 'Raymond', 'age': 32 }"));
             Assert.IsType<NotFoundResult>(result);
@@ -52,8 +54,9 @@ namespace FakeServer.Test
             var filePath = UTHelpers.Up();
             var ds = new DataStore(filePath);
             var apiSettings = Options.Create(new ApiSettings { UpsertOnPut = true });
+            var dsSettings = Options.Create(new DataStoreSettings());
 
-            var controller = new DynamicController(ds, apiSettings);
+            var controller = new DynamicController(ds, apiSettings, dsSettings);
 
             var result = await controller.ReplaceItem("my_test", "2", JToken.Parse("{ 'id': 2, 'name': 'Raymond', 'age': 32 }"));
             Assert.IsType<NoContentResult>(result);
@@ -74,8 +77,9 @@ namespace FakeServer.Test
             var filePath = UTHelpers.Up();
             var ds = new DataStore(filePath);
             var apiSettings = Options.Create(new ApiSettings { UpsertOnPut = true });
+            var dsSettings = Options.Create(new DataStoreSettings());
 
-            var controller = new DynamicController(ds, apiSettings);
+            var controller = new DynamicController(ds, apiSettings, dsSettings);
 
             var result = await controller.ReplaceItem("my_test_string", "acdc", JToken.Parse("{ 'id': 2, 'text': 'Hello' }")) as NoContentResult;
             Assert.Equal(204, result.StatusCode);
@@ -95,8 +99,9 @@ namespace FakeServer.Test
             var filePath = UTHelpers.Up();
             var ds = new DataStore(filePath);
             var apiSettings = Options.Create(new ApiSettings());
+            var dsSettings = Options.Create(new DataStoreSettings());
 
-            var controller = new DynamicController(ds, apiSettings);
+            var controller = new DynamicController(ds, apiSettings, dsSettings);
             controller.ControllerContext = new ControllerContext();
             controller.ControllerContext.HttpContext = new DefaultHttpContext();
             controller.ControllerContext.HttpContext.Request.QueryString = new QueryString("?parents.favouriteMovie=Predator");
@@ -114,8 +119,9 @@ namespace FakeServer.Test
             var filePath = UTHelpers.Up();
             var ds = new DataStore(filePath);
             var apiSettings = Options.Create(new ApiSettings());
+            var dsSettings = Options.Create(new DataStoreSettings());
 
-            var controller = new DynamicController(ds, apiSettings);
+            var controller = new DynamicController(ds, apiSettings, dsSettings);
             controller.ControllerContext = new ControllerContext();
             controller.ControllerContext.HttpContext = new DefaultHttpContext();
             controller.ControllerContext.HttpContext.Request.QueryString = new QueryString("?children.friends.name=Castillo");
@@ -132,8 +138,9 @@ namespace FakeServer.Test
             var filePath = UTHelpers.Up();
             var ds = new DataStore(filePath);
             var apiSettings = Options.Create(new ApiSettings());
+            var dsSettings = Options.Create(new DataStoreSettings());
 
-            var controller = new DynamicController(ds, apiSettings);
+            var controller = new DynamicController(ds, apiSettings, dsSettings);
 
             var result = controller.GetNested("families", 1, "parents/1/work") as OkObjectResult;
             Assert.Equal("APEXTRI", ((dynamic)result.Value).companyName);
@@ -147,8 +154,9 @@ namespace FakeServer.Test
             var filePath = UTHelpers.Up();
             var ds = new DataStore(filePath);
             var apiSettings = Options.Create(new ApiSettings());
+            var dsSettings = Options.Create(new DataStoreSettings());
 
-            var controller = new DynamicController(ds, apiSettings);
+            var controller = new DynamicController(ds, apiSettings, dsSettings);
 
             var result = controller.GetNested("families", 1, "parents/1") as OkObjectResult;
             Assert.Equal("Kim", ((dynamic)result.Value).name);
@@ -162,8 +170,9 @@ namespace FakeServer.Test
             var filePath = UTHelpers.Up();
             var ds = new DataStore(filePath);
             var apiSettings = Options.Create(new ApiSettings());
+            var dsSettings = Options.Create(new DataStoreSettings());
 
-            var controller = new DynamicController(ds, apiSettings);
+            var controller = new DynamicController(ds, apiSettings, dsSettings);
 
             var result = controller.GetNested("families", 1, "parents") as OkObjectResult;
             Assert.Equal(2, ((IEnumerable<dynamic>)result.Value).Count());
@@ -177,8 +186,9 @@ namespace FakeServer.Test
             var filePath = UTHelpers.Up();
             var ds = new DataStore(filePath);
             var apiSettings = Options.Create(new ApiSettings { UseResultObject = true });
+            var dsSettings = Options.Create(new DataStoreSettings());
 
-            var controller = new DynamicController(ds, apiSettings);
+            var controller = new DynamicController(ds, apiSettings, dsSettings);
             controller.ControllerContext = new ControllerContext();
             controller.ControllerContext.HttpContext = new DefaultHttpContext();
             controller.ControllerContext.HttpContext.Request.QueryString = new QueryString("");
@@ -201,8 +211,9 @@ namespace FakeServer.Test
             var filePath = UTHelpers.Up();
             var ds = new DataStore(filePath);
             var apiSettings = Options.Create(new ApiSettings { UseResultObject = true });
+            var dsSettings = Options.Create(new DataStoreSettings());
 
-            var controller = new DynamicController(ds, apiSettings);
+            var controller = new DynamicController(ds, apiSettings, dsSettings);
             controller.ControllerContext = new ControllerContext();
             controller.ControllerContext.HttpContext = new DefaultHttpContext();
             controller.ControllerContext.HttpContext.Request.QueryString = new QueryString("?offset=5&limit=12");
@@ -225,8 +236,9 @@ namespace FakeServer.Test
             var filePath = UTHelpers.Up();
             var ds = new DataStore(filePath);
             var apiSettings = Options.Create(new ApiSettings { UseResultObject = true });
+            var dsSettings = Options.Create(new DataStoreSettings());
 
-            var controller = new DynamicController(ds, apiSettings);
+            var controller = new DynamicController(ds, apiSettings, dsSettings);
             controller.ControllerContext = new ControllerContext();
             controller.ControllerContext.HttpContext = new DefaultHttpContext();
             controller.ControllerContext.HttpContext.Request.QueryString = new QueryString("?page=1&per_page=12");
@@ -249,8 +261,9 @@ namespace FakeServer.Test
             var filePath = UTHelpers.Up();
             var ds = new DataStore(filePath);
             var apiSettings = Options.Create(new ApiSettings { UpsertOnPut = true });
+            var dsSettings = Options.Create(new DataStoreSettings());
 
-            var controller = new DynamicController(ds, apiSettings);
+            var controller = new DynamicController(ds, apiSettings, dsSettings);
 
             var itemResult = controller.GetItems("configuration");
             Assert.IsType<OkObjectResult>(itemResult);
@@ -268,8 +281,9 @@ namespace FakeServer.Test
             var filePath = UTHelpers.Up();
             var ds = new DataStore(filePath);
             var apiSettings = Options.Create(new ApiSettings { UpsertOnPut = true });
+            var dsSettings = Options.Create(new DataStoreSettings());
 
-            var controller = new DynamicController(ds, apiSettings);
+            var controller = new DynamicController(ds, apiSettings, dsSettings);
 
             var itemResult = controller.GetItem("configuration", "0");
             Assert.IsType<BadRequestResult>(itemResult);
@@ -283,8 +297,9 @@ namespace FakeServer.Test
             var filePath = UTHelpers.Up();
             var ds = new DataStore(filePath);
             var apiSettings = Options.Create(new ApiSettings());
+            var dsSettings = Options.Create(new DataStoreSettings());
 
-            var controller = new DynamicController(ds, apiSettings);
+            var controller = new DynamicController(ds, apiSettings, dsSettings);
 
             var result = controller.GetNested("configuration", 0, "ip");
             Assert.IsType<BadRequestResult>(result);
@@ -298,8 +313,9 @@ namespace FakeServer.Test
             var filePath = UTHelpers.Up();
             var ds = new DataStore(filePath);
             var apiSettings = Options.Create(new ApiSettings());
+            var dsSettings = Options.Create(new DataStoreSettings());
 
-            var controller = new DynamicController(ds, apiSettings);
+            var controller = new DynamicController(ds, apiSettings, dsSettings);
 
             var item = new { value = "hello" };
 

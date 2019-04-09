@@ -523,6 +523,16 @@ Headers:
 X-Total-Count: 1249
 ```
 
+#### Data Store Id-field name
+
+Name of the Id-field used by Data Store can be configure from `appsettings.json`. Default name for the id-field is `id`.
+
+```json
+"DataStore": {
+  "IdField": "id"
+}
+```
+
 #### Eager data reload
 
 By default Data Store updates its internal data on every request by reading the data from the JSON file. 
@@ -530,7 +540,7 @@ By default Data Store updates its internal data on every request by reading the 
 `EagerDataReload` can be configured from `appsettings.json`.
 
 ```json
-"Common": {
+"DataStore": {
   "EagerDataReload": true
 }
 ```

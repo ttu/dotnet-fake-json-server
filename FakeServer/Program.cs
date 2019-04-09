@@ -37,6 +37,13 @@ namespace FakeServer
                 .WriteTo.RollingFile(Path.Combine(PlatformServices.Default.Application.ApplicationBasePath, "log-{Date}.txt"))
                 .CreateLogger();
 
+            if (config["DataStore:IdField"] == null)
+            {
+                Console.WriteLine("\nUpdate appsettings.json to latest version");
+                Console.WriteLine("Program will exit...");
+                return 1;
+            }
+
             try
             {
                 Log.Information("Starting Fake JSON Server");

@@ -2,6 +2,8 @@
 
 ### [Unreleased]
 * ADDED: Token endpoint to support username/password in JSON content
+* ADDED: Define stored data id-field name
+* CHANGED: Rename Common property from appsettings.json to DataStore
 
 ### [0.9.1] - 2019-02-08
 * CHANGED: Target framework to .NET Core 2.2

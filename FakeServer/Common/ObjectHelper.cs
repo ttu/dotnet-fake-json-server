@@ -58,7 +58,7 @@ namespace FakeServer.Common
         /// <param name="current"></param>
         /// <param name="propertyName"></param>
         /// <returns>Dynamic is return value can be a single item or a list</returns>
-        public static dynamic GetNestedProperty(ExpandoObject current, string propertyName)
+        public static dynamic GetNestedProperty(ExpandoObject current, string propertyName, string idFieldName)
         {
             var propertyNameCurrent = propertyName.Contains('/') ? propertyName.Split('/').First() : propertyName;
             var tail = propertyName.Contains('/') ? propertyName.Substring(propertyName.IndexOf('/') + 1) : string.Empty;
@@ -73,9 +73,9 @@ namespace FakeServer.Common
                 tail = tail.Contains('/') ? tail.Substring(tail.IndexOf('/') + 1) : string.Empty;
 
                 if (currentValue is IEnumerable<dynamic> valueEnumerable)
-                    returnValue = valueEnumerable.FirstOrDefault(e => GetFieldValue(e, Config.IdField) == parsedInteger);
+                    returnValue = valueEnumerable.FirstOrDefault(e => GetFieldValue(e, idFieldName) == parsedInteger);
                 else
-                    returnValue = GetFieldValue(((dynamic)currentValue), Config.IdField) == parsedInteger ? currentValue as ExpandoObject : null;
+                    returnValue = GetFieldValue(((dynamic)currentValue), idFieldName) == parsedInteger ? currentValue as ExpandoObject : null;
             }
             else
             {
@@ -85,7 +85,7 @@ namespace FakeServer.Common
             if (string.IsNullOrEmpty(tail))
                 return returnValue;
             else
-                return GetNestedProperty(returnValue, tail);
+                return GetNestedProperty(returnValue, tail, idFieldName);
         }
 
         public static dynamic GetFieldValue(object source, string fieldName)

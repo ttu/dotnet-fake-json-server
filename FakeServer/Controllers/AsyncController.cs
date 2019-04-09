@@ -3,6 +3,7 @@ using FakeServer.Jobs;
 using JsonFlatFileDataStore;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -20,11 +21,13 @@ namespace FakeServer.Controllers
     {
         private readonly IDataStore _ds;
         private readonly JobsService _jobs;
+        private readonly DataStoreSettings _dsSettings;
 
-        public AsyncController(IDataStore ds, JobsService jobs)
+        public AsyncController(IDataStore ds, JobsService jobs, IOptions<DataStoreSettings> dsSettings)
         {
             _ds = ds;
             _jobs = jobs;
+            _dsSettings = dsSettings.Value;
         }
 
         /// <summary>
@@ -44,7 +47,7 @@ namespace FakeServer.Controllers
             {
                 var collection = _ds.GetCollection(collectionId);
                 collection.InsertOne(item);
-                return item[Config.IdField].Value<string>();
+                return item[_dsSettings.IdField].Value<string>();
             });
 
             var queuUrl = _jobs.StartNewJob(collectionId, "POST", action);
@@ -67,7 +70,7 @@ namespace FakeServer.Controllers
             if (item == null)
                 return BadRequest();
 
-            ObjectHelper.SetFieldValue(item, Config.IdField, id);
+            ObjectHelper.SetFieldValue(item, _dsSettings.IdField, id);
             //item.id = id;
 
             var action = new Func<dynamic>(() =>
