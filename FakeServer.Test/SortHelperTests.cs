@@ -7,6 +7,8 @@ namespace FakeServer.Test
 {
     public class SortHelperTests
     {
+        private const string _idFieldName = "id";
+
         [Fact]
         public void SortFields()
         {
@@ -27,18 +29,18 @@ namespace FakeServer.Test
 
             var result = SortHelper.SortFields(new[] { exp, exp2, exp3 }, new[] { "+Age" });
             Assert.Equal(3, result.Count());
-            Assert.Equal(20, ObjectHelper.GetNestedProperty(result.ToList()[0], "Age"));
-            Assert.Equal(60, ObjectHelper.GetNestedProperty(result.ToList()[2], "Age"));
+            Assert.Equal(20, ObjectHelper.GetNestedProperty(result.ToList()[0], "Age", _idFieldName));
+            Assert.Equal(60, ObjectHelper.GetNestedProperty(result.ToList()[2], "Age", _idFieldName));
 
             result = SortHelper.SortFields(new[] { exp, exp2, exp3 }, new[] { "-Age" });
             Assert.Equal(3, result.Count());
-            Assert.Equal(60, ObjectHelper.GetNestedProperty(result.ToList()[0], "Age"));
-            Assert.Equal(20, ObjectHelper.GetNestedProperty(result.ToList()[2], "Age"));
+            Assert.Equal(60, ObjectHelper.GetNestedProperty(result.ToList()[0], "Age", _idFieldName));
+            Assert.Equal(20, ObjectHelper.GetNestedProperty(result.ToList()[2], "Age", _idFieldName));
 
             result = SortHelper.SortFields(new[] { exp, exp2, exp3 }, new[] { "Age" });
             Assert.Equal(3, result.Count());
-            Assert.Equal(60, ObjectHelper.GetNestedProperty(result.ToList()[0], "Age"));
-            Assert.Equal(20, ObjectHelper.GetNestedProperty(result.ToList()[2], "Age"));
+            Assert.Equal(60, ObjectHelper.GetNestedProperty(result.ToList()[0], "Age", _idFieldName));
+            Assert.Equal(20, ObjectHelper.GetNestedProperty(result.ToList()[2], "Age", _idFieldName));
         }
         
         [Fact]

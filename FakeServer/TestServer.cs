@@ -16,6 +16,7 @@ namespace FakeServer
             mainConfiguration.Add("currentPath", path);
             mainConfiguration.Add("file", file);
 
+            mainConfiguration.Add("DataStore:IdField", "id");
             mainConfiguration.Add("Caching:ETag:Enabled", "true");
 
             if (!string.IsNullOrEmpty(authenticationType))

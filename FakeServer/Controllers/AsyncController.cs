@@ -3,6 +3,7 @@ using FakeServer.Jobs;
 using JsonFlatFileDataStore;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -20,11 +21,13 @@ namespace FakeServer.Controllers
     {
         private readonly IDataStore _ds;
         private readonly JobsService _jobs;
+        private readonly DataStoreSettings _dsSettings;
 
-        public AsyncController(IDataStore ds, JobsService jobs)
+        public AsyncController(IDataStore ds, JobsService jobs, IOptions<DataStoreSettings> dsSettings)
         {
             _ds = ds;
             _jobs = jobs;
+            _dsSettings = dsSettings.Value;
         }
 
         /// <summary>
@@ -44,7 +47,7 @@ namespace FakeServer.Controllers
             {
                 var collection = _ds.GetCollection(collectionId);
                 collection.InsertOne(item);
-                return item["id"].Value<string>();
+                return item[_dsSettings.IdField].Value<string>();
             });
 
             var queuUrl = _jobs.StartNewJob(collectionId, "POST", action);
@@ -67,11 +70,12 @@ namespace FakeServer.Controllers
             if (item == null)
                 return BadRequest();
 
-            item.id = id;
+            ObjectHelper.SetFieldValue(item, _dsSettings.IdField, id);
+            //item.id = id;
 
             var action = new Func<dynamic>(() =>
             {
-                _ds.GetCollection(collectionId).ReplaceOne((Predicate<dynamic>)(e => e.id == id), item);
+                _ds.GetCollection(collectionId).ReplaceOne(id, item);
                 return id;
             });
 
@@ -106,7 +110,7 @@ namespace FakeServer.Controllers
 
             var action = new Func<dynamic>(() =>
             {
-                _ds.GetCollection(collectionId).UpdateOne((Predicate<dynamic>)(e => e.id == id), sourceData);
+                _ds.GetCollection(collectionId).UpdateOne(id, sourceData);
                 return id;
             });
 
@@ -126,7 +130,7 @@ namespace FakeServer.Controllers
         {
             var action = new Func<dynamic>(() =>
             {
-                var found = _ds.GetCollection(collectionId).DeleteOne(e => e.id == id);
+                var found = _ds.GetCollection(collectionId).DeleteOne(id);
                 return id;
             });
 

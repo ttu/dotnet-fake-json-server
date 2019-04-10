@@ -18,14 +18,16 @@ namespace FakeServer.GraphQL
         private readonly IDataStore _datastore;
         private readonly IMessageBus _bus;
         private readonly bool _authenticationEnabled;
+        private readonly string _idFieldName;
         private readonly string[] _allowedTypes = new[] { "application/graphql", "application/json" };
 
-        public GraphQLMiddleware(RequestDelegate next, IDataStore datastore, IMessageBus bus, bool authenticationEnabled)
+        public GraphQLMiddleware(RequestDelegate next, IDataStore datastore, IMessageBus bus, bool authenticationEnabled, string idFieldName)
         {
             _next = next;
             _datastore = datastore;
             _bus = bus;
             _authenticationEnabled = authenticationEnabled;
+            _idFieldName = idFieldName;
         }
 
         public async Task Invoke(HttpContext context)
@@ -68,7 +70,7 @@ namespace FakeServer.GraphQL
 
                 query = toReplace.Aggregate(query, (acc, curr) => acc.Replace(curr, ""));
 
-                result = GraphQL.HandleQuery(query, _datastore);
+                result = GraphQL.HandleQuery(query, _datastore, _idFieldName);
             }
 
             var json = result.Errors?.Any() == true

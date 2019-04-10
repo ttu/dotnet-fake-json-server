@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Globalization;
@@ -57,7 +58,7 @@ namespace FakeServer.Common
         /// <param name="current"></param>
         /// <param name="propertyName"></param>
         /// <returns>Dynamic is return value can be a single item or a list</returns>
-        public static dynamic GetNestedProperty(ExpandoObject current, string propertyName)
+        public static dynamic GetNestedProperty(ExpandoObject current, string propertyName, string idFieldName)
         {
             var propertyNameCurrent = propertyName.Contains('/') ? propertyName.Split('/').First() : propertyName;
             var tail = propertyName.Contains('/') ? propertyName.Substring(propertyName.IndexOf('/') + 1) : string.Empty;
@@ -72,9 +73,9 @@ namespace FakeServer.Common
                 tail = tail.Contains('/') ? tail.Substring(tail.IndexOf('/') + 1) : string.Empty;
 
                 if (currentValue is IEnumerable<dynamic> valueEnumerable)
-                    returnValue = valueEnumerable.FirstOrDefault(e => e.id == parsedInteger);
+                    returnValue = valueEnumerable.FirstOrDefault(e => GetFieldValue(e, idFieldName) == parsedInteger);
                 else
-                    returnValue = ((dynamic)currentValue).id == parsedInteger ? currentValue as ExpandoObject : null;
+                    returnValue = GetFieldValue(((dynamic)currentValue), idFieldName) == parsedInteger ? currentValue as ExpandoObject : null;
             }
             else
             {
@@ -84,7 +85,48 @@ namespace FakeServer.Common
             if (string.IsNullOrEmpty(tail))
                 return returnValue;
             else
-                return GetNestedProperty(returnValue, tail);
+                return GetNestedProperty(returnValue, tail, idFieldName);
+        }
+
+        public static dynamic GetFieldValue(object source, string fieldName)
+        {
+            if (source is ExpandoObject sourceExpando)
+            {
+                var sourceExpandoDict = new Dictionary<string, dynamic>(sourceExpando, StringComparer.OrdinalIgnoreCase);
+                return sourceExpandoDict.ContainsKey(fieldName) ? sourceExpandoDict[fieldName] : null;
+            }
+
+            var srcProp = source.GetType().GetProperties().FirstOrDefault(p => string.Equals(p.Name, fieldName, StringComparison.OrdinalIgnoreCase));
+            return srcProp?.GetValue(source, null);
+        }
+
+        public static void SetFieldValue(object item, string fieldName, dynamic data)
+        {
+            if (item is JToken)
+            {
+                dynamic jTokenItem = item;
+                jTokenItem[fieldName] = data;
+            }
+            else if (item is ExpandoObject)
+            {
+                dynamic expandoItem = item;
+                var expandoDict = expandoItem as IDictionary<string, object>;
+                expandoDict[fieldName] = data;
+            }
+            else
+            {
+                var idProperty = item.GetType().GetProperties().FirstOrDefault(p => string.Equals(p.Name, fieldName, StringComparison.OrdinalIgnoreCase));
+
+                if (idProperty != null && idProperty.CanWrite)
+                    idProperty.SetValue(item, data);
+            }
+        }
+
+        private static object GetValue(object source, dynamic srcProp)
+        {
+            return source.GetType() == typeof(ExpandoObject)
+                        ? srcProp.Value
+                        : srcProp.GetValue(source, null);
         }
 
         public static dynamic GetWebSocketMessage(string method, string path)

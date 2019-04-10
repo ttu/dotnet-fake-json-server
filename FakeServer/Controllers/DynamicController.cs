@@ -19,12 +19,14 @@ namespace FakeServer.Controllers
     public class DynamicController : Controller
     {
         private readonly IDataStore _ds;
-        private readonly ApiSettings _settings;
+        private readonly ApiSettings _apiSettings;
+        private readonly DataStoreSettings _dsSettings;
 
-        public DynamicController(IDataStore ds, IOptions<ApiSettings> settings)
+        public DynamicController(IDataStore ds, IOptions<ApiSettings> apiSettings, IOptions<DataStoreSettings> dsSettings)
         {
             _ds = ds;
-            _settings = settings.Value;
+            _apiSettings = apiSettings.Value;
+            _dsSettings = dsSettings.Value;
         }
 
         /// <summary>
@@ -81,7 +83,7 @@ namespace FakeServer.Controllers
             {
                 if (!QueryHelper.IsQueryValid(Request.Query))
                     return BadRequest();
-                
+
                 return GetCollectionItem(collectionId, skip, take);
             }
         }
@@ -145,7 +147,7 @@ namespace FakeServer.Controllers
                 results = SortHelper.SortFields(results, options.SortFields);
             }
 
-            if (_settings.UseResultObject)
+            if (_apiSettings.UseResultObject)
             {
                 return Ok(QueryHelper.GetResultObject(results, totalCount, paginationHeader, options));
             }
@@ -173,7 +175,7 @@ namespace FakeServer.Controllers
             if (_ds.IsItem(collectionId))
                 return BadRequest();
 
-            var result = _ds.GetCollection(collectionId).Find(e => e.id == id).FirstOrDefault();
+            var result = _ds.GetCollection(collectionId).Find(e => ObjectHelper.GetFieldValue(e, _dsSettings.IdField) == id).FirstOrDefault();
 
             if (result == null)
                 return NotFound();
@@ -201,12 +203,12 @@ namespace FakeServer.Controllers
             if (_ds.IsItem(collectionId))
                 return BadRequest();
 
-            var item = _ds.GetCollection(collectionId).AsQueryable().FirstOrDefault(e => e.id == id);
+            var item = _ds.GetCollection(collectionId).AsQueryable().FirstOrDefault(e => ObjectHelper.GetFieldValue(e, _dsSettings.IdField) == id);
 
             if (item == null)
                 return BadRequest();
 
-            var nested = ObjectHelper.GetNestedProperty(item, path);
+            var nested = ObjectHelper.GetNestedProperty(item, path, _dsSettings.IdField);
 
             if (nested == null)
                 return NotFound();
@@ -236,7 +238,10 @@ namespace FakeServer.Controllers
 
             await collection.InsertOneAsync(item);
 
-            return Created($"{Request.GetDisplayUrl()}/{item["id"]}", new { id = item["id"] });
+            var createdItem = new ExpandoObject();
+            createdItem.TryAdd(_dsSettings.IdField, item[_dsSettings.IdField]);
+
+            return Created($"{Request.GetDisplayUrl()}/{item[_dsSettings.IdField]}", createdItem);
         }
 
         /// <summary>
@@ -256,9 +261,10 @@ namespace FakeServer.Controllers
                 return BadRequest();
 
             // Make sure that new data has id field correctly
-            item.id = id;
+            ObjectHelper.SetFieldValue(item, _dsSettings.IdField, id);
+            //item.id = id;
 
-            var success = await _ds.GetCollection(collectionId).ReplaceOneAsync((Predicate<dynamic>)(e => e.id == id), item, _settings.UpsertOnPut);
+            var success = await _ds.GetCollection(collectionId).ReplaceOneAsync(id, item, _apiSettings.UpsertOnPut);
 
             if (success)
                 return NoContent();
@@ -293,7 +299,7 @@ namespace FakeServer.Controllers
             if (!((IDictionary<string, object>)sourceData).Any() || _ds.IsItem(collectionId))
                 return BadRequest();
 
-            var success = await _ds.GetCollection(collectionId).UpdateOneAsync((Predicate<dynamic>)(e => e.id == id), sourceData);
+            var success = await _ds.GetCollection(collectionId).UpdateOneAsync(id, sourceData);
 
             if (success)
                 return NoContent();
@@ -316,7 +322,7 @@ namespace FakeServer.Controllers
             if (_ds.IsItem(collectionId))
                 return BadRequest();
 
-            var success = await _ds.GetCollection(collectionId).DeleteOneAsync(e => e.id == id);
+            var success = await _ds.GetCollection(collectionId).DeleteOneAsync(id);
 
             if (success)
                 return NoContent();
@@ -342,7 +348,7 @@ namespace FakeServer.Controllers
             if (item == null)
                 return BadRequest();
 
-            var success = await _ds.ReplaceItemAsync(objectId, item, _settings.UpsertOnPut);
+            var success = await _ds.ReplaceItemAsync(objectId, item, _apiSettings.UpsertOnPut);
 
             if (success)
                 return NoContent();

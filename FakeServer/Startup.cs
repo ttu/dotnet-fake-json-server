@@ -16,6 +16,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.PlatformAbstractions;
 using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerUI;
+using System;
 using System.IO;
 
 namespace FakeServer
@@ -31,6 +32,8 @@ namespace FakeServer
 
         public void ConfigureServices(IServiceCollection services)
         {
+           
+
             var folder = Configuration["staticFolder"];
 
             if (!string.IsNullOrEmpty(folder))
@@ -45,12 +48,13 @@ namespace FakeServer
             }
 
             var jsonFilePath = Path.Combine(Configuration["currentPath"], Configuration["file"]);
-            services.AddSingleton<IDataStore>(new DataStore(jsonFilePath, reloadBeforeGetCollection: Configuration.GetValue<bool>("Common:EagerDataReload")));
+            services.AddSingleton<IDataStore>(new DataStore(jsonFilePath, keyProperty: Configuration["DataStore:IdField"],  reloadBeforeGetCollection: Configuration.GetValue<bool>("DataStore:EagerDataReload")));
             services.AddSingleton<IMessageBus, MessageBus>();
             services.AddSingleton<JobsService>();
 
             services.Configure<AuthenticationSettings>(Configuration.GetSection("Authentication"));
             services.Configure<ApiSettings>(Configuration.GetSection("Api"));
+            services.Configure<DataStoreSettings>(Configuration.GetSection("DataStore"));
             services.Configure<JobsSettings>(Configuration.GetSection("Jobs"));
             services.Configure<SimulateSettings>(Configuration.GetSection("Simulate"));
 
@@ -161,7 +165,8 @@ namespace FakeServer
             app.UseMiddleware<GraphQLMiddleware>(
                         app.ApplicationServices.GetRequiredService<IDataStore>(),
                         app.ApplicationServices.GetRequiredService<IMessageBus>(),
-                        useAuthentication);
+                        useAuthentication,
+                        Configuration["DataStore:IdField"]);
 
             app.UseMvc();
 

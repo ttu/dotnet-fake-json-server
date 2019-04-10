@@ -1,4 +1,5 @@
-﻿using GraphQL;
+﻿using FakeServer.Common;
+using GraphQL;
 using GraphQL.Execution;
 using GraphQL.Language.AST;
 using GraphQL.Types;
@@ -27,7 +28,7 @@ namespace FakeServer.GraphQL
 
     public static class GraphQL
     {
-        public static GraphQLResult HandleQuery(string query, IDataStore datastore)
+        public static GraphQLResult HandleQuery(string query, IDataStore datastore, string idFieldName)
         {
             Document d;
 
@@ -64,7 +65,7 @@ namespace FakeServer.GraphQL
                 {
                     var fields = CollectFields(operation.SelectionSet);
 
-                    var mutaationResults = ExecuteMutationFields(datastore, null, fields);
+                    var mutaationResults = ExecuteMutationFields(datastore, null, fields, idFieldName);
 
                     var responseData = mutaationResults.ToDictionary(pair => pair.Key, pair => pair.Value.Item1);
                     var notifications = mutaationResults.Select(pair => pair.Value.Item2).Where(e => e != null).ToList();
@@ -346,7 +347,7 @@ namespace FakeServer.GraphQL
             }
         }
 
-        private static Dictionary<string, dynamic> ExecuteMutationFields(dynamic source, dynamic target, Dictionary<string, Fields> fields, bool isRoot = false)
+        private static Dictionary<string, dynamic> ExecuteMutationFields(dynamic source, dynamic target, Dictionary<string, Fields> fields, string idFieldName, bool isRoot = false)
         {
             return fields.ToDictionary(
                 pair => GetResponseName(pair),
@@ -369,44 +370,45 @@ namespace FakeServer.GraphQL
 
                         dynamic updateData = success ? new { Method = "POST", Path = $"{collectionName}/{itemId}", Collection = collectionName, ItemId = itemId } : null;
 
-                        ExecutionResult item = GetMutationReturnItem(source, fieldsToUse, itemId);
+                        ExecutionResult item = GetMutationReturnItem(source, fieldsToUse, itemId, idFieldName);
                         return Tuple.Create(item.Data as object, updateData);
                         //return item.Value as object;
                     }
                     else if (pair.Value.First().Name.StartsWith("update"))
                     {
-                        dynamic id = GraphQL.GetInputId(pair);
+                        dynamic id = GraphQL.GetInputId(pair, idFieldName);
                         ExpandoObject newItem = ResolveMutationField("patch", target, pair.Value, isRoot);
 
-                        var success = collection.UpdateOne(e => e.id == id, newItem);
+                        var success = collection.UpdateOne(id, newItem);
 
                         dynamic updateData = success ? new { Method = "PATCH", Path = $"{collectionName}/{id}", Collection = collectionName, ItemId = id } : null;
 
-                        ExecutionResult item = GetMutationReturnItem(source, fieldsToUse, id);
+                        ExecutionResult item = GetMutationReturnItem(source, fieldsToUse, id, idFieldName);
                         return Tuple.Create(item.Data as object, updateData);
                         //return item.Value as object;
                     }
                     else if (pair.Value.First().Name.StartsWith("replace"))
                     {
-                        dynamic id = GraphQL.GetInputId(pair);
+                        dynamic id = GraphQL.GetInputId(pair, idFieldName);
                         dynamic newItem = ResolveMutationField(collectionName, target, pair.Value, isRoot);
 
                         // Make sure that new data has id field correctly
-                        newItem.id = id;
+                        ObjectHelper.SetFieldValue(newItem, idFieldName, id);
+                        //newItem.id = id;
 
-                        var success = collection.ReplaceOne(e => e.id == id, newItem as ExpandoObject);
+                        var success = collection.ReplaceOne(id, newItem as ExpandoObject);
 
                         dynamic updateData = success ? new { Method = "PUT", Path = $"{collectionName}/{id}", Collection = collectionName, ItemId = id } : null;
 
-                        ExecutionResult item = GetMutationReturnItem(source, fieldsToUse, id);
+                        ExecutionResult item = GetMutationReturnItem(source, fieldsToUse, id, idFieldName);
                         return Tuple.Create(item.Data as object, updateData);
                         //return item.Value as object;
                     }
                     else if (pair.Value.First().Name.StartsWith("delete"))
                     {
-                        dynamic id = GraphQL.GetInputId(pair);
+                        dynamic id = GraphQL.GetInputId(pair, idFieldName);
 
-                        var success = collection.DeleteOne(e => e.id == id);
+                        var success = collection.DeleteOne(id);
 
                         dynamic updateData = success ? new { Method = "DELETE", Path = $"{collectionName}/{id}", Collection = collectionName, ItemId = id } : null;
                         var item = new ExecutionResult { Data = success };
@@ -427,23 +429,24 @@ namespace FakeServer.GraphQL
             return fields.Any() ? fields.FirstOrDefault().Key : "Result";
         }
 
-        private static dynamic GetInputId(KeyValuePair<string, Fields> pair)
+        private static dynamic GetInputId(KeyValuePair<string, Fields> pair, string idFieldName)
         {
             return ((dynamic)pair.Value.First()
                                         .Children.First(e => e is Arguments)
                                         .Children.First(e => ((dynamic)e).Name == "input")
                                         .Children.First()
-                                        .Children.First(e => ((dynamic)e).Name == "id")
+                                        .Children.First(e => ((dynamic)e).Name == idFieldName)
                                         .Children.First()).Value;
         }
 
-        private static ExecutionResult GetMutationReturnItem(dynamic source, Dictionary<string, Fields> fieldsToUse, int id)
+        private static ExecutionResult GetMutationReturnItem(dynamic source, Dictionary<string, Fields> fieldsToUse, int id, string idFieldName)
         {
             // Get all items and then select one with newly added id
             ExecutionResult value = ResolveField(source, null, fieldsToUse.First().Value, true);
             var items = value.Data as List<dynamic>;
-            var item = new ExecutionResult() { Data = items.First(e => ((dynamic)e).id == id) };
+            var item = new ExecutionResult() { Data = items.First(e => ObjectHelper.GetFieldValue(e, idFieldName) == id) };
             return item;
+            
         }
 
         private static ExpandoObject ResolveMutationField(string nameToProcess, dynamic newItem, Fields fields, bool isRoot = false)
