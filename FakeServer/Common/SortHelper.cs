@@ -47,6 +47,6 @@ namespace FakeServer.Common
 
         private static string RemoveSortDirection(string sortField) => sortField.Replace("+", "").Replace("-", "").Trim();
 
-        private static bool IsSortDescending(string sortField) => !(char.IsWhiteSpace(sortField[0]) || sortField.Contains("+"));        
+        private static bool IsSortDescending(string sortField) => !(char.IsWhiteSpace(sortField[0]) || sortField.Contains("+"));
     }
 }

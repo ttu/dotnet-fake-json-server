@@ -16,7 +16,6 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.PlatformAbstractions;
 using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerUI;
-using System;
 using System.IO;
 
 namespace FakeServer
@@ -32,8 +31,6 @@ namespace FakeServer
 
         public void ConfigureServices(IServiceCollection services)
         {
-           
-
             var folder = Configuration["staticFolder"];
 
             if (!string.IsNullOrEmpty(folder))
@@ -48,7 +45,7 @@ namespace FakeServer
             }
 
             var jsonFilePath = Path.Combine(Configuration["currentPath"], Configuration["file"]);
-            services.AddSingleton<IDataStore>(new DataStore(jsonFilePath, keyProperty: Configuration["DataStore:IdField"],  reloadBeforeGetCollection: Configuration.GetValue<bool>("DataStore:EagerDataReload")));
+            services.AddSingleton<IDataStore>(new DataStore(jsonFilePath, keyProperty: Configuration["DataStore:IdField"], reloadBeforeGetCollection: Configuration.GetValue<bool>("DataStore:EagerDataReload")));
             services.AddSingleton<IMessageBus, MessageBus>();
             services.AddSingleton<JobsService>();
 

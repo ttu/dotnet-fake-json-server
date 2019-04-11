@@ -26,8 +26,8 @@ namespace FakeServer.Common
             // PUT : Avoiding mid-air collisions
 
             if (context.Request.Path.Value.StartsWith($"/{Config.ApiRoute}") == false ||
-                (context.Request.Method != HttpMethods.Get && 
-                 context.Request.Method != HttpMethods.Head && 
+                (context.Request.Method != HttpMethods.Get &&
+                 context.Request.Method != HttpMethods.Head &&
                  context.Request.Method != HttpMethods.Put))
             {
                 await _next(context);

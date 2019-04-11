@@ -42,7 +42,7 @@ namespace FakeServer.Test
             Assert.Equal(60, ObjectHelper.GetNestedProperty(result.ToList()[0], "Age", _idFieldName));
             Assert.Equal(20, ObjectHelper.GetNestedProperty(result.ToList()[2], "Age", _idFieldName));
         }
-        
+
         [Fact]
         public void SortFields_EmptySortArray()
         {

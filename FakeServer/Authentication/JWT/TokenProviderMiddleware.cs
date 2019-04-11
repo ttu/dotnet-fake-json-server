@@ -47,7 +47,7 @@ namespace FakeServer.Authentication.Jwt
                 return;
             }
 
-            (string username, string password, bool isDataValid) = context.Request.HasFormContentType 
+            (string username, string password, bool isDataValid) = context.Request.HasFormContentType
                                                                     ? GetFromFormData(context)
                                                                     : await GetFromJson(context);
 

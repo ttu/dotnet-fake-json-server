@@ -10,7 +10,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace FakeServer.GraphQL
 {
@@ -285,7 +284,7 @@ namespace FakeServer.GraphQL
                         var r = ResolveField(item, rootObject, i.Value);
                         rootObject = r.Data;
                     }
-                    
+
                     if (rootObject != null)
                         result.Add(rootObject);
                 }
@@ -446,7 +445,6 @@ namespace FakeServer.GraphQL
             var items = value.Data as List<dynamic>;
             var item = new ExecutionResult() { Data = items.First(e => ObjectHelper.GetFieldValue(e, idFieldName) == id) };
             return item;
-            
         }
 
         private static ExpandoObject ResolveMutationField(string nameToProcess, dynamic newItem, Fields fields, bool isRoot = false)

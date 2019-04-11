@@ -159,8 +159,17 @@ namespace FakeServer.Common
             queryParams.Remove("skip");
             queryParams.Remove("take");
 
-            return new QueryOptions { Skip = skip, Take = take, SkipWord = skipWord, TakeWord = takeWord, IsTextSearch = isTextSearch, 
-                Fields = fields, SortFields = sortFields, QueryParams = queryParams };
+            return new QueryOptions
+            {
+                Skip = skip,
+                Take = take,
+                SkipWord = skipWord,
+                TakeWord = takeWord,
+                IsTextSearch = isTextSearch,
+                Fields = fields,
+                SortFields = sortFields,
+                QueryParams = queryParams
+            };
         }
 
         public static bool IsQueryValid(IQueryCollection query)

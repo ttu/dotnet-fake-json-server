@@ -113,7 +113,7 @@ namespace FakeServer.GraphQL
             if (jsonBody.query is null)
             {
                 return (false, null, "Missing query property in json.");
-            }    
+            }
 
             return (true, jsonBody.query, null);
         }

@@ -57,6 +57,7 @@ namespace FakeServer.Common
         /// </summary>
         /// <param name="current"></param>
         /// <param name="propertyName"></param>
+        /// <param name="idFieldName"></param>
         /// <returns>Dynamic is return value can be a single item or a list</returns>
         public static dynamic GetNestedProperty(ExpandoObject current, string propertyName, string idFieldName)
         {
@@ -155,7 +156,7 @@ namespace FakeServer.Common
             return dict.Where(kvp => fields.Contains(kvp.Key)).ToDictionary(k => k.Key, k => k.Value);
         }
 
-        private static List<Func<string, dynamic>> _convertFuncs = new List<Func<string, dynamic>>
+        private static readonly List<Func<string, dynamic>> _convertFuncs = new List<Func<string, dynamic>>
         {
             x => Convert.ToBoolean(x),
             x => Convert.ToInt32(x),

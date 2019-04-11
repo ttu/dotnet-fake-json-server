@@ -32,17 +32,17 @@ namespace FakeServer
                        .AddEnvironmentVariables()
                        .Build();
 
-            Log.Logger = new LoggerConfiguration()
-                .ReadFrom.Configuration(config)
-                .WriteTo.RollingFile(Path.Combine(PlatformServices.Default.Application.ApplicationBasePath, "log-{Date}.txt"))
-                .CreateLogger();
-
-            if (config["DataStore:IdField"] == null)
+            if (!isConfigValid(config))
             {
                 Console.WriteLine("\nUpdate appsettings.json to latest version");
                 Console.WriteLine("Program will exit...");
                 return 1;
             }
+
+            Log.Logger = new LoggerConfiguration()
+                .ReadFrom.Configuration(config)
+                .WriteTo.RollingFile(Path.Combine(PlatformServices.Default.Application.ApplicationBasePath, "log-{Date}.txt"))
+                .CreateLogger();
 
             try
             {
@@ -66,6 +66,8 @@ namespace FakeServer
                .UseConfiguration(config)
                .UseStartup<Startup>()
                .UseSerilog();
+
+        private static bool isConfigValid(IConfigurationRoot config) => config["DataStore:IdField"] == null ? false : true;
 
         private static CommandLineApplication BuildCommandLineApp(
             Func<string[], Dictionary<string, string>, int> invoke)
