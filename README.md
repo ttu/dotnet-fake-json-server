@@ -271,7 +271,7 @@ Example queries are in [Insomnia](https://insomnia.rest/) workspace format in [F
 
 Fake REST API supports Token and Basic Authentication. 
 
-Authentication can be disabled from `authentication.json` by setting Enabled to `false`. `AuthenticationType` options are `token` and `basic`.
+Authentication can be disabled from `appsettings.json` by setting Enabled to `false`. `AuthenticationType` options are `token` and `basic`.
 
 Add allowed usernames/passwords to `Users`-array.
 
