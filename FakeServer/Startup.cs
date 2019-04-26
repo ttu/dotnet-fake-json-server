@@ -3,6 +3,7 @@ using FakeServer.Authentication.Basic;
 using FakeServer.Authentication.Custom;
 using FakeServer.Authentication.Jwt;
 using FakeServer.Common;
+using FakeServer.CustomResponse;
 using FakeServer.GraphQL;
 using FakeServer.Jobs;
 using FakeServer.Simulate;
@@ -54,6 +55,7 @@ namespace FakeServer
             services.Configure<DataStoreSettings>(Configuration.GetSection("DataStore"));
             services.Configure<JobsSettings>(Configuration.GetSection("Jobs"));
             services.Configure<SimulateSettings>(Configuration.GetSection("Simulate"));
+            services.Configure<CustomResponseSettings>(Configuration.GetSection("CustomResponse"));
 
             services.AddCors(options =>
             {
@@ -136,6 +138,11 @@ namespace FakeServer
             if (Configuration.GetValue<bool>("Simulate:Error:Enabled"))
             {
                 app.UseMiddleware<ErrorMiddleware>();
+            }
+
+            if (Configuration.GetValue<bool>("CustomResponse:Enabled"))
+            {
+                app.UseMiddleware<CustomResponseMiddleware>();
             }
 
             app.UseWebSockets();
