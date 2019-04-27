@@ -4,6 +4,7 @@ using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -24,28 +25,38 @@ namespace FakeServer.CustomResponse
     {
         private readonly RequestDelegate _next;
         private readonly CustomResponseSettings _settings;
-        private readonly Script<object> _script;
+        private readonly List<Script<object>> _scripts;
 
         public CustomResponseMiddleware(RequestDelegate next, IOptions<CustomResponseSettings> settings)
         {
             _next = next;
             _settings = settings.Value;
-            _script = CSharpScript.Create<object>(_settings.Script,
-                                                    ScriptOptions.Default
-                                                                    .WithReferences(_settings.References)
-                                                                    .WithImports(_settings.Usings),
-                                                    globalsType: typeof(Globals));
+            _scripts = _settings.Scripts.Select(s =>
+            {
+                var script = CSharpScript.Create<object>(s.Script,
+                                                        ScriptOptions.Default
+                                                                        .WithReferences(s.References)
+                                                                        .WithImports(s.Usings),
+                                                        globalsType: typeof(Globals));
 
-            _script.Compile();
+                script.Compile();
+                return script;
+            }).ToList();
         }
 
         public async Task Invoke(HttpContext context)
         {
-            if (!_settings.Methods.Contains(context.Request.Method) || !_settings.Paths.Any(context.Request.Path.Value.Contains))
+            var scriptSettings = _settings.Scripts.LastOrDefault(s =>
+                s.Methods.Contains(context.Request.Method) && s.Paths.Any(context.Request.Path.Value.Contains));
+
+            if (scriptSettings == null)
             {
                 await _next(context);
                 return;
             }
+
+            var idx = _settings.Scripts.IndexOf(scriptSettings);
+            var script = _scripts[idx];
 
             var originalStream = context.Response.Body;
 
@@ -63,20 +74,25 @@ namespace FakeServer.CustomResponse
                     _Body = RemoveLiterals(bodyString)
                 };
 
-                var script = await _script.RunAsync(globalObject);
+                var scriptResult = await script.RunAsync(globalObject);
 
                 // HACK: Remove string quotemarks from around the _Body
                 // Original body is e.g. in an array: [{\"id\":1,\"name\":\"Jame\s\"}]
                 // Script will return new { Data = _Body }
                 // Script will set Data as a string { Data = "[{\"id\":1,\"name\":\"Jame\s\"}]" }
 
-                var jsonCleared = RemoveLiterals(JsonConvert.SerializeObject(script.ReturnValue));
+                var jsonCleared = RemoveLiterals(JsonConvert.SerializeObject(scriptResult.ReturnValue));
 
                 var bodyCleanStart = jsonCleared.IndexOf(globalObject._Body);
-                var bodyCleanEnd = bodyCleanStart + globalObject._Body.Length;
-                jsonCleared = jsonCleared
-                                .Remove(bodyCleanEnd, 1)
-                                .Remove(bodyCleanStart - 1, 1);
+
+                if (bodyCleanStart != -1)
+                {
+                    var bodyCleanEnd = bodyCleanStart + globalObject._Body.Length;
+
+                    jsonCleared = jsonCleared
+                              .Remove(bodyCleanEnd, 1)
+                              .Remove(bodyCleanStart - 1, 1);
+                }
 
                 var byteArray = Encoding.ASCII.GetBytes(jsonCleared);
                 var stream = new MemoryStream(byteArray);
@@ -101,6 +117,10 @@ namespace FakeServer.CustomResponse
             {
                 return string.Empty;
             }
+        }
+
+        private class SS : CustomResponseSettings
+        {
         }
     }
 }

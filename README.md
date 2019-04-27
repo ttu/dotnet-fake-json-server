@@ -1358,16 +1358,29 @@ Error simulation is always skipped for Swagger, WebSocket (ws) and for any html 
 
 ### Custom Response
 
-Fake Server has a custom response middleware which can execute C# code to transform the response body
+Fake Server has a custom response middleware to transform reponse body with C#-scripts.
+
+Multiple scripts can be configured and if path matches multiple scipts, last match will be used.
 
 ```json
 "CustomResponse": {
     "Enabled": true,
-    "Script": "return new { Data = _Body, Success = _Context.Response.StatusCode == 200 };",
-    "Methods": [ "GET" ],
-    "Paths": [ "api" ],
-    "Usings": [ "System", "Microsoft.AspNetCore.Http" ],
-    "References": [ "Microsoft.AspNetCore" ]
+    "Scripts": [
+        {
+            "Script": "return new { Data = _Body, Success = _Context.Response.StatusCode == 200 };",
+            "Methods": [ "GET" ],
+            "Paths": [ "api" ],
+            "Usings": [ "System", "Microsoft.AspNetCore.Http" ],
+            "References": [ "Microsoft.AspNetCore" ]
+        },
+        {
+            "Script": "return new { Data = \"illegal operation\" };",
+            "Methods": [ "GET" ],
+            "Paths": [ "api/users" ],
+            "Usings": [ "System", "Microsoft.AspNetCore.Http" ],
+            "References": [ "Microsoft.AspNetCore" ]
+      }
+    ]
 }
 ```
 
