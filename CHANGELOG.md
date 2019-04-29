@@ -5,6 +5,7 @@
 * ADDED: Define stored data id-field name
 * CHANGED: Rename Common property from appsettings.json to DataStore
 * CHANGED: Remove authentication.json and add Authentication settings to appsettings.json
+* ADDED: Configurable reponse transfrom middleware
 
 ### [0.9.1] - 2019-02-08
 * CHANGED: Target framework to .NET Core 2.2
