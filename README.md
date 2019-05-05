@@ -37,7 +37,7 @@ Fake JSON Server is a Fake REST API that can be used as a Back End for prototypi
 * Swagger [#](#swagger)
 * CORS [#](#cors)
 * Caching and avoiding mid-air collisions with ETag [#](#caching-and-avoiding-mid-air-collisions-with-etag)
-* Configurable custom response [#](#custom-response)
+* Configurable custom response transformation [#](#custom-response-transformation)
 * _Experimental_ GraphQL query and mutation support [#](#graphql)
 
 ##### Developed with
@@ -110,7 +110,7 @@ Fake JSON Server is a Fake REST API that can be used as a Back End for prototypi
       - [Replace item](#replace-item-1)
       - [Delete item](#delete-item-1)
   * [Simulate Delay and Random Errors](#simulate-delay-and-random-errors)
-  * [Configurable Custom Eesponse](#custom-response)
+  * [Configurable Custom Response Transformation](#custom-response-transformation)
 - [Logging](#logging)
 - [Guidelines](#guidelines)
 - [Other Links](#other-links)
@@ -1356,7 +1356,7 @@ Random errors can be simulated by setting `Simulate.Error.Enabled` to _true_. Er
 
 Error simulation is always skipped for Swagger, WebSocket (ws) and for any html file.
 
-### Custom Response
+### Custom Response Transformation
 
 Fake Server has a custom response middleware to transform reponse body with C#-scripts.
 
@@ -1389,10 +1389,12 @@ C# code is executed as a csscript and it has some special reacy processed object
 ```csharp
 // HttpContext
 public HttpContext _Context;
-// Collection id is parsed from the Request path
+// Collection id parsed from the Request path
 public string _CollectionId;
 // Original Response Body encoded to string
 public string _Body;
+// Request Http Method
+public string _Method;
 ```
 
 Example script creates new anonymous object
@@ -1413,7 +1415,7 @@ Previous script will have a response body:
 }
 ```
 
-If response data requires so dynamically named properties, e.g. `users` in the example, then more complex processing for the response is required.
+If response data requires so dynamically named properties, e.g. `users` in the example, then response requires more complex processing.
 
 ```json
 {
@@ -1429,6 +1431,7 @@ If response data requires so dynamically named properties, e.g. `users` in the e
 ```
 
 C#-code for the processing would be following:
+
 ```csharp
 var data = new ExpandoObject();
 var dataItems = data as IDictionary<string, object>;
@@ -1444,8 +1447,7 @@ return body;
 Script also would need `System.Collections.Generic` and `System.Dynamic` as imports. 
 
 ```json
-"CustomResponse": {
-    "Enabled": true,
+{
     "Script": "var data = new ExpandoObject();var dataItems = data as IDictionary<string, object>;dataItems.Add(_CollectionId, _Body);var body = new ExpandoObject();var items = body as IDictionary<string, object>;items.Add(\"Data\", data);items.Add(\"Success\", _Context.Response.StatusCode == 200);return body;",
     "Methods": [ "GET" ],
     "Paths": [ "api" ],
@@ -1453,7 +1455,6 @@ Script also would need `System.Collections.Generic` and `System.Dynamic` as impo
     "References": [ "Microsoft.AspNetCore" ]
 }
 ```
-
 
 ## Logging
 

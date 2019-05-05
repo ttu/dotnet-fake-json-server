@@ -19,6 +19,7 @@ namespace FakeServer.CustomResponse
         public HttpContext _Context;
         public string _CollectionId;
         public string _Body;
+        public string _Method;
     }
 
     public class CustomResponseMiddleware
@@ -71,7 +72,8 @@ namespace FakeServer.CustomResponse
                 {
                     _Context = context,
                     _CollectionId = GetCollectionFromPath(context.Request.Path.Value),
-                    _Body = RemoveLiterals(bodyString)
+                    _Body = RemoveLiterals(bodyString),
+                    _Method = context.Request.Method
                 };
 
                 var scriptResult = await script.RunAsync(globalObject);
@@ -117,10 +119,6 @@ namespace FakeServer.CustomResponse
             {
                 return string.Empty;
             }
-        }
-
-        private class SS : CustomResponseSettings
-        {
         }
     }
 }
