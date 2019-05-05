@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.Globalization;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace FakeServer.Common
 {
@@ -198,6 +199,23 @@ namespace FakeServer.Common
                     return result;
 
             return value;
+        }
+
+        public static string RemoveLiterals(string input) => Regex.Replace(input, "[\\\\](?=(\"))", "");
+
+        public static string GetCollectionFromPath(string path)
+        {
+            try
+            {
+                var collection = path.Remove(0, Config.ApiRoute.Length + 2);
+                collection = collection.IndexOf("/") != -1 ? collection.Remove(collection.IndexOf("/")) : collection;
+                collection = collection.IndexOf("?") != -1 ? collection.Remove(collection.IndexOf("?")) : collection;
+                return collection;
+            }
+            catch
+            {
+                return string.Empty;
+            }
         }
     }
 }

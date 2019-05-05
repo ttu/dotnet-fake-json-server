@@ -13,7 +13,6 @@ using System.Threading.Tasks;
 
 namespace FakeServer.CustomResponse
 {
-    // TODO: How to name these?
     public class Globals
     {
         public HttpContext _Context;
@@ -71,8 +70,8 @@ namespace FakeServer.CustomResponse
                 var globalObject = new Globals
                 {
                     _Context = context,
-                    _CollectionId = GetCollectionFromPath(context.Request.Path.Value),
-                    _Body = RemoveLiterals(bodyString),
+                    _CollectionId = ObjectHelper.GetCollectionFromPath(context.Request.Path.Value),
+                    _Body = ObjectHelper.RemoveLiterals(bodyString),
                     _Method = context.Request.Method
                 };
 
@@ -83,7 +82,7 @@ namespace FakeServer.CustomResponse
                 // Script will return new { Data = _Body }
                 // Script will set Data as a string { Data = "[{\"id\":1,\"name\":\"Jame\s\"}]" }
 
-                var jsonCleared = RemoveLiterals(JsonConvert.SerializeObject(scriptResult.ReturnValue));
+                var jsonCleared = ObjectHelper.RemoveLiterals(JsonConvert.SerializeObject(scriptResult.ReturnValue));
 
                 var bodyCleanStart = jsonCleared.IndexOf(globalObject._Body);
 
@@ -104,21 +103,6 @@ namespace FakeServer.CustomResponse
 
         // TODO: Move to helper classes and add tests
 
-        private string RemoveLiterals(string input) => Regex.Replace(input, "[\\\\](?=(\"))", "");
-
-        private string GetCollectionFromPath(string path)
-        {
-            try
-            {
-                var collection = path.Remove(0, Config.ApiRoute.Length + 2);
-                collection = collection.IndexOf("/") != -1 ? collection.Remove(collection.IndexOf("/")) : collection;
-                collection = collection.IndexOf("?") != -1 ? collection.Remove(collection.IndexOf("?")) : collection;
-                return collection;
-            }
-            catch
-            {
-                return string.Empty;
-            }
-        }
+    
     }
 }
