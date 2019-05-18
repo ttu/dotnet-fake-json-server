@@ -51,7 +51,10 @@ namespace FakeServer.GraphQL
                 return;
             }
 
-            if (!_allowedMethods.Any(context.Request.Method.Contains) || !_allowedTypes.Any(context.Request.ContentType.Contains))
+            if (
+                !_allowedMethods.Any(context.Request.Method.Contains) ||
+                (context.Request.Method == "POST" && !_allowedTypes.Any(context.Request.ContentType.Contains))
+            )
             {
                 context.Response.StatusCode = (int)HttpStatusCode.NotImplemented;
                 await context.Response.WriteAsync(JsonConvert.SerializeObject(new { errors = new[] { "Not implemented" } }));
@@ -93,6 +96,10 @@ namespace FakeServer.GraphQL
             if (context.Request.Query.TryGetValue("query", out StringValues query))
             {
                 return (true, query[0], null);
+            }
+            else if (context.Request.Method == "GET")
+            {
+                return (false, null, "Missing query parameter `query`");
             }
 
             string body;

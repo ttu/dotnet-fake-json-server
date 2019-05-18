@@ -1438,11 +1438,63 @@ namespace FakeServer.Test
         }
 
         [Fact]
-        public async Task GetGraphQL_NotImplemented()
+        public async Task PostGraphQL_QueryParameter()
         {
             using (var client = new HttpClient())
             {
-                var result = await client.GetAsync($"{_fixture.BaseUrl}/graphql?query={{users}}");
+                StringContent content = new StringContent("", Encoding.UTF8, "application/graphql");
+                string query = @"{users{name}}";
+                var result = await client.PostAsync($"{_fixture.BaseUrl}/graphql?query={query}", content);
+
+                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+
+                var data = JsonConvert.DeserializeObject<JObject>(await result.Content.ReadAsStringAsync());
+
+                Assert.NotNull(data["data"]);
+                Assert.Null(data["errors"]);
+            }
+        }
+
+        [Fact]
+        public async Task PostGraphQL_Error_InvalidQueryParameter()
+        {
+            using (var client = new HttpClient())
+            {
+                StringContent content = new StringContent("", Encoding.UTF8, "application/graphql");
+                string query = @"{ users { name";
+                var result = await client.PostAsync($"{_fixture.BaseUrl}/graphql?query={query}", content);
+                Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
+            }
+        }
+
+        [Fact]
+        public async Task PostGraphQL_QueryParameter_VsBody()
+        {
+            using (var client = new HttpClient())
+            {
+                StringContent content = new StringContent(@"{ users { name } }", Encoding.UTF8, "application/graphql");
+                string query = @"{ users { id, name } }";
+                var result = await client.PostAsync($"{_fixture.BaseUrl}/graphql?query={query}", content);
+
+                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+
+                var data = JsonConvert.DeserializeObject<JObject>(await result.Content.ReadAsStringAsync());
+
+                // If the API had chosen to parse the request body instead of the `query` query parameter, 
+                // it would've only returned the name for each user
+                Assert.NotNull(data["data"]["users"][0]["id"]);
+                Assert.Null(data["errors"]);
+            }
+        }
+
+        [Fact]
+        public async Task PostGraphQL_QueryParameter_ContentTypeNotImplemented()
+        {
+            using (var client = new HttpClient())
+            {
+                StringContent content = new StringContent("", Encoding.UTF8);
+                string query = @"{ users { name } }";
+                var result = await client.PostAsync($"{_fixture.BaseUrl}/graphql?query={query}", content);
 
                 Assert.Equal(HttpStatusCode.NotImplemented, result.StatusCode);
 
@@ -1450,6 +1502,44 @@ namespace FakeServer.Test
 
                 Assert.Null(data["data"]);
                 Assert.NotNull(data["errors"]);
+            }
+        }
+
+        [Fact]
+        public async Task GetGraphQL_Error_MissingQueryParameter()
+        {
+            using (var client = new HttpClient())
+            {
+                var result = await client.GetAsync($"{_fixture.BaseUrl}/graphql");
+                Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
+            }
+        }
+
+        [Fact]
+        public async Task GetGraphQL_Error_InvalidQueryParameter()
+        {
+            using (var client = new HttpClient())
+            {
+                string query = @"{ users { name";
+                var result = await client.GetAsync($"{_fixture.BaseUrl}/graphql?query={query}");
+                Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
+            }
+        }
+
+        [Fact]
+        public async Task GetGraphQL_QueryParameter()
+        {
+            using (var client = new HttpClient())
+            {
+                string query = @"{ users { name } }";
+                var result = await client.GetAsync($"{_fixture.BaseUrl}/graphql?query={query}");
+
+                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+
+                var data = JsonConvert.DeserializeObject<JObject>(await result.Content.ReadAsStringAsync());
+
+                Assert.NotNull(data["data"]);
+                Assert.Null(data["errors"]);
             }
         }
     }
