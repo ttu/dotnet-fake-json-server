@@ -21,8 +21,8 @@ namespace FakeServer.GraphQL
         private readonly bool _authenticationEnabled;
         private readonly string _idFieldName;
         private readonly string[] _allowedTypes = new[] { "application/graphql", "application/json" };
-        private readonly string[] _allowedMethods = new[] { "GET", "POST" };
-
+        private readonly string[] _allowedMethods = new[] { HttpMethods.Get, HttpMethods.Post };
+        
         public GraphQLMiddleware(RequestDelegate next, IDataStore datastore, IMessageBus bus, bool authenticationEnabled, string idFieldName)
         {
             _next = next;
@@ -51,9 +51,8 @@ namespace FakeServer.GraphQL
                 return;
             }
 
-            if (
-                !_allowedMethods.Any(context.Request.Method.Contains) ||
-                (context.Request.Method == "POST" && !_allowedTypes.Any(context.Request.ContentType.Contains))
+            if (!_allowedMethods.Any(context.Request.Method.Contains) ||
+            (context.Request.Method == HttpMethods.Post && !_allowedTypes.Any(context.Request.ContentType.Contains))
             )
             {
                 context.Response.StatusCode = (int)HttpStatusCode.NotImplemented;
@@ -97,7 +96,7 @@ namespace FakeServer.GraphQL
             {
                 return (true, query[0], null);
             }
-            else if (context.Request.Method == "GET")
+            else if (context.Request.Method == HttpMethods.Get)
             {
                 return (false, null, "Missing query parameter `query`");
             }

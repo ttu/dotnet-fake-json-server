@@ -1442,7 +1442,7 @@ namespace FakeServer.Test
         {
             using (var client = new HttpClient())
             {
-                StringContent content = new StringContent("", Encoding.UTF8, "application/graphql");
+                var content = new StringContent("", Encoding.UTF8, "application/graphql");
                 string query = @"{users{name}}";
                 var result = await client.PostAsync($"{_fixture.BaseUrl}/graphql?query={query}", content);
 
@@ -1460,7 +1460,7 @@ namespace FakeServer.Test
         {
             using (var client = new HttpClient())
             {
-                StringContent content = new StringContent("", Encoding.UTF8, "application/graphql");
+                var content = new StringContent("", Encoding.UTF8, "application/graphql");
                 string query = @"{ users { name";
                 var result = await client.PostAsync($"{_fixture.BaseUrl}/graphql?query={query}", content);
                 Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
@@ -1472,7 +1472,7 @@ namespace FakeServer.Test
         {
             using (var client = new HttpClient())
             {
-                StringContent content = new StringContent(@"{ users { name } }", Encoding.UTF8, "application/graphql");
+                var content = new StringContent(@"{ users { name } }", Encoding.UTF8, "application/graphql");
                 string query = @"{ users { id, name } }";
                 var result = await client.PostAsync($"{_fixture.BaseUrl}/graphql?query={query}", content);
 
@@ -1492,7 +1492,7 @@ namespace FakeServer.Test
         {
             using (var client = new HttpClient())
             {
-                StringContent content = new StringContent("", Encoding.UTF8);
+                var content = new StringContent("", Encoding.UTF8);
                 string query = @"{ users { name } }";
                 var result = await client.PostAsync($"{_fixture.BaseUrl}/graphql?query={query}", content);
 
