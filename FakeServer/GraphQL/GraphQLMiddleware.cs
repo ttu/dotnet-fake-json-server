@@ -2,6 +2,7 @@
 using FakeServer.WebSockets;
 using JsonFlatFileDataStore;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -20,6 +21,7 @@ namespace FakeServer.GraphQL
         private readonly bool _authenticationEnabled;
         private readonly string _idFieldName;
         private readonly string[] _allowedTypes = new[] { "application/graphql", "application/json" };
+        private readonly string[] _allowedMethods = new[] { "GET", "POST" };
 
         public GraphQLMiddleware(RequestDelegate next, IDataStore datastore, IMessageBus bus, bool authenticationEnabled, string idFieldName)
         {
@@ -34,8 +36,8 @@ namespace FakeServer.GraphQL
         {
             // POST application/graphql body is query
             // POST application/json and { "query": "..." }
-            // TODO: POST /graphql?query={users{name}}
-            // TODO: GET /graphql?query={users{name}}
+            // POST /graphql?query={users{name}}
+            // GET /graphql?query={users{name}}
 
             if (!context.Request.Path.Value.StartsWith($"/{Config.GraphQLRoute}"))
             {
@@ -49,7 +51,7 @@ namespace FakeServer.GraphQL
                 return;
             }
 
-            if (context.Request.Method != "POST" || !_allowedTypes.Any(context.Request.ContentType.Contains))
+            if (!_allowedMethods.Any(context.Request.Method.Contains) || !_allowedTypes.Any(context.Request.ContentType.Contains))
             {
                 context.Response.StatusCode = (int)HttpStatusCode.NotImplemented;
                 await context.Response.WriteAsync(JsonConvert.SerializeObject(new { errors = new[] { "Not implemented" } }));
@@ -87,6 +89,12 @@ namespace FakeServer.GraphQL
 
         private static async Task<(bool success, string body, string error)> ParseQuery(HttpContext context)
         {
+            // If the "query" query string parameter exists, we don't care about the body or the request type
+            if (context.Request.Query.TryGetValue("query", out StringValues query))
+            {
+                return (true, query[0], null);
+            }
+
             string body;
 
             using (var streamReader = new StreamReader(context.Request.Body))
