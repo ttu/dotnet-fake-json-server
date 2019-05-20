@@ -1038,6 +1038,20 @@ Body: { "query": "[query/mutation]" }
 501 Not Implemented : HTTP method and/or content-type combination not implemented
 ```
 
+Alternatively, the `/graphql` endpoint also supports requests containing a valid GraphQL query as a `query` query parameter using either a GET or POST request. Queries in the JSON format are not supported as query parameters. Note that in the case of a POST request, the query supplied using the query parameter will take priority over any content in the request body, which will be ignored if the `query` query parameter is present.
+
+```
+> GET /graphql?query=[query/mutation]
+
+OR
+
+> POST /graphql?query=[query/mutation]
+
+200 OK              : Query/mutation successful 
+400 Bad Request     : Query/mutation contains errors
+501 Not Implemented : HTTP method and/or content-type combination not implemented
+```
+
 Response is in JSON format. It contains `data` and `errors` fields. `errors` field is not present if there are no errors. 
 
 ```json
