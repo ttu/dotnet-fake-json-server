@@ -139,5 +139,22 @@ namespace FakeServer.Test
 
             Assert.True(success);
         }
+
+        [Theory]
+        [InlineData("[{\"id\":1,\"name\":\"Jam\"es\"}]", "[{\"id\":1,\"name\":\"Jam\"es\"}]")]
+        public void RemoveLiterals(string original, string expected)
+        {
+            var result = ObjectHelper.RemoveLiterals(original);
+            Assert.Equal(expected, result);
+        }
+
+        [Theory]
+        [InlineData("/api/users/1/2/3", "users")]
+        [InlineData("/api/users?hello=test", "users")]
+        public void GetCollectionFromPath(string request, string expected)
+        {
+            var result = ObjectHelper.GetCollectionFromPath(request);
+            Assert.Equal(expected, result);
+        }
     }
 }
