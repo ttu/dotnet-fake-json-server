@@ -5,7 +5,6 @@ namespace FakeServer.CustomResponse
     public class CustomResponseSettings
     {
         public bool Enabled { get; set; }
-
         public List<ScriptSettings> Scripts { get; set; }
     }
 
