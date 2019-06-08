@@ -130,6 +130,8 @@ namespace FakeServer
 
             app.UseMiddleware<HttpOptionsMiddleware>();
 
+            app.UseHeadMethodMiddleware();
+
             if (Configuration.GetValue<bool>("Simulate:Delay:Enabled"))
             {
                 app.UseMiddleware<DelayMiddleware>();

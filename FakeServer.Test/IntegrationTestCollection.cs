@@ -56,6 +56,11 @@ namespace FakeServer.Test
             Client = _factory.CreateClient();
         }
 
+        public HttpClient CreateClient(bool allowAutoRedirect)
+        {
+            return _factory.CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = allowAutoRedirect });
+        }
+
         public void Dispose()
         {
             Stop();
