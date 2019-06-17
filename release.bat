@@ -11,12 +11,12 @@ set unixOS=osx-x64 linux-x64
 
 for %%N in (%winOS%) do (
 	set rid=%%N
-	dotnet publish ./FakeServer/FakeServer.csproj -c release -r !rid!
+	dotnet publish ./FakeServer/FakeServer.csproj -c release -r !rid! /p:PackAsTool=false
 	7z a -tzip ./releases/fakeserver-!rid!.zip ./FakeServer/bin/release/netcoreapp2.2/!rid!/publish/* -r
 )
 
 for %%N in (%unixOS%) do (
 	set rid=%%N
-	dotnet publish ./FakeServer/FakeServer.csproj -c release -r !rid!
+	dotnet publish ./FakeServer/FakeServer.csproj -c release -r !rid! /p:PackAsTool=false
 	7z a -ttar -so ./releases/fakeserver-!rid!.tar ./FakeServer/bin/release/netcoreapp2.2/!rid!/publish/* -r | 7z a -si ./releases/fakeserver-!rid!.tar.gz
 )
