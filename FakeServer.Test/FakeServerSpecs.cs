@@ -5,10 +5,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using WebSocket4Net;
 using Xunit;
 
 namespace FakeServer.Test
@@ -614,25 +614,20 @@ namespace FakeServer.Test
         {
             var are = new AutoResetEvent(false);
 
-            var webSoketMessages = new List<dynamic>();
+            var webSocketMessages = new List<dynamic>();
 
-            var port = _fixture.Client.BaseAddress.IsDefaultPort ? "" : $":{_fixture.Client.BaseAddress.Port}";
-            var websocket = new WebSocket($"ws://{_fixture.Client.BaseAddress.Host}{port}/ws");
+            var webSocket = await _fixture.CreateWebSocketClient();
 
-            websocket.MessageReceived += (s, e) =>
+            async Task WebSocketReceiveHandler()
             {
-                webSoketMessages.Add(JsonConvert.DeserializeObject<dynamic>(e.Message));
+                var buffer = new byte[1024 * 4];
+                await webSocket.ReceiveAsync(buffer, CancellationToken.None);
+                var count = Array.IndexOf(buffer, (byte)0);
+                count = count == -1 ? buffer.Length : count;
+                var message = Encoding.Default.GetString(buffer, 0, count);
+                webSocketMessages.Add(JsonConvert.DeserializeObject<dynamic>(message));
                 are.Set();
-            };
-
-            websocket.Opened += (s, e) =>
-            {
-                are.Set();
-            };
-
-            websocket.Open();
-
-            are.WaitOne();
+            }
 
             var patchData = new { name = "Albert", age = 12, work = new { name = "EMACS" } };
 
@@ -641,6 +636,8 @@ namespace FakeServer.Test
             var result = await _fixture.Client.SendAsync(request);
             result.EnsureSuccessStatusCode();
 
+            WebSocketReceiveHandler();
+
             are.WaitOne();
 
             content = new StringContent(JsonConvert.SerializeObject(new { name = "James", age = 40, work = new { name = "ACME" } }), Encoding.UTF8, "application/json");
@@ -648,11 +645,15 @@ namespace FakeServer.Test
             result = await _fixture.Client.SendAsync(request);
             result.EnsureSuccessStatusCode();
 
+            WebSocketReceiveHandler();
+
             are.WaitOne();
 
-            Assert.Equal(2, webSoketMessages.Count);
-            Assert.Equal("PATCH", webSoketMessages[0].method.ToString());
-            Assert.Equal("/api/users/1", webSoketMessages[0].path.ToString());
+            await webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Test finished", CancellationToken.None);
+
+            Assert.Equal(2, webSocketMessages.Count);
+            Assert.Equal("PATCH", webSocketMessages[0].method.ToString());
+            Assert.Equal("/api/users/1", webSocketMessages[0].path.ToString());
         }
 
         [Fact]

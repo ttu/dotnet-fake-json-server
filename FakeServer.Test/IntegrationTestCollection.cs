@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
+using System.Net.WebSockets;
 using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
@@ -28,6 +31,7 @@ namespace FakeServer.Test
             {
                 {"currentPath", path},
                 {"file", _newFilePath},
+                {"DataStore:IdField", "id"},
                 {"Caching:ETag:Enabled", "true"}
             };
 
@@ -61,6 +65,13 @@ namespace FakeServer.Test
             return _factory.CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = allowAutoRedirect });
         }
 
+        public async Task<WebSocket> CreateWebSocketClient()
+        {
+            return await _factory.Server
+                .CreateWebSocketClient()
+                .ConnectAsync(new Uri(_factory.Server.BaseAddress, "ws"), CancellationToken.None);
+        }
+
         public void Dispose()
         {
             Stop();
@@ -68,14 +79,20 @@ namespace FakeServer.Test
 
         public void Stop()
         {
-            Client.Dispose();
-            _factory.Dispose();
+            if (Client != null)
+            {
+                Client.Dispose();
+                Client = null;
+            }
+
+            if (_factory != null)
+            {
+                _factory.Dispose();
+                _factory = null;
+            }
+
             UTHelpers.Down(_newFilePath);
         }
-
-        public int Port { get; private set; }
-
-        public string BaseUrl { get; private set; }
     }
 
     [CollectionDefinition("Integration collection")]
