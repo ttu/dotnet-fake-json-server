@@ -10,10 +10,10 @@
     <Authors>Tomi Tuhkanen</Authors>
     <Company />
     <Description>Fake JSON Server</Description>
-    <Version>0.9.1</Version>
+    <Version>0.10.0</Version>
     <PackageProjectUrl>https://github.com/ttu/dotnet-fake-json-server</PackageProjectUrl>
     <RepositoryUrl>https://github.com/ttu/dotnet-fake-json-server</RepositoryUrl>
-    <PackageLicenseUrl>https://raw.githubusercontent.com/ttu/dotnet-fake-json-server/master/LICENSE</PackageLicenseUrl>
+    <PackageLicenseUrl></PackageLicenseUrl>
     <PackageTags>fake json server rest api</PackageTags>
   </PropertyGroup>
 
@@ -21,6 +21,7 @@
     <DocumentationFile>FakeServer.xml</DocumentationFile>
     <NoWarn>1591;1701;1702;1705</NoWarn>
     <AssemblyName>FakeServer</AssemblyName>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
   </PropertyGroup>
     
   <!-- 
@@ -69,6 +70,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="FakeServer.xml" CopyToPublishDirectory="Always" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>

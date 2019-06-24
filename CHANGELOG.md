@@ -1,6 +1,8 @@
 # Changelog
 
 ### [Unreleased]
+
+### [0.10.0] - 2019-06-16
 * ADDED: Token endpoint to support username/password in JSON content
 * ADDED: Define stored data id-field name
 * CHANGED: Rename Common property from appsettings.json to DataStore
