@@ -612,8 +612,6 @@ namespace FakeServer.Test
         [Fact]
         public async Task WebSockets_CalledTwice()
         {
-            var are = new AutoResetEvent(false);
-
             var webSocketMessages = new List<dynamic>();
 
             var webSocket = await _fixture.CreateWebSocketClient();
@@ -626,7 +624,6 @@ namespace FakeServer.Test
                 count = count == -1 ? buffer.Length : count;
                 var message = Encoding.Default.GetString(buffer, 0, count);
                 webSocketMessages.Add(JsonConvert.DeserializeObject<dynamic>(message));
-                are.Set();
             }
 
             var patchData = new { name = "Albert", age = 12, work = new { name = "EMACS" } };
@@ -636,18 +633,14 @@ namespace FakeServer.Test
             var result = await _fixture.Client.SendAsync(request);
             result.EnsureSuccessStatusCode();
 
-            WebSocketReceiveHandler();
-
-            are.WaitOne();
+            await WebSocketReceiveHandler();
 
             content = new StringContent(JsonConvert.SerializeObject(new { name = "James", age = 40, work = new { name = "ACME" } }), Encoding.UTF8, "application/json");
             request = new HttpRequestMessage(new HttpMethod("PATCH"), $"api/users/1") { Content = content };
             result = await _fixture.Client.SendAsync(request);
             result.EnsureSuccessStatusCode();
 
-            WebSocketReceiveHandler();
-
-            are.WaitOne();
+            await WebSocketReceiveHandler();
 
             await webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Test finished", CancellationToken.None);
 
