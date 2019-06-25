@@ -46,7 +46,7 @@ namespace FakeServer.Test
             _factory = new WebApplicationFactory<Startup>()
                 .WithWebHostBuilder(builder =>
                 {
-                    builder.UseEnvironment("Development")
+                    builder.UseEnvironment("IntegrationTest")
                         .ConfigureAppConfiguration((ctx, b) =>
                         {
                             b.SetBasePath(path)

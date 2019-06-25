@@ -130,7 +130,10 @@ namespace FakeServer
 
             app.UseMiddleware<HttpOptionsMiddleware>();
 
-            app.UseHeadMethodMiddleware();
+            if (env.EnvironmentName == "IntegrationTest")
+            {
+                app.UseMiddleware<HeadMethodMiddleware>();
+            }
 
             if (Configuration.GetValue<bool>("Simulate:Delay:Enabled"))
             {
