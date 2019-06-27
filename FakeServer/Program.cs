@@ -47,7 +47,7 @@ namespace FakeServer
             try
             {
                 Log.Information("Starting Fake JSON Server");
-                BuildWebHost(args, config).Build().Run();
+                CreateWebHostBuilder(args).UseConfiguration(config).Build().Run();
                 return 0;
             }
             catch (Exception ex)
@@ -61,12 +61,11 @@ namespace FakeServer
             }
         }
 
-        public static IWebHostBuilder BuildWebHost(string[] args, IConfigurationRoot config) =>
-           WebHost.CreateDefaultBuilder(args)
-               .UseConfiguration(config)
-               .UseStartup<Startup>()
-               .UseSerilog();
-
+        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
+            WebHost.CreateDefaultBuilder(args)
+            .UseStartup<Startup>()
+            .UseSerilog();
+            
         private static bool isConfigValid(IConfigurationRoot config) => config["DataStore:IdField"] == null ? false : true;
 
         private static CommandLineApplication BuildCommandLineApp(

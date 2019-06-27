@@ -1,41 +1,75 @@
 ﻿using System;
-using System.Diagnostics;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
+using System.Net.WebSockets;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Memory;
 using Xunit;
 
 namespace FakeServer.Test
 {
-    public class IntegrationFixture : IDisposable
+    public class IntegrationFixture : ICollectionFixture<WebApplicationFactory<Startup>>, IDisposable
     {
-        private Task _serverTask;
-        private string _newFilePath;
+        private WebApplicationFactory<Startup> _factory;
+        public HttpClient Client { get; private set; }
 
-        public IntegrationFixture()
-        {
-        }
+        private string _newFilePath;
 
         public void StartServer(string authenticationType = "")
         {
-            if (_serverTask != null)
-                return;
-
-            var dir = Path.GetDirectoryName(typeof(IntegrationFixture).GetTypeInfo().Assembly.Location);
-
+            var path = Path.GetDirectoryName(typeof(IntegrationFixture).GetTypeInfo().Assembly.Location);
             var fileName = Guid.NewGuid().ToString();
             _newFilePath = UTHelpers.Up(fileName);
 
-            Port = 5001;
-            BaseUrl = $"http://localhost:{Port}";
-
-            _serverTask = Task.Run(() =>
+            var mainConfiguration = new Dictionary<string, string>
             {
-                TestServer.Run(BaseUrl, dir, $"{fileName}.json", authenticationType);
-            });
+                {"currentPath", path},
+                {"file", _newFilePath},
+                {"DataStore:IdField", "id"},
+                {"Caching:ETag:Enabled", "true"}
+            };
 
-            var success = Task.Run(() => WaitForServer()).GetAwaiter().GetResult();
+            if (!string.IsNullOrEmpty(authenticationType))
+            {
+                mainConfiguration.Add("Authentication:Enabled", "true");
+                mainConfiguration.Add("Authentication:AuthenticationType", authenticationType);
+                mainConfiguration.Add("Authentication:Users:0:Username", "admin");
+                mainConfiguration.Add("Authentication:Users:0:Password", "root");
+            }
+
+            _factory = new WebApplicationFactory<Startup>()
+                .WithWebHostBuilder(builder =>
+                {
+                    builder.UseEnvironment("IntegrationTest")
+                        .ConfigureAppConfiguration((ctx, b) =>
+                        {
+                            b.SetBasePath(path)
+                                .Add(new MemoryConfigurationSource
+                                {
+                                    InitialData = mainConfiguration
+                                });
+                        });
+                });
+
+            Client = _factory.CreateClient();
+        }
+
+        public HttpClient CreateClient(bool allowAutoRedirect)
+        {
+            return _factory.CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = allowAutoRedirect });
+        }
+
+        public async Task<WebSocket> CreateWebSocketClient()
+        {
+            return await _factory.Server
+                .CreateWebSocketClient()
+                .ConnectAsync(new Uri(_factory.Server.BaseAddress, "ws"), CancellationToken.None);
         }
 
         public void Dispose()
@@ -45,48 +79,24 @@ namespace FakeServer.Test
 
         public void Stop()
         {
-            TestServer.Stop();
-            _serverTask = null;
-            UTHelpers.Down(_newFilePath);
-        }
-
-        public int Port { get; private set; }
-
-        public string BaseUrl { get; private set; }
-
-        private async Task<bool> WaitForServer()
-        {
-            var sw = Stopwatch.StartNew();
-
-            while (sw.ElapsedMilliseconds < 20000)
+            if (Client != null)
             {
-                try
-                {
-                    using (var client = new HttpClient())
-                    {
-                        var result = await client.GetAsync($"{BaseUrl}");
-                        return true;
-                    }
-                }
-                catch (Exception)
-                {
-                }
-
-                await Task.Delay(500);
+                Client.Dispose();
+                Client = null;
             }
 
-            throw new Exception("Server not started");
+            if (_factory != null)
+            {
+                _factory.Dispose();
+                _factory = null;
+            }
+
+            UTHelpers.Down(_newFilePath);
         }
     }
 
     [CollectionDefinition("Integration collection")]
     public class IntegrationTestCollection : ICollectionFixture<IntegrationFixture>
     {
-        private IntegrationFixture _fixture;
-
-        public IntegrationTestCollection(IntegrationFixture fixture)
-        {
-            _fixture = fixture;
-        }
     }
 }
