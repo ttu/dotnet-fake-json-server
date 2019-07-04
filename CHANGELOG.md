@@ -1,6 +1,7 @@
 # Changelog
 
 ### [Unreleased]
+* CHANGED: PATCH methods to require Content-Type: application/json+merge-patch or merge-patch+json
 
 ### [0.10.0] - 2019-06-16
 * ADDED: Token endpoint to support username/password in JSON content
