@@ -914,6 +914,7 @@ Location=http://localhost:57602/api/users/6
 ```
 
 If collection is empty and new item has an _id-field_ set, it will be used a first _id-value_. If _id-field_ is not set, _id-value_ will start from `0`.
+
 #### Replace item 
 
 ``` 
@@ -932,18 +933,23 @@ $ curl -H "Accept: application/json" -H "Content-type: application/json" -X PUT 
 
 #### Update item 
 
+Server supports merge patches.
+
 ```
 > PATCH /api/{collection}/{id}
 
-204 No Content  : Item updated
-400 Bad Request : PATCH is empty
-404 Not Found   : Item is not found
+Content-type: application/json+merge-patch or application/merge-patch+json
+
+204 No Content             : Item updated
+400 Bad Request            : PATCH is empty
+404 Not Found              : Item is not found
+415 Unsupported Media Type : Content type is not supported
 ```
 
 Set `name` to _Timmy_ from user with `id` _1_.
 
 ```sh
-$ curl -H "Accept: application/json" -H "Content-type: application/json" -X PATCH -d '{ "name": "Timmy" }' http://localhost:57602/api/users/1
+$ curl -H "Accept: application/json" -H "Content-type: application/json+merge-patch" -X PATCH -d '{ "name": "Timmy" }' http://localhost:57602/api/users/1
 ```
 
 #### Delete item
@@ -1497,7 +1503,8 @@ API follows best practices and recommendations from these guides:
 * [Introduction to GraphQL](http://graphql.org/learn/)
 * [MDN Web Docs: ETag](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/ETag)
 * [Designing GraphQL Mutations](https://dev-blog.apollodata.com/designing-graphql-mutations-e09de826ed97)
-
+* [The "application/merge-patch" Media Type](https://tools.ietf.org/id/draft-snell-merge-patch-02.html#rfc.section.2)
+ 
 ## Other Links
 
 * [Benchmark with wrk](docs/BenchmarkWrk.md)

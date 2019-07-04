@@ -100,7 +100,9 @@ namespace FakeServer.Controllers
         /// <param name="patchData">Patch data</param>
         /// <returns></returns>
         /// <response code="202">New async operation started</response>
+        /// <response code="415">Unsupported content type</response>
         [HttpPatch("{collectionId}/{id}")]
+        [Consumes("application/json+merge-patch", new[] { "application/merge-patch+json" })]
         public IActionResult UpdateItem(string collectionId, [FromRoute][DynamicBinder]dynamic id, [FromBody]JToken patchData)
         {
             dynamic sourceData = JsonConvert.DeserializeObject<ExpandoObject>(patchData.ToString());

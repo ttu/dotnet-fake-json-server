@@ -11,13 +11,17 @@ using FakeServer.WebSockets;
 using JsonFlatFileDataStore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.PlatformAbstractions;
+using Microsoft.Net.Http.Headers;
 using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using System.IO;
+using System.Linq;
 
 namespace FakeServer
 {
@@ -85,6 +89,12 @@ namespace FakeServer
             }
 
             services.AddMvc();
+
+            services.Configure<MvcOptions>(options => {
+                var jsonFormatter = options.InputFormatters.OfType<JsonInputFormatter>().First(i => i.GetType() == typeof(JsonInputFormatter));
+                jsonFormatter.SupportedMediaTypes.Add(new MediaTypeHeaderValue("application/json+merge-patch"));
+                jsonFormatter.SupportedMediaTypes.Add(new MediaTypeHeaderValue("application/merge-patch+json"));
+            });
 
             services.AddSwaggerGen(c =>
             {

@@ -291,7 +291,9 @@ namespace FakeServer.Controllers
         /// <response code="204">Item found and updated</response>
         /// <response code="400">Patch data is empty or item is not in a collection</response>
         /// <response code="404">Item not found</response>
+        /// <response code="415">Unsupported content type</response>
         [HttpPatch("{collectionId}/{id}")]
+        [Consumes("application/json+merge-patch", new[] { "application/merge-patch+json" } )]
         public async Task<IActionResult> UpdateItem(string collectionId, [FromRoute][DynamicBinder]dynamic id, [FromBody]JToken patchData)
         {
             dynamic sourceData = JsonConvert.DeserializeObject<ExpandoObject>(patchData.ToString());
@@ -374,7 +376,9 @@ namespace FakeServer.Controllers
         /// <response code="204">Object found and updated</response>
         /// <response code="400">Patch data is empty</response>
         /// <response code="404">Object not found</response>
+        /// <response code="415">Unsupported content type</response>
         [HttpPatch("{objectId}")]
+        [Consumes("application/json+merge-patch", new[] { "application/merge-patch+json" })]
         public async Task<IActionResult> UpdateSingleItem(string objectId, [FromBody]JToken patchData)
         {
             dynamic sourceData = JsonConvert.DeserializeObject<ExpandoObject>(patchData.ToString());
