@@ -933,7 +933,7 @@ $ curl -H "Accept: application/json" -H "Content-type: application/json" -X PUT 
 
 #### Update item 
 
-Server supports merge patches.
+Server supports [JSON merge patches](https://tools.ietf.org/html/rfc7396).
 
 ```
 > PATCH /api/{collection}/{id}
@@ -946,11 +946,27 @@ Content-type: application/json+merge-patch or application/merge-patch+json
 415 Unsupported Media Type : Content type is not supported
 ```
 
-Set `name` to _Timmy_ from user with `id` _1_.
+
+Set `age` to _41_ and `work.rating` to _3.2_ from user with `id` _1_.
 
 ```sh
-$ curl -H "Accept: application/json" -H "Content-type: application/json+merge-patch" -X PATCH -d '{ "name": "Timmy" }' http://localhost:57602/api/users/1
+$ curl -H "Accept: application/json" -H "Content-type: application/json+merge-patch" -X PATCH -d '{ "age": "41", "work": { "rating": 3.2 }}' http://localhost:57602/api/users/1
 ```
+
+```json
+{
+  "age": 41,
+  "work": {
+    "rating": 3.2
+  }
+} 
+```
+
+_NOTE:_
+
+> Due to the limitations of the merge patch, if the patch is anything other than an object, the result will always be to replace the entire target with the entire patch. Also, it is not possible to patch part of a target that is not an object, such as to replace just some of the values in an array.
+
+https://tools.ietf.org/html/rfc7396#section-2
 
 #### Delete item
 
