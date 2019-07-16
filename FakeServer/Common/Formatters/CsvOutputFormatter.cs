@@ -3,7 +3,6 @@ using Microsoft.Net.Http.Headers;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -41,7 +40,7 @@ namespace FakeServer.Common.Formatters
             }
         }
 
-        private static void HandleObject(StringBuilder buffer, object expando, bool isRoot = false)
+        private void HandleObject(StringBuilder buffer, object expando, bool isRoot = false)
         {
             if (expando is IEnumerable<object> collection)
             {
@@ -74,7 +73,7 @@ namespace FakeServer.Common.Formatters
             }
         }
 
-        private static void FormatCsv(StringBuilder buffer, ExpandoObject item)
+        private void FormatCsv(StringBuilder buffer, ExpandoObject item)
         {
             foreach (var field in item)
             {
