@@ -53,6 +53,33 @@ namespace FakeServer.Test
         }
 
         [Fact]
+        public async Task GetUsers_Accept_CSV()
+        {
+            var request = new HttpRequestMessage(new HttpMethod("GET"), $"api/users");
+            request.Headers.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("text/csv"));
+
+            var result = await _fixture.Client.SendAsync(request);
+            result.EnsureSuccessStatusCode();
+
+            var rows = await result.Content.ReadAsStringAsync();
+            Assert.False(string.IsNullOrEmpty(rows));
+
+            var items = rows.Split(Environment.NewLine);
+            Assert.True(items.Length > 1);
+        }
+
+        [Fact]
+        public async Task GetUsers_Accept_NotAcceptable()
+        {
+            var request = new HttpRequestMessage(new HttpMethod("GET"), $"api/users");
+            request.Headers.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/vnd.api+json"));
+
+            var result = await _fixture.Client.SendAsync(request);
+
+            Assert.Equal(HttpStatusCode.NotAcceptable, result.StatusCode);
+        }
+
+        [Fact]
         public async Task GetUsers_SkipTake()
         {
             var result = await _fixture.Client.GetAsync($"api/users?skip=1&take=2");
@@ -1282,7 +1309,7 @@ namespace FakeServer.Test
 
             var data = JsonConvert.DeserializeObject<JObject>(await result.Content.ReadAsStringAsync());
 
-            // If the API had chosen to parse the request body instead of the `query` query parameter, 
+            // If the API had chosen to parse the request body instead of the `query` query parameter,
             // it would've only returned the name for each user
             Assert.NotNull(data["data"]["users"][0]["id"]);
             Assert.Null(data["errors"]);
