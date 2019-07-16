@@ -1,7 +1,7 @@
 {
     "_type": "export",
     "__export_format": 4,
-    "__export_date": "2019-07-10T07:05:46.331Z",
+    "__export_date": "2019-07-16T14:00:54.869Z",
     "__export_source": "insomnia.desktop.app:v6.5.4",
     "resources": [
         {
@@ -122,7 +122,7 @@
             "isPrivate": false,
             "metaSortKey": -1517220052854.75,
             "method": "GET",
-            "modified": 1539681244996,
+            "modified": 1563265074022,
             "name": "Query",
             "parameters": [],
             "parentId": "wrk_76853beb1f054d5ca9a53f87c2e7de11",
@@ -144,36 +144,8 @@
             "isPrivate": false,
             "metaSortKey": -1517219713077.5,
             "method": "GET",
-            "modified": 1539681243488,
-            "name": "Get item with id",
-            "parameters": [],
-            "parentId": "wrk_76853beb1f054d5ca9a53f87c2e7de11",
-            "settingDisableRenderRequestBody": false,
-            "settingEncodeUrl": true,
-            "settingRebuildPath": true,
-            "settingSendCookies": true,
-            "settingStoreCookies": true,
-            "url": "{{ baseurl }}/api/families/19",
-            "_type": "request"
-        },
-        {
-            "_id": "req_64553015bd594c3ab80d03685354b2f2",
-            "authentication": {},
-            "body": {},
-            "created": 1518102423833,
-            "description": "",
-            "headers": [
-                {
-                    "id": "pair_03b1f3761a98437fb5e9a27060fe2096",
-                    "name": "If-None-Match",
-                    "value": "\"HfGeT_OtCWI1UE-PESFgYpv_v-c\""
-                }
-            ],
-            "isPrivate": false,
-            "metaSortKey": -1517219713074.375,
-            "method": "GET",
-            "modified": 1539681238819,
-            "name": "Get item with id (If-None-Match)",
+            "modified": 1563265175329,
+            "name": "Query item with id",
             "parameters": [],
             "parentId": "wrk_76853beb1f054d5ca9a53f87c2e7de11",
             "settingDisableRenderRequestBody": false,
@@ -192,10 +164,10 @@
             "description": "",
             "headers": [],
             "isPrivate": false,
-            "metaSortKey": -1517219713071.25,
+            "metaSortKey": -1517219713077.1094,
             "method": "GET",
-            "modified": 1539681234312,
-            "name": "Get nested items",
+            "modified": 1563265255999,
+            "name": "Query nested items",
             "parameters": [],
             "parentId": "wrk_76853beb1f054d5ca9a53f87c2e7de11",
             "settingDisableRenderRequestBody": false,
@@ -214,10 +186,10 @@
             "description": "",
             "headers": [],
             "isPrivate": false,
-            "metaSortKey": -1517219713068.125,
+            "metaSortKey": -1517219713076.914,
             "method": "GET",
-            "modified": 1539681233146,
-            "name": "Get object",
+            "modified": 1563265260999,
+            "name": "Query object",
             "parameters": [],
             "parentId": "wrk_76853beb1f054d5ca9a53f87c2e7de11",
             "settingDisableRenderRequestBody": false,
@@ -405,6 +377,90 @@
             "_type": "request"
         },
         {
+            "_id": "req_64553015bd594c3ab80d03685354b2f2",
+            "authentication": {},
+            "body": {},
+            "created": 1518102423833,
+            "description": "",
+            "headers": [
+                {
+                    "id": "pair_03b1f3761a98437fb5e9a27060fe2096",
+                    "name": "If-None-Match",
+                    "value": "\"HfGeT_OtCWI1UE-PESFgYpv_v-c\""
+                }
+            ],
+            "isPrivate": false,
+            "metaSortKey": -1517219314330.625,
+            "method": "GET",
+            "modified": 1563265283367,
+            "name": "Query item with id (If-None-Match - 304 - Not Modified)",
+            "parameters": [],
+            "parentId": "wrk_76853beb1f054d5ca9a53f87c2e7de11",
+            "settingDisableRenderRequestBody": false,
+            "settingEncodeUrl": true,
+            "settingRebuildPath": true,
+            "settingSendCookies": true,
+            "settingStoreCookies": true,
+            "url": "{{ baseurl }}/api/families/19",
+            "_type": "request"
+        },
+        {
+            "_id": "req_3cedb87d127042c196683136a0d179dc",
+            "authentication": {},
+            "body": {},
+            "created": 1563260326961,
+            "description": "",
+            "headers": [
+                {
+                    "id": "pair_0d3f3d8f1fa2485582baf3e018ce6ed9",
+                    "name": "Accept",
+                    "value": "text/csv"
+                }
+            ],
+            "isPrivate": false,
+            "metaSortKey": -1517219274474.6875,
+            "method": "GET",
+            "modified": 1563284089097,
+            "name": "Query with Content Negotiation (Accept - text/csv)",
+            "parameters": [],
+            "parentId": "wrk_76853beb1f054d5ca9a53f87c2e7de11",
+            "settingDisableRenderRequestBody": false,
+            "settingEncodeUrl": true,
+            "settingRebuildPath": true,
+            "settingSendCookies": true,
+            "settingStoreCookies": true,
+            "url": "{{ baseurl }}/api/users",
+            "_type": "request"
+        },
+        {
+            "_id": "req_34504d84e6d045a8b8d1fb32b21c8c21",
+            "authentication": {},
+            "body": {},
+            "created": 1563260596950,
+            "description": "",
+            "headers": [
+                {
+                    "id": "pair_0d3f3d8f1fa2485582baf3e018ce6ed9",
+                    "name": "Accept",
+                    "value": "application/vnd.api+json"
+                }
+            ],
+            "isPrivate": false,
+            "metaSortKey": -1517219254546.7188,
+            "method": "GET",
+            "modified": 1563265245039,
+            "name": "Query with Content Negotiation (Accept - 406 - Not Acceptable)",
+            "parameters": [],
+            "parentId": "wrk_76853beb1f054d5ca9a53f87c2e7de11",
+            "settingDisableRenderRequestBody": false,
+            "settingEncodeUrl": true,
+            "settingRebuildPath": true,
+            "settingSendCookies": true,
+            "settingStoreCookies": true,
+            "url": "{{ baseurl }}/api/users/1",
+            "_type": "request"
+        },
+        {
             "_id": "req_f5d38fe7fb76424ba515c7213737921c",
             "authentication": {},
             "body": {
@@ -480,13 +536,18 @@
                     "id": "pair_baf5d7f9c8fd445691543b51f5e64c1a",
                     "name": "Content-Type",
                     "value": "application/json"
+                },
+                {
+                    "id": "pair_43f42b6ca94f4aad83072b3daf72abde",
+                    "name": "If-Match",
+                    "value": "aaa"
                 }
             ],
             "isPrivate": false,
             "metaSortKey": -1517219144942.8906,
             "method": "PUT",
-            "modified": 1539681136406,
-            "name": "Replace item (If-Match)",
+            "modified": 1563265346853,
+            "name": "Replace item (If-Match - 412- Precondition Failed)",
             "parameters": [],
             "parentId": "wrk_76853beb1f054d5ca9a53f87c2e7de11",
             "settingDisableRenderRequestBody": false,
@@ -633,7 +694,7 @@
             },
             "isPrivate": false,
             "metaSortKey": 1536243424954,
-            "modified": 1562623882597,
+            "modified": 1563285598544,
             "name": "New Environment",
             "parentId": "wrk_76853beb1f054d5ca9a53f87c2e7de11",
             "_type": "environment"
