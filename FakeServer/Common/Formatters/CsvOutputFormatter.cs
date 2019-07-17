@@ -46,30 +46,27 @@ namespace FakeServer.Common.Formatters
             {
                 foreach (var item in collection)
                 {
-                    FormatCsv(buffer, (ExpandoObject)item);
-
-                    if (isRoot)
-                    {
-                        if (buffer[buffer.Length - 1] == ',')
-                        {
-                            buffer.Remove(buffer.Length - 1, 1);
-                        }
-
-                        buffer.Append(Environment.NewLine);
-                    }
+                    HandleExpando(buffer, (ExpandoObject)item, isRoot);
                 }
             }
             else
             {
-                FormatCsv(buffer, (ExpandoObject)expando);
+                HandleExpando(buffer, expando, isRoot);
+            }
+        }
 
-                if (isRoot)
+        private void HandleExpando(StringBuilder buffer, object expando, bool isRoot)
+        {
+            FormatCsv(buffer, (ExpandoObject)expando);
+
+            if (isRoot)
+            {
+                if (buffer[buffer.Length - 1] == ',')
                 {
-                    if (buffer[buffer.Length - 1] == ',')
-                    {
-                        buffer.Remove(buffer.Length - 1, 1);
-                    }
+                    buffer.Remove(buffer.Length - 1, 1);
                 }
+
+                buffer.Append(Environment.NewLine);
             }
         }
 
