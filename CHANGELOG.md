@@ -2,6 +2,7 @@
 
 ### [Unreleased]
 * CHANGED: PATCH methods to require Content-Type: application/json+merge-patch or merge-patch+json
+* ADDED: Content negotiation with Accept-header
 
 ### [0.10.0] - 2019-06-16
 * ADDED: Token endpoint to support username/password in JSON content
