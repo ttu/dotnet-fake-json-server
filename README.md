@@ -388,10 +388,6 @@ If a request contains the `If-None-Match` header, the header's value is compared
 $ curl -H "If-None-Match: \"5yZCXmjhk5ozJyTK4-OJkkd_X18\"" 'http://localhost:57602/api/users?age=40'
 ```
 
-```json
-304 Not Modified
-```
-
 #### Avoiding mid-air collisions
 
 If the `PUT` request contains the `If-Match` header, the header's value is compared to the item to be updated. If the value matches to the item's checksum then items is updated, else `412 Precondition Failed` is returned.
@@ -407,10 +403,6 @@ $ curl -H "accept: text/csv" http://localhost:57603/api/users
 ```
 
 If content types is not supported. `406 Not Acceptable` is returned.
-
-```json
-406 Not Acceptable
-```
 
 ## Routes, Functionalities and Examples
 
