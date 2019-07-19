@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc.Formatters;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Net.Http.Headers;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -17,73 +19,47 @@ namespace FakeServer.Common.Formatters
             SupportedEncodings.Add(Encoding.Unicode);
         }
 
-        protected override bool CanWriteType(Type type)
+        protected override bool CanWriteType(Type type) =>
+                typeof(ExpandoObject).IsAssignableFrom(type) || typeof(IEnumerable<object>).IsAssignableFrom(type) ? base.CanWriteType(type) : false;
+
+        public async override Task WriteResponseBodyAsync(OutputFormatterWriteContext context, Encoding selectedEncoding)
         {
-            if (typeof(ExpandoObject).IsAssignableFrom(type) || typeof(IEnumerable<object>).IsAssignableFrom(type))
+            string itemsToString(string acc, dynamic multiItems) => multiItems is IEnumerable<object> collection
+                                                                    ? collection.Aggregate(acc, itemsToString)
+                                                                    : string.IsNullOrEmpty(acc) ? multiItems : $"{acc},{multiItems}";
+
+            string multipleItemsToCsv(IEnumerable<object> itemCollection)
             {
-                return base.CanWriteType(type);
+                var items = HandleExpandoCollection(itemCollection);
+                var allText = items.Select(i => i.Aggregate(string.Empty, itemsToString));
+                return string.Join(Environment.NewLine, allText);
             }
 
-            return false;
-        }
-
-        public override Task WriteResponseBodyAsync(OutputFormatterWriteContext context, Encoding selectedEncoding)
-        {
-            var response = context.HttpContext.Response;
-            var buffer = new StringBuilder();
-
-            HandleObject(buffer, context.Object, true);
-
-            using (var writer = context.WriterFactory(response.Body, selectedEncoding))
+            string singleItemToCsv(object obj)
             {
-                return writer.WriteAsync(buffer.ToString());
+                var items = HandleExpando(context.Object as ExpandoObject);
+                return items.Aggregate(string.Empty, itemsToString);
             }
+
+            var text = context.Object is IEnumerable<object> col ? multipleItemsToCsv(col) : singleItemToCsv(context.Object);
+
+            await context.HttpContext.Response.WriteAsync(text);
         }
 
-        private void HandleObject(StringBuilder buffer, object expando, bool isRoot = false)
-        {
-            if (expando is IEnumerable<object> collection)
+        private IEnumerable<IEnumerable<dynamic>> HandleExpandoCollection(IEnumerable<object> collection) =>
+                                        collection.Select(item => item is IEnumerable<object> col
+                                                                    ? HandleExpandoCollection(col)
+                                                                    : HandleExpando(item as ExpandoObject));
+
+        private IEnumerable<dynamic> HandleExpando(ExpandoObject item) =>
+            item.Select(field =>
             {
-                foreach (var item in collection)
+                switch (field.Value)
                 {
-                    HandleExpando(buffer, (ExpandoObject)item, isRoot);
+                    case ExpandoObject exp: return HandleExpando(exp);
+                    case IEnumerable<object> col: return HandleExpandoCollection(col);
+                    default: return field.Value.ToString() as dynamic;
                 }
-            }
-            else
-            {
-                HandleExpando(buffer, expando, isRoot);
-            }
-        }
-
-        private void HandleExpando(StringBuilder buffer, object expando, bool isRoot)
-        {
-            FormatCsv(buffer, (ExpandoObject)expando);
-
-            if (isRoot)
-            {
-                if (buffer[buffer.Length - 1] == ',')
-                {
-                    buffer.Remove(buffer.Length - 1, 1);
-                }
-
-                buffer.Append(Environment.NewLine);
-            }
-        }
-
-        private void FormatCsv(StringBuilder buffer, ExpandoObject item)
-        {
-            foreach (var field in item)
-            {
-                if (field.Value is ExpandoObject || field.Value is IEnumerable<object>)
-                {
-                    HandleObject(buffer, field.Value);
-                }
-                else
-                {
-                    buffer.Append(field.Value.ToString());
-                    buffer.Append(",");
-                }
-            }
-        }
+            });
     }
 }

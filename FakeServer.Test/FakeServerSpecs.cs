@@ -69,6 +69,22 @@ namespace FakeServer.Test
         }
 
         [Fact]
+        public async Task GetSingleUser_Accept_CSV()
+        {
+            var request = new HttpRequestMessage(new HttpMethod("GET"), $"api/users/1");
+            request.Headers.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("text/csv"));
+
+            var result = await _fixture.Client.SendAsync(request);
+            result.EnsureSuccessStatusCode();
+
+            var rows = await result.Content.ReadAsStringAsync();
+            Assert.False(string.IsNullOrEmpty(rows));
+
+            var items = rows.Split(Environment.NewLine);
+            Assert.Single(items);
+        }
+
+        [Fact]
         public async Task GetUsers_Accept_NotAcceptable()
         {
             var request = new HttpRequestMessage(new HttpMethod("GET"), $"api/users");
