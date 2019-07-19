@@ -36,6 +36,7 @@ Fake JSON Server is a Fake REST API that can be used as a Back End for prototypi
 * Static files [#](#static-files)
 * Swagger [#](#swagger)
 * CORS [#](#cors)
+* Content Negotiation [#](#content-negotiaton)
 * Caching and avoiding mid-air collisions with ETag [#](#caching-and-avoiding-mid-air-collisions-with-etag)
 * Configurable custom response transformation [#](#custom-response-transformation)
 * _Experimental_ GraphQL query and mutation support [#](#graphql)
@@ -74,6 +75,7 @@ Fake JSON Server is a Fake REST API that can be used as a Back End for prototypi
   * [Caching and avoiding mid-air collisions with ETag](#caching-and-avoiding-mid-air-collisions-with-etag)
     + [Caching of unchanged resources](#caching-of-unchanged-resources)
     + [Avoiding mid-air collisions](#avoiding-mid-air-collisions)
+  * [Content Negotiaton](#content-negotiaton)
 - [Routes, Functionalities and Examples](#routes--functionalities-and-examples)
     + [Routes](#routes)
     + [Collections and objects](#collections-and-objects)
@@ -386,13 +388,21 @@ If a request contains the `If-None-Match` header, the header's value is compared
 $ curl -H "If-None-Match: \"5yZCXmjhk5ozJyTK4-OJkkd_X18\"" 'http://localhost:57602/api/users?age=40'
 ```
 
-```json
-304 Not Modified
-```
-
 #### Avoiding mid-air collisions
 
 If the `PUT` request contains the `If-Match` header, the header's value is compared to the item to be updated. If the value matches to the item's checksum then items is updated, else `412 Precondition Failed` is returned.
+
+#### Content Negotiaton
+
+Client can determine what type of representation is desired with `Accept` header. By default data is returned in JSON (`text/json`, `application/json`).
+
+At the moment only supported type besides JSON is CSV.
+
+```sh
+$ curl -H "accept: text/csv" http://localhost:57603/api/users
+```
+
+If content types is not supported. `406 Not Acceptable` is returned.
 
 ## Routes, Functionalities and Examples
 

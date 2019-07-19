@@ -3,6 +3,7 @@ using FakeServer.Authentication.Basic;
 using FakeServer.Authentication.Custom;
 using FakeServer.Authentication.Jwt;
 using FakeServer.Common;
+using FakeServer.Common.Formatters;
 using FakeServer.CustomResponse;
 using FakeServer.GraphQL;
 using FakeServer.Jobs;
@@ -88,9 +89,16 @@ namespace FakeServer
                 services.AddAllowAllAuthentication();
             }
 
-            services.AddMvc();
+            services.AddMvc()
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
-            services.Configure<MvcOptions>(options => {
+            services.Configure<MvcOptions>(options => 
+            {
+                options.RespectBrowserAcceptHeader = true;
+                options.ReturnHttpNotAcceptable = true;
+
+                options.OutputFormatters.Add(new CsvOutputFormatter());
+
                 var jsonFormatter = options.InputFormatters.OfType<JsonInputFormatter>().First(i => i.GetType() == typeof(JsonInputFormatter));
                 jsonFormatter.SupportedMediaTypes.Add(new MediaTypeHeaderValue("application/json+merge-patch"));
                 jsonFormatter.SupportedMediaTypes.Add(new MediaTypeHeaderValue("application/merge-patch+json"));
