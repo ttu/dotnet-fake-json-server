@@ -396,13 +396,23 @@ If the `PUT` request contains the `If-Match` header, the header's value is compa
 
 Client can determine what type of representation is desired with `Accept` header. By default data is returned in JSON (`text/json`, `application/json`).
 
-At the moment only supported type besides JSON is CSV.
+At the moment supported types are _JSON_, _CSV_ and _XML_.
 
-```sh
-$ curl -H "accept: text/csv" http://localhost:57603/api/users
+```
+text/json
+application/json
+text/csv
+text/xml
+application/xml
 ```
 
-If content types is not supported. `406 Not Acceptable` is returned.
+Get all users in _CSV_
+
+```sh
+$ curl -H "Accept: text/csv" http://localhost:57603/api/users
+```
+
+If content types is not supported `406 Not Acceptable` is returned.
 
 ## Routes, Functionalities and Examples
 

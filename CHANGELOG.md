@@ -2,7 +2,7 @@
 
 ### [Unreleased]
 * CHANGED: PATCH methods to require Content-Type: application/json+merge-patch or merge-patch+json
-* ADDED: Content negotiation with Accept-header and support for CSV
+* ADDED: Content negotiation with Accept-header and support for CSV and XML
 
 ### [0.10.0] - 2019-06-16
 * ADDED: Token endpoint to support username/password in JSON content

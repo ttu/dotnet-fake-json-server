@@ -85,6 +85,35 @@ namespace FakeServer.Test
         }
 
         [Fact]
+        public async Task GetUsers_Accept_XML()
+        {
+            var request = new HttpRequestMessage(new HttpMethod("GET"), $"api/users");
+            request.Headers.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("text/xml"));
+
+            var result = await _fixture.Client.SendAsync(request);
+            result.EnsureSuccessStatusCode();
+
+            var rows = await result.Content.ReadAsStringAsync();
+            Assert.False(string.IsNullOrEmpty(rows));
+
+            var items = rows.Split(Environment.NewLine);
+            Assert.True(items.Length > 1);
+        }
+
+        [Fact]
+        public async Task GetSingleUser_Accept_XML()
+        {
+            var request = new HttpRequestMessage(new HttpMethod("GET"), $"api/users/1");
+            request.Headers.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("text/xml"));
+
+            var result = await _fixture.Client.SendAsync(request);
+            result.EnsureSuccessStatusCode();
+
+            var rows = await result.Content.ReadAsStringAsync();
+            Assert.False(string.IsNullOrEmpty(rows));
+        }
+
+        [Fact]
         public async Task GetUsers_Accept_NotAcceptable()
         {
             var request = new HttpRequestMessage(new HttpMethod("GET"), $"api/users");
