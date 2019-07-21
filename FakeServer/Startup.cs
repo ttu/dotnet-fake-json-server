@@ -98,6 +98,7 @@ namespace FakeServer
                 options.ReturnHttpNotAcceptable = true;
 
                 options.OutputFormatters.Add(new CsvOutputFormatter());
+                options.OutputFormatters.Add(new XmlOutputFormatter());
 
                 var jsonFormatter = options.InputFormatters.OfType<JsonInputFormatter>().First(i => i.GetType() == typeof(JsonInputFormatter));
                 jsonFormatter.SupportedMediaTypes.Add(new MediaTypeHeaderValue("application/json+merge-patch"));
