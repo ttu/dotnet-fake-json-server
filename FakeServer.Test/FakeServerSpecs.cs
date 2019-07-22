@@ -65,13 +65,13 @@ namespace FakeServer.Test
             Assert.False(string.IsNullOrEmpty(rows));
 
             var items = rows.Split(Environment.NewLine);
-            Assert.True(items.Length > 1);
+            Assert.Equal("4,Jarvis,52,SF,Autocar Company,SF,0,9", items[3]);
         }
 
         [Fact]
-        public async Task GetSingleUser_Accept_CSV()
+        public async Task GetSingleFamily_Accept_CSV()
         {
-            var request = new HttpRequestMessage(new HttpMethod("GET"), $"api/users/1");
+            var request = new HttpRequestMessage(new HttpMethod("GET"), $"api/families/1");
             request.Headers.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("text/csv"));
 
             var result = await _fixture.Client.SendAsync(request);
@@ -82,6 +82,8 @@ namespace FakeServer.Test
 
             var items = rows.Split(Environment.NewLine);
             Assert.Single(items);
+            // Check that inner collections are serialized correctly
+            Assert.DoesNotContain("System.Collections.Generic.List", items[0]);
         }
 
         [Fact]
@@ -95,15 +97,12 @@ namespace FakeServer.Test
 
             var rows = await result.Content.ReadAsStringAsync();
             Assert.False(string.IsNullOrEmpty(rows));
-
-            var items = rows.Split(Environment.NewLine);
-            Assert.True(items.Length > 1);
         }
 
         [Fact]
-        public async Task GetSingleUser_Accept_XML()
+        public async Task GetSingleFamily_Accept_XML()
         {
-            var request = new HttpRequestMessage(new HttpMethod("GET"), $"api/users/1");
+            var request = new HttpRequestMessage(new HttpMethod("GET"), $"api/families/1");
             request.Headers.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("text/xml"));
 
             var result = await _fixture.Client.SendAsync(request);
@@ -111,6 +110,9 @@ namespace FakeServer.Test
 
             var rows = await result.Content.ReadAsStringAsync();
             Assert.False(string.IsNullOrEmpty(rows));
+            // Check that inner collections are serialized correctly
+            Assert.DoesNotContain("[id, 0]", rows);
+            Assert.DoesNotContain("System.Collections.Generic.List", rows);
         }
 
         [Fact]

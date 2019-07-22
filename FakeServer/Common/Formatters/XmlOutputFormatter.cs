@@ -26,31 +26,45 @@ namespace FakeServer.Common.Formatters
 
         public async override Task WriteResponseBodyAsync(OutputFormatterWriteContext context, Encoding selectedEncoding)
         {
-            XElement itemsToString(XElement acc, KeyValuePair<string, object> fields)
+            // TODO: Fix collection element naming. Current implementation:
+            // <families>
+            //   <families_0>
+
+            XElement HandleExpandoField(XElement acc, KeyValuePair<string, object> fields)
             {
-                var element = fields.Value is ExpandoObject expando
-                                ? expando.Aggregate(new XElement(fields.Key), itemsToString)
-                                : new XElement(fields.Key, fields.Value);
+                XElement element = null;
+
+                if (fields.Value is IEnumerable<object> innerList)
+                {
+                    var children = innerList.Select((i, idx) => ((ExpandoObject)i).Aggregate(new XElement($"{fields.Key}_{idx}"), HandleExpandoField));
+                    element = new XElement(fields.Key, children);
+                }
+                else
+                {
+                    element = fields.Value is ExpandoObject expando
+                                 ? expando.Aggregate(new XElement(fields.Key), HandleExpandoField)
+                                 : new XElement(fields.Key, fields.Value);
+                }
+
                 acc.Add(element);
                 return acc;
             };
 
-            XElement multipleItemsToXml(string name, IEnumerable<object> itemCollection)
+            XElement MultipleItemsToXml(string name, IEnumerable<object> itemCollection)
             {
-                var items = itemCollection.Select(i => ((ExpandoObject)i).Aggregate(new XElement(name), itemsToString));
-                var root = new XElement($"{name}s", items);
+                var children = itemCollection.Select((i, idx) => ((ExpandoObject)i).Aggregate(new XElement($"{name}_{idx}"), HandleExpandoField));
+                var root = new XElement(name, children);
                 return root;
             }
 
-            XElement singleItemToXml(string name, ExpandoObject obj)
+            XElement SingleItemToXml(string name, ExpandoObject obj)
             {
-                return obj.Aggregate(new XElement(name), itemsToString);
+                return obj.Aggregate(new XElement(name), HandleExpandoField);
             }
 
-            var collectionName = ObjectHelper.GetCollectionFromPath(context.HttpContext.Request.Path.Value);
-            var itemName = collectionName.Substring(0, collectionName.Length - 1);
+            var itemName = ObjectHelper.GetCollectionFromPath(context.HttpContext.Request.Path.Value);
 
-            var xml = context.Object is IEnumerable<object> col ? multipleItemsToXml(itemName, col) : singleItemToXml(itemName, context.Object as ExpandoObject);
+            var xml = context.Object is IEnumerable<object> col ? MultipleItemsToXml(itemName, col) : SingleItemToXml(itemName, context.Object as ExpandoObject);
 
             await context.HttpContext.Response.WriteAsync(xml.ToString());
         }
