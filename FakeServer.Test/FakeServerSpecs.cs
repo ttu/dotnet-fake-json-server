@@ -65,7 +65,7 @@ namespace FakeServer.Test
             Assert.False(string.IsNullOrEmpty(rows));
 
             var items = rows.Split(Environment.NewLine);
-            Assert.Equal("4,Jarvis,52,SF,Autocar Company,SF,0,9", items[3]);
+            Assert.Contains("4,Jarvis,52,SF,Autocar Company,SF,", items[3]);
         }
 
         [Fact]
