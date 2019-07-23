@@ -1,7 +1,7 @@
 {
     "_type": "export",
     "__export_format": 4,
-    "__export_date": "2019-07-16T14:00:54.869Z",
+    "__export_date": "2019-07-22T14:01:50.825Z",
     "__export_source": "insomnia.desktop.app:v6.5.4",
     "resources": [
         {
@@ -111,10 +111,7 @@
         },
         {
             "_id": "req_4cd1cb878594488391a8303d46639eef",
-            "authentication": {
-                "token": "{{ authtoken  }}",
-                "type": "bearer"
-            },
+            "authentication": {},
             "body": {},
             "created": 1517228557882,
             "description": "",
@@ -122,7 +119,7 @@
             "isPrivate": false,
             "metaSortKey": -1517220052854.75,
             "method": "GET",
-            "modified": 1563265074022,
+            "modified": 1563784008580,
             "name": "Query",
             "parameters": [],
             "parentId": "wrk_76853beb1f054d5ca9a53f87c2e7de11",
@@ -420,7 +417,7 @@
             "isPrivate": false,
             "metaSortKey": -1517219274474.6875,
             "method": "GET",
-            "modified": 1563284089097,
+            "modified": 1563797840301,
             "name": "Query with Content Negotiation (Accept - text/csv)",
             "parameters": [],
             "parentId": "wrk_76853beb1f054d5ca9a53f87c2e7de11",
@@ -429,7 +426,35 @@
             "settingRebuildPath": true,
             "settingSendCookies": true,
             "settingStoreCookies": true,
-            "url": "{{ baseurl }}/api/users",
+            "url": "{{ baseurl }}/api/families/1",
+            "_type": "request"
+        },
+        {
+            "_id": "req_1dcc0070673d4b35a0f41812a0b41993",
+            "authentication": {},
+            "body": {},
+            "created": 1563797826212,
+            "description": "",
+            "headers": [
+                {
+                    "id": "pair_0d3f3d8f1fa2485582baf3e018ce6ed9",
+                    "name": "Accept",
+                    "value": "text/xml"
+                }
+            ],
+            "isPrivate": false,
+            "metaSortKey": -1517219264510.7031,
+            "method": "GET",
+            "modified": 1563799511602,
+            "name": "Query with Content Negotiation (Accept - text/xml)",
+            "parameters": [],
+            "parentId": "wrk_76853beb1f054d5ca9a53f87c2e7de11",
+            "settingDisableRenderRequestBody": false,
+            "settingEncodeUrl": true,
+            "settingRebuildPath": true,
+            "settingSendCookies": true,
+            "settingStoreCookies": true,
+            "url": "{{ baseurl }}/api/families",
             "_type": "request"
         },
         {
@@ -654,6 +679,37 @@
             "_type": "request"
         },
         {
+            "_id": "req_56ed37a5dada49c98d17c4f72b6c700c",
+            "authentication": {},
+            "body": {
+                "mimeType": "application/json",
+                "text": "{\n\t\"username\": \"admin\",\n\t\"password\": \"root\"\n}"
+            },
+            "created": 1563783602708,
+            "description": "",
+            "headers": [
+                {
+                    "id": "pair_90a9b35f7fde49b6a8a24c7244a21c7f",
+                    "name": "Content-Type",
+                    "value": "application/json"
+                }
+            ],
+            "isPrivate": false,
+            "metaSortKey": -1517219114975.9375,
+            "method": "POST",
+            "modified": 1563783692974,
+            "name": "Login (Content-Type: application/json)",
+            "parameters": [],
+            "parentId": "wrk_76853beb1f054d5ca9a53f87c2e7de11",
+            "settingDisableRenderRequestBody": false,
+            "settingEncodeUrl": true,
+            "settingRebuildPath": true,
+            "settingSendCookies": true,
+            "settingStoreCookies": true,
+            "url": "{{ baseurl }}/token",
+            "_type": "request"
+        },
+        {
             "_id": "req_ecf28d74c8f74913a55374f29cc9f535",
             "authentication": {
                 "token": "{{ authtoken  }}",
@@ -679,6 +735,64 @@
             "_type": "request"
         },
         {
+            "_id": "req_acf8d387027f463091b2e31b7d736548",
+            "authentication": {},
+            "body": {},
+            "created": 1563783818972,
+            "description": "",
+            "headers": [
+                {
+                    "id": "pair_2a2d97b1e48146c18b533cab9c4b4161",
+                    "name": "Authorization",
+                    "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsImp0aSI6ImI0OTZjZWFjLTI4MDctNGYwYi1iOTQwLWY4OTA1NTQzYWY0MiIsImlhdCI6MTU2Mzc4Mzg2NiwibmJmIjoxNTYzNzgzODY2LCJleHAiOjE1NjM3ODQxNjYsImlzcyI6IkV4YW1wbGVJc3N1ZXIiLCJhdWQiOiJFeGFtcGxlQXVkaWVuY2UifQ.lU_jjqZX1GpTENglwDLYNAGXPMwA0O4LFmJoCs7htQw"
+                }
+            ],
+            "isPrivate": false,
+            "metaSortKey": -1517219114900.9375,
+            "method": "GET",
+            "modified": 1563789099633,
+            "name": "Query with Authorization header",
+            "parameters": [],
+            "parentId": "wrk_76853beb1f054d5ca9a53f87c2e7de11",
+            "settingDisableRenderRequestBody": false,
+            "settingEncodeUrl": true,
+            "settingRebuildPath": true,
+            "settingSendCookies": true,
+            "settingStoreCookies": true,
+            "url": "{{ baseurl }}/api/families",
+            "_type": "request"
+        },
+        {
+            "_id": "req_498391a2a7be460d8f0f6e9cfa25384a",
+            "authentication": {
+                "accessTokenUrl": "{{ baseurl }}/token",
+                "clientId": "root",
+                "clientSecret": "admin",
+                "grantType": "client_credentials",
+                "password": "admin",
+                "type": "oauth2",
+                "username": "root"
+            },
+            "body": {},
+            "created": 1563783960697,
+            "description": "",
+            "headers": [],
+            "isPrivate": false,
+            "metaSortKey": -1517219095047.9688,
+            "method": "GET",
+            "modified": 1563789244151,
+            "name": "Query with Client Credentials",
+            "parameters": [],
+            "parentId": "wrk_76853beb1f054d5ca9a53f87c2e7de11",
+            "settingDisableRenderRequestBody": false,
+            "settingEncodeUrl": true,
+            "settingRebuildPath": true,
+            "settingSendCookies": true,
+            "settingStoreCookies": true,
+            "url": "{{ baseurl }}/api/families",
+            "_type": "request"
+        },
+        {
             "_id": "env_a203f5c3be67427586b0ee9d65fa1a35",
             "color": null,
             "created": 1517219550466,
@@ -694,7 +808,7 @@
             },
             "isPrivate": false,
             "metaSortKey": 1536243424954,
-            "modified": 1563285598544,
+            "modified": 1563804054518,
             "name": "New Environment",
             "parentId": "wrk_76853beb1f054d5ca9a53f87c2e7de11",
             "_type": "environment"

@@ -303,6 +303,11 @@ $ curl -X POST -H 'content-type: multipart/form-data' -F username=admin -F passw
 $ curl -X POST -H 'content-type: application/json' -d '{ "username": "admin", "password": "root" }' http://localhost:57602/token
 ```
 
+Token can be fetch also using `Client Credentials` grant type (see example from Insomnia workspace):
+```sh
+$ curl -X POST -d "grant_type=client_credentials&client_id=admin&client_secret=root" http://localhost:57602/token
+```
+
 Add token to Authorization header:
 
 ```sh
@@ -1539,7 +1544,7 @@ API follows best practices and recommendations from these guides:
 * [Introduction to GraphQL](http://graphql.org/learn/)
 * [MDN Web Docs: ETag](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/ETag)
 * [Designing GraphQL Mutations](https://dev-blog.apollodata.com/designing-graphql-mutations-e09de826ed97)
-* [The "application/merge-patch" Media Type](https://tools.ietf.org/id/draft-snell-merge-patch-02.html#rfc.section.2)
+* [IETF Tools](https://tools.ietf.org/id/draft-snell-merge-patch-02.html#rfc.section.2)
  
 ## Other Links
 
