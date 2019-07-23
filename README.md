@@ -236,10 +236,10 @@ When user defines static files, it is assumed that user is serving a single page
 $ curl http://localhost:57602/api
 
 # Insert new user
-$ curl -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{ "name": "Phil", "age": 20, "location": "NY" }' http://localhost:57602/api/users/
+$ curl -H "Content-type: application/json" -X POST -d '{ "name": "Phil", "age": 20, "location": "NY" }' http://localhost:57602/api/users/
 
 # Insert another user
-$ curl -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{ "name": "James", "age": 40, "location": "SF" }' http://localhost:57602/api/users/
+$ curl -H "Content-type: application/json" -X POST -d '{ "name": "James", "age": 40, "location": "SF" }' http://localhost:57602/api/users/
 
 # List users
 $ curl http://localhost:57602/api/users
