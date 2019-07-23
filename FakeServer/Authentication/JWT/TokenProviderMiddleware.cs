@@ -7,6 +7,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Linq;
 using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace FakeServer.Authentication.Jwt
@@ -80,6 +81,21 @@ namespace FakeServer.Authentication.Jwt
 
         private (string username, string password, bool validData) GetFromFormData(HttpContext context)
         {
+            if (context.Request.Form != null && context.Request.Form.ContainsKey("grant_type") && context.Request.Form["grant_type"] == "client_credentials")
+            {
+                if (context.Request.Form.ContainsKey("client_id"))
+                {
+                    return (context.Request.Form["client_id"], context.Request.Form["client_secret"], true);
+                }
+                else
+                {
+                    var authHeader = context.Request.Headers["Authorization"].ToString();
+                    var authString = authHeader.Substring("Basic ".Length).Trim();
+                    var credentials = Encoding.UTF8.GetString(Convert.FromBase64String(authString)).Split(':');
+                    return (credentials[1], credentials[0], true);
+                }
+            }
+
             if (!context.Request.Form.ContainsKey("username") || !context.Request.Form.ContainsKey("password"))
                 return (string.Empty, string.Empty, false);
 
