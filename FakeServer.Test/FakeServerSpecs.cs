@@ -108,11 +108,20 @@ namespace FakeServer.Test
             var result = await _fixture.Client.SendAsync(request);
             result.EnsureSuccessStatusCode();
 
-            var rows = await result.Content.ReadAsStringAsync();
-            Assert.False(string.IsNullOrEmpty(rows));
+            var xml = await result.Content.ReadAsStringAsync();
+            Assert.False(string.IsNullOrEmpty(xml));
+
             // Check that inner collections are serialized correctly
-            Assert.DoesNotContain("[id, 0]", rows);
-            Assert.DoesNotContain("System.Collections.Generic.List", rows);
+            Assert.DoesNotContain("[id, 0]", xml);
+            Assert.DoesNotContain("System.Collections.Generic.List", xml);
+
+            var rows = xml.Split(Environment.NewLine);
+            Assert.Equal("<family>", rows[0].Trim());
+            Assert.Equal("<parents>", rows[3].Trim());
+            Assert.Equal("<parent>", rows[4].Trim());
+            Assert.Equal("<children>", rows[33].Trim());
+            Assert.Equal("<child>", rows[34].Trim());
+            Assert.Equal("<work>", rows[12].Trim());
         }
 
         [Fact]
