@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using Pluralize.NET.Core;
 
 namespace FakeServer.Common.Formatters
 {
@@ -24,20 +25,19 @@ namespace FakeServer.Common.Formatters
         protected override bool CanWriteType(Type type) =>
                 typeof(ExpandoObject).IsAssignableFrom(type) || typeof(IEnumerable<object>).IsAssignableFrom(type) ? base.CanWriteType(type) : false;
 
+        private static Pluralizer _pluralizer = new Pluralizer();
+
         public async override Task WriteResponseBodyAsync(OutputFormatterWriteContext context, Encoding selectedEncoding)
         {
-            // TODO: Fix collection element naming. Current implementation:
-            // <families>
-            //   <families_0>
-
             XElement HandleExpandoField(XElement acc, KeyValuePair<string, object> fields)
             {
                 XElement element = null;
 
+
                 if (fields.Value is IEnumerable<object> innerList)
                 {
-                    var children = innerList.Select((i, idx) => ((ExpandoObject)i).Aggregate(new XElement($"{fields.Key}_{idx}"), HandleExpandoField));
-                    element = new XElement(fields.Key, children);
+                    var children = innerList.Select((i) => ((ExpandoObject)i).Aggregate(new XElement($"{_pluralizer.Singularize(fields.Key)}"), HandleExpandoField));
+                    element = new XElement(_pluralizer.Pluralize(fields.Key), children);
                 }
                 else
                 {
@@ -52,8 +52,8 @@ namespace FakeServer.Common.Formatters
 
             XElement MultipleItemsToXml(string name, IEnumerable<object> itemCollection)
             {
-                var children = itemCollection.Select((i, idx) => ((ExpandoObject)i).Aggregate(new XElement($"{name}_{idx}"), HandleExpandoField));
-                var root = new XElement(name, children);
+                var children = itemCollection.Select((i) => ((ExpandoObject)i).Aggregate(new XElement($"{_pluralizer.Singularize(name)}"), HandleExpandoField));
+                var root = new XElement(_pluralizer.Pluralize(name), children);
                 return root;
             }
 
@@ -62,7 +62,7 @@ namespace FakeServer.Common.Formatters
                 return obj.Aggregate(new XElement(name), HandleExpandoField);
             }
 
-            var itemName = ObjectHelper.GetCollectionFromPath(context.HttpContext.Request.Path.Value);
+            var itemName = _pluralizer.Singularize(ObjectHelper.GetCollectionFromPath(context.HttpContext.Request.Path.Value));
 
             var xml = context.Object is IEnumerable<object> col ? MultipleItemsToXml(itemName, col) : SingleItemToXml(itemName, context.Object as ExpandoObject);
 
