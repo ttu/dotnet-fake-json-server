@@ -3,10 +3,10 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <RuntimeIdentifiers>win-x64;osx-x64;linux-x64</RuntimeIdentifiers>
-	<PackAsTool>true</PackAsTool>
-	<IsPackable>true</IsPackable>
-	<ToolCommandName>fake-server</ToolCommandName>
-	<PackageId>FakeServer</PackageId>
+	  <PackAsTool>true</PackAsTool>
+	  <IsPackable>true</IsPackable>
+	  <ToolCommandName>fake-server</ToolCommandName>
+	  <PackageId>FakeServer</PackageId>
     <Authors>Tomi Tuhkanen</Authors>
     <Company />
     <Description>Fake JSON Server</Description>
@@ -18,7 +18,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <DocumentationFile>FakeServer.xml</DocumentationFile>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>1591;1701;1702;1705</NoWarn>
     <AssemblyName>FakeServer</AssemblyName>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
@@ -34,7 +34,7 @@
   </ItemGroup>-->
   <ItemGroup>
     <PackageReference Include="GraphQL" Version="2.4.0" />
-    <PackageReference Include="JsonFlatFileDataStore" Version="2.2.0" />
+    <PackageReference Include="JsonFlatFileDataStore" Version="2.2.1" />
     <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="2.4.2" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.8.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.0.0" />
@@ -50,6 +50,7 @@
     <PackageReference Include="Serilog.Settings.Configuration" Version="3.1.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
     <PackageReference Include="Serilog.Sinks.RollingFile" Version="3.3.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.0.0-rc4" />
     <PackageReference Include="System.Linq.Dynamic.Core" Version="1.0.19" />
     <PackageReference Include="System.Reflection.TypeExtensions" Version="4.6.0" />
   </ItemGroup>
@@ -64,9 +65,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="FakeServer.xml" CopyToPublishDirectory="Always" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\LICENSE">

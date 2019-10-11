@@ -17,9 +17,11 @@ using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.PlatformAbstractions;
 using Microsoft.Net.Http.Headers;
-//using Swashbuckle.AspNetCore.Swagger;
-//using Swashbuckle.AspNetCore.SwaggerUI;
+using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.Swagger;
+using Swashbuckle.AspNetCore.SwaggerUI;
 using System.IO;
 using System.Linq;
 
@@ -87,6 +89,7 @@ namespace FakeServer
                 services.AddAllowAllAuthentication();
             }
 
+            // TODO: AddControllers
             services.AddMvc()
                 .AddNewtonsoftJson()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
@@ -104,25 +107,25 @@ namespace FakeServer
                 jsonFormatter.SupportedMediaTypes.Add(new MediaTypeHeaderValue("application/merge-patch+json"));
             });
 
-            //services.AddSwaggerGen(c =>
-            //{
-            //    c.SwaggerDoc("v1", new Info { Title = "Fake JSON API", Version = "v1" });
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Fake JSON API", Version = "v1" });
 
-            //    var basePath = PlatformServices.Default.Application.ApplicationBasePath;
-            //    var xmlPath = Path.Combine(basePath, "FakeServer.xml");
-            //    c.IncludeXmlComments(xmlPath);
+                var basePath = PlatformServices.Default.Application.ApplicationBasePath;
+                var xmlPath = Path.Combine(basePath, "FakeServer.xml");
+                c.IncludeXmlComments(xmlPath);
 
-            //    if (useAuthentication)
-            //    {
-            //        c.OperationFilter<AddAuthorizationHeaderParameterOperationFilter>();
+                if (useAuthentication)
+                {
+                    c.OperationFilter<AddAuthorizationHeaderParameterOperationFilter>();
 
-            //        if (Configuration["Authentication:AuthenticationType"] == "token")
-            //            c.DocumentFilter<AuthTokenOperation>();
-            //    }
-            //});
+                    if (Configuration["Authentication:AuthenticationType"] == "token")
+                        c.DocumentFilter<AuthTokenOperation>();
+                }
+            });
         }
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IApplicationLifetime appLifetime)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseDefaultFiles();
 
@@ -204,13 +207,13 @@ namespace FakeServer
                 endpoints.MapControllers();
             });
 
-            //app.UseSwagger();
+            app.UseSwagger();
 
-            //app.UseSwaggerUI(c =>
-            //{
-            //    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Fake JSON API V1");
-            //    c.SupportedSubmitMethods(SubmitMethod.Get, SubmitMethod.Head, SubmitMethod.Post, SubmitMethod.Put, SubmitMethod.Patch, SubmitMethod.Delete);
-            //});
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Fake JSON API V1");
+                c.SupportedSubmitMethods(SubmitMethod.Get, SubmitMethod.Head, SubmitMethod.Post, SubmitMethod.Put, SubmitMethod.Patch, SubmitMethod.Delete);
+            });
         }
     }
 }
