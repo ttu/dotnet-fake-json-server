@@ -80,6 +80,7 @@ namespace FakeServer
             var optionServe = app.Option("-s|--serve <PATH>", "Static files (default wwwroot)",
                 CommandOptionType.SingleValue);
             var optionsUrls = app.Option("--urls <URLS>", "Server url (default http://localhost:57602)", CommandOptionType.SingleValue);
+            var optionInit = app.Option("--init", "Initializes a new appsettings.json file", CommandOptionType.NoValue);
 
             app.OnExecute(() =>
             {
@@ -122,15 +123,31 @@ namespace FakeServer
                     app.RemainingArguments.Add(optionsUrls.Value());
                 }
 
+                if (optionInit.HasValue()) {
+                    app.RemainingArguments.Add("--init");
+                    app.RemainingArguments.Add(optionInit.Value());
+                    var baseAppSettingsFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "appsettings.json");
+                    var newAppSettingFile = Path.Combine(initialData["currentPath"],"appsettings.json");
+                    if (!File.Exists(newAppSettingFile)) {
+                        File.Copy(baseAppSettingsFile, newAppSettingFile);
+                    }
+                    Console.WriteLine($"AppSettings file created at default location: {initialData["currentPath"]}");
+                }
+
                 return invoke(app.RemainingArguments.ToArray(), initialData);
             });
 
             return app;
-        }
+        } 
 
         private static string GetAssemblyVersion()
         {
             return FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion;
+        }
+
+        private static string GetExecutingAssemblyPath() 
+        {
+            return Assembly.GetExecutingAssembly().Location;
         }
     }
 }
