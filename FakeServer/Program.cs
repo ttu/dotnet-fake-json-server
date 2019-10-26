@@ -80,7 +80,7 @@ namespace FakeServer
             var optionServe = app.Option("-s|--serve <PATH>", "Static files (default wwwroot)",
                 CommandOptionType.SingleValue);
             var optionsUrls = app.Option("--urls <URLS>", "Server url (default http://localhost:57602)", CommandOptionType.SingleValue);
-            var optionInit = app.Option("--init", "Initializes a new appsettings.json file", CommandOptionType.NoValue);
+            var optionInit = app.Option("--init", "Initializes a new appsettings.json file in the current folder", CommandOptionType.NoValue);
 
             app.OnExecute(() =>
             {
@@ -123,15 +123,19 @@ namespace FakeServer
                     app.RemainingArguments.Add(optionsUrls.Value());
                 }
 
-                if (optionInit.HasValue()) {
-                    app.RemainingArguments.Add("--init");
-                    app.RemainingArguments.Add(optionInit.Value());
+                if (optionInit.HasValue()) 
+                {
                     var baseAppSettingsFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "appsettings.json");
                     var newAppSettingFile = Path.Combine(initialData["currentPath"],"appsettings.json");
-                    if (!File.Exists(newAppSettingFile)) {
+                    if (!File.Exists(newAppSettingFile)) 
+                    {
                         File.Copy(baseAppSettingsFile, newAppSettingFile);
+                        Console.WriteLine($"AppSettings file created in current folder: {initialData["currentPath"]}");
+                        return 0;
                     }
-                    Console.WriteLine($"AppSettings file created at default location: {initialData["currentPath"]}");
+                    
+                    Console.WriteLine("AppSettings.json file already exists in current folder!");
+                    return 0;
                 }
 
                 return invoke(app.RemainingArguments.ToArray(), initialData);
@@ -143,11 +147,6 @@ namespace FakeServer
         private static string GetAssemblyVersion()
         {
             return FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion;
-        }
-
-        private static string GetExecutingAssemblyPath() 
-        {
-            return Assembly.GetExecutingAssembly().Location;
         }
     }
 }
