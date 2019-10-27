@@ -132,7 +132,8 @@ namespace FakeServer
                         File.Copy(baseAppSettingsFile, newAppSettingFile);
                         Console.WriteLine($"AppSettings file created in current folder: {initialData["currentPath"]}");
                     }
-                    else {
+                    else 
+                    {
                         Console.WriteLine("AppSettings.json file already exists in current folder!");
                     }
                     return 0;
