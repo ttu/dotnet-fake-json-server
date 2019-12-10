@@ -20,7 +20,6 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.PlatformAbstractions;
 using Microsoft.Net.Http.Headers;
 using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using System.IO;
 using System.Linq;
@@ -102,9 +101,10 @@ namespace FakeServer
                 options.OutputFormatters.Add(new CsvOutputFormatter());
                 options.OutputFormatters.Add(new XmlOutputFormatter());
 
-                var jsonFormatter = options.InputFormatters.OfType<NewtonsoftJsonInputFormatter>().First(i => i.GetType() == typeof(NewtonsoftJsonPatchInputFormatter));
-                jsonFormatter.SupportedMediaTypes.Add(new MediaTypeHeaderValue("application/json+merge-patch"));
-                jsonFormatter.SupportedMediaTypes.Add(new MediaTypeHeaderValue("application/merge-patch+json"));
+                // Add patches to NewtonsoftJsonPatchInputFormatter, not to NewtonsoftJsonPatchInputFormatter
+                var jsonFormatter = options.InputFormatters.OfType<NewtonsoftJsonInputFormatter>().First(i => i.GetType() == typeof(NewtonsoftJsonInputFormatter));
+                jsonFormatter.SupportedMediaTypes.Add(new MediaTypeHeaderValue(Constants.JsonMergePatch));
+                jsonFormatter.SupportedMediaTypes.Add(new MediaTypeHeaderValue(Constants.MergePatchJson));
             });
 
             services.AddSwaggerGen(c =>
@@ -200,7 +200,6 @@ namespace FakeServer
                         app.ApplicationServices.GetRequiredService<IMessageBus>(),
                         useAuthentication,
                         Configuration["DataStore:IdField"]);
-
 
             app.UseEndpoints(endpoints =>
             {
