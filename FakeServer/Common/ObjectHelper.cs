@@ -105,6 +105,9 @@ namespace FakeServer.Common
         /// <summary>
         /// Compare the field value from a source object to the provided id.
         /// </summary>
+        /// <remarks>
+        /// If the field value is a string, it is also compared to the string representation of the provided id.
+        /// </remarks>
         /// <param name="source"></param>
         /// <param name="fieldName"></param>
         /// <param name="id"></param>
@@ -115,6 +118,9 @@ namespace FakeServer.Common
 
             if (fieldValue.Equals(id))
                 return true;
+
+            if (fieldValue.GetType() == typeof(string) && id.GetType() != typeof(string))
+                return fieldValue == id.ToString().ToLower();
 
             return false;
         }
