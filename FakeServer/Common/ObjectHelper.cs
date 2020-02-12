@@ -75,9 +75,9 @@ namespace FakeServer.Common
                 tail = tail.Contains('/') ? tail.Substring(tail.IndexOf('/') + 1) : string.Empty;
 
                 if (currentValue is IEnumerable<dynamic> valueEnumerable)
-                    returnValue = valueEnumerable.FirstOrDefault(e => GetFieldValue(e, idFieldName) == parsedInteger);
+                    returnValue = valueEnumerable.FirstOrDefault(e => CompareFieldValueWithId(e, idFieldName, parsedInteger));
                 else
-                    returnValue = GetFieldValue(((dynamic)currentValue), idFieldName) == parsedInteger ? currentValue as ExpandoObject : null;
+                    returnValue = CompareFieldValueWithId(((dynamic)currentValue), idFieldName, parsedInteger) ? currentValue as ExpandoObject : null;
             }
             else
             {
@@ -100,6 +100,23 @@ namespace FakeServer.Common
 
             var srcProp = source.GetType().GetProperties().FirstOrDefault(p => string.Equals(p.Name, fieldName, StringComparison.OrdinalIgnoreCase));
             return srcProp?.GetValue(source, null);
+        }
+
+        /// <summary>
+        /// Compare the field value from a source object to the provided id.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="fieldName"></param>
+        /// <param name="id"></param>
+        /// <returns>The field value from is equal to the provided id</returns>
+        public static bool CompareFieldValueWithId(object source, string fieldName, dynamic id)
+        {
+            dynamic fieldValue = ObjectHelper.GetFieldValue(source, fieldName);
+
+            if (fieldValue.Equals(id))
+                return true;
+
+            return false;
         }
 
         public static void SetFieldValue(object item, string fieldName, dynamic data)
