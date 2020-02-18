@@ -75,9 +75,9 @@ namespace FakeServer.Common
                 tail = tail.Contains('/') ? tail.Substring(tail.IndexOf('/') + 1) : string.Empty;
 
                 if (currentValue is IEnumerable<dynamic> valueEnumerable)
-                    returnValue = valueEnumerable.FirstOrDefault(e => GetFieldValue(e, idFieldName) == parsedInteger);
+                    returnValue = valueEnumerable.FirstOrDefault(e => CompareFieldValueWithId(e, idFieldName, parsedInteger));
                 else
-                    returnValue = GetFieldValue(((dynamic)currentValue), idFieldName) == parsedInteger ? currentValue as ExpandoObject : null;
+                    returnValue = CompareFieldValueWithId(((dynamic)currentValue), idFieldName, parsedInteger) ? currentValue as ExpandoObject : null;
             }
             else
             {
@@ -100,6 +100,29 @@ namespace FakeServer.Common
 
             var srcProp = source.GetType().GetProperties().FirstOrDefault(p => string.Equals(p.Name, fieldName, StringComparison.OrdinalIgnoreCase));
             return srcProp?.GetValue(source, null);
+        }
+
+        /// <summary>
+        /// Compare the field value from a source object to the provided id.
+        /// </summary>
+        /// <remarks>
+        /// If the field value is a string, it is also compared to the string representation of the provided id.
+        /// </remarks>
+        /// <param name="source"></param>
+        /// <param name="fieldName"></param>
+        /// <param name="id"></param>
+        /// <returns>The field value from is equal to the provided id</returns>
+        public static bool CompareFieldValueWithId(object source, string fieldName, dynamic id)
+        {
+            dynamic fieldValue = ObjectHelper.GetFieldValue(source, fieldName);
+
+            if (fieldValue.Equals(id))
+                return true;
+
+            if (fieldValue.GetType() == typeof(string) && id.GetType() != typeof(string))
+                return fieldValue == id.ToString().ToLower();
+
+            return false;
         }
 
         public static void SetFieldValue(object item, string fieldName, dynamic data)
@@ -165,14 +188,14 @@ namespace FakeServer.Common
             x => DateTime.Parse(x, CultureInfo.InvariantCulture)
         };
 
-        /// <summary>
-        /// Convert input value to correct type
-        /// </summary>
-        /// <param name="value">input</param>
-        /// <returns>value as an integer, as a double or as a string</returns>
-        public static dynamic GetValueAsCorrectType(string value)
+        private static Lazy<List<Func<string, dynamic>>> _convertFuncsExceptDateTime = new Lazy<List<Func<string, dynamic>>>(
+            () => _convertFuncs.Take(3).ToList());
+        
+        private static List<Func<string, dynamic>> _convertIdFuncs => _convertFuncsExceptDateTime.Value;
+
+        private static dynamic GetValueAsCorrectType(string value, List<Func<string, dynamic>> convertFuncs)
         {
-            foreach (var func in _convertFuncs)
+            foreach (var func in convertFuncs)
             {
                 try
                 {
@@ -185,6 +208,20 @@ namespace FakeServer.Common
 
             return value;
         }
+
+        /// <summary>
+        /// Convert a value to correct type
+        /// </summary>
+        /// <param name="value">the input value</param>
+        /// <returns>value as a boolean, an integer, a double, a DateTime or as a string</returns>
+        public static dynamic GetValueAsCorrectType(string value) => GetValueAsCorrectType(value, _convertFuncs);
+
+        /// <summary>
+        /// Convert the value of an identifier from JSON to correct type.
+        /// </summary>
+        /// <param name="id">the input id</param>
+        /// <returns>value as a boolean, an integer, a double or as a string</returns>
+        public static dynamic GetIdAsCorrectType(string id) => GetValueAsCorrectType(id, _convertIdFuncs);
 
         /// <summary>
         /// Try to cast value from JSON file to correct type.
