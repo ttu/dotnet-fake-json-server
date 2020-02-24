@@ -210,6 +210,11 @@ namespace FakeServer
             // todo GSA UseSwagger is not useful anymore because we do not need to build the JSON file for specs
             //app.UseSwagger();
 
+            // todo GSA LATER check support for Basic auth for non regression
+
+            // todo GSA swagger ui for OAuth2 flows with swashbuckle:
+            // https://github.com/domaindrivendev/Swashbuckle.AspNetCore#enable-oauth20-flows
+            // customize UI here https://github.com/swagger-api/swagger-ui/blob/v3.10.0/docs/usage/oauth2.md
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger.json", "Fake JSON API V1");
