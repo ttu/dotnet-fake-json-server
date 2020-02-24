@@ -1,4 +1,6 @@
-﻿using FakeServer.Authentication;
+﻿using System.IO;
+using System.Linq;
+using FakeServer.Authentication;
 using FakeServer.Authentication.Basic;
 using FakeServer.Authentication.Custom;
 using FakeServer.Authentication.Jwt;
@@ -17,12 +19,8 @@ using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
-using Microsoft.Extensions.PlatformAbstractions;
 using Microsoft.Net.Http.Headers;
-using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerUI;
-using System.IO;
-using System.Linq;
 
 namespace FakeServer
 {
@@ -107,22 +105,25 @@ namespace FakeServer
                 jsonFormatter.SupportedMediaTypes.Add(new MediaTypeHeaderValue(Constants.MergePatchJson));
             });
 
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Fake JSON API", Version = "v1" });
+            // todo GSA AddSwaggerGen is not useful anymore because we do not need to configure the JSON file for specs
+            // not related, but read:
+            // https://github.com/domaindrivendev/Swashbuckle.AspNetCore/releases/tag/v5.0.0
+            //services.AddSwaggerGen(c =>
+            //{
+            //    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Fake JSON API", Version = "v1" });
 
-                var basePath = PlatformServices.Default.Application.ApplicationBasePath;
-                var xmlPath = Path.Combine(basePath, "FakeServer.xml");
-                c.IncludeXmlComments(xmlPath);
+            //    var basePath = PlatformServices.Default.Application.ApplicationBasePath;
+            //    var xmlPath = Path.Combine(basePath, "FakeServer.xml");
+            //    c.IncludeXmlComments(xmlPath);
 
-                if (useAuthentication)
-                {
-                    c.OperationFilter<AddAuthorizationHeaderParameterOperationFilter>();
+            //    if (useAuthentication)
+            //    {
+            //        c.OperationFilter<AddAuthorizationHeaderParameterOperationFilter>();
 
-                    if (Configuration["Authentication:AuthenticationType"] == "token")
-                        c.DocumentFilter<AuthTokenOperation>();
-                }
-            });
+            //        if (Configuration["Authentication:AuthenticationType"] == "token")
+            //            c.DocumentFilter<AuthTokenOperation>();
+            //    }
+            //});
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -206,11 +207,12 @@ namespace FakeServer
                 endpoints.MapControllers();
             });
 
-            app.UseSwagger();
+            // todo GSA UseSwagger is not useful anymore because we do not need to build the JSON file for specs
+            //app.UseSwagger();
 
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Fake JSON API V1");
+                c.SwaggerEndpoint("/swagger.json", "Fake JSON API V1");
                 c.SupportedSubmitMethods(SubmitMethod.Get, SubmitMethod.Head, SubmitMethod.Post, SubmitMethod.Put, SubmitMethod.Patch, SubmitMethod.Delete);
             });
         }
