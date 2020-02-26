@@ -662,6 +662,22 @@ namespace FakeServer.Test
         }
 
         [Fact]
+        public async Task PostAndDeleteItem_NewCollection_DeleteItem_ExitingCollection()
+        {
+            var newUser = new { name = "Newton" };
+
+            var content = new StringContent(JsonConvert.SerializeObject(newUser), Encoding.UTF8, "application/json");
+            var result = await _fixture.Client.PostAsync($"api/hello", content);
+            result.EnsureSuccessStatusCode();
+
+            result = await _fixture.Client.DeleteAsync($"api/hello/0");
+            result.EnsureSuccessStatusCode();
+
+            result = await _fixture.Client.DeleteAsync($"api/users/1");
+            result.EnsureSuccessStatusCode();
+        }
+
+        [Fact]
         public async Task Post_SingleItem_ExistingCollection()
         {
             var collection = "configuration";
