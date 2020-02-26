@@ -29,7 +29,7 @@ namespace FakeServer.Common
             var stringValue = value.ToString();
             bindingContext.ModelState.SetModelValue(bindingContext.ModelName, stringValue, stringValue);
 
-            dynamic convertedId = ObjectHelper.GetValueAsCorrectType(stringValue);
+            dynamic convertedId = ObjectHelper.GetIdAsCorrectType(stringValue);
             bindingContext.Result = ModelBindingResult.Success(convertedId);
 
             return Task.CompletedTask;

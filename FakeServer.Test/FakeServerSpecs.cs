@@ -343,7 +343,7 @@ namespace FakeServer.Test
         public async Task GetItem_WithId_Found()
         {
             var result = await _fixture.Client.GetAsync($"api/users/1");
-            Assert.Equal(System.Net.HttpStatusCode.OK, result.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, result.StatusCode);
 
             var item = JsonConvert.DeserializeObject<JObject>(await result.Content.ReadAsStringAsync());
             Assert.Equal("James", item["name"].Value<string>());
@@ -353,7 +353,35 @@ namespace FakeServer.Test
         public async Task GetItem_WithId_NotFound()
         {
             var result = await _fixture.Client.GetAsync($"api/users/100000");
-            Assert.Equal(System.Net.HttpStatusCode.NotFound, result.StatusCode);
+            Assert.Equal(HttpStatusCode.NotFound, result.StatusCode);
+        }
+
+        [Fact]
+        public async Task GetItem_WithId_StoredInJsonAs_Integer()
+        {
+            var result = await _fixture.Client.GetAsync($"api/movies/300");
+            Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+        }
+
+        [Fact]
+        public async Task GetItem_WithId_StoredInJsonAs_IntegerInString()
+        {
+            var result = await _fixture.Client.GetAsync($"api/movies/7");
+            Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+        }
+
+        [Fact]
+        public async Task GetItem_WithId_StoredInJsonAs_BooleanInString()
+        {
+            var result = await _fixture.Client.GetAsync($"api/movies/true");
+            Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+        }
+
+        [Fact]
+        public async Task GetItem_WithId_StoredInJsonAs_DateInString()
+        {
+            var result = await _fixture.Client.GetAsync($"api/movies/1984-01-01");
+            Assert.Equal(HttpStatusCode.OK, result.StatusCode);
         }
 
         [Fact]
@@ -478,6 +506,14 @@ namespace FakeServer.Test
             var result = await _fixture.Client.GetAsync($"api/families/18/parents/1/work");
             var workplace = JsonConvert.DeserializeObject<JObject>(await result.Content.ReadAsStringAsync());
             Assert.Equal("EVIDENDS", workplace["companyName"].Value<string>());
+        }
+
+        [Fact]
+        public async Task GetItem_Nested_WithId_StoredInJsonAs_IntegerInString()
+        {
+            var result = await _fixture.Client.GetAsync($"api/movies/300/sequels/3002");
+            var sequel = JsonConvert.DeserializeObject<JObject>(await result.Content.ReadAsStringAsync());
+            Assert.Equal("300: Rise of an Empire", sequel["name"].Value<string>());
         }
 
         [Fact]
@@ -625,6 +661,22 @@ namespace FakeServer.Test
 
             result = await _fixture.Client.GetAsync($"api/hello");
             Assert.Equal(HttpStatusCode.NotFound, result.StatusCode);
+        }
+
+        [Fact]
+        public async Task PostAndDeleteItem_NewCollection_DeleteItem_ExitingCollection()
+        {
+            var newUser = new { name = "Newton" };
+
+            var content = new StringContent(JsonConvert.SerializeObject(newUser), Encoding.UTF8, "application/json");
+            var result = await _fixture.Client.PostAsync($"api/hello", content);
+            result.EnsureSuccessStatusCode();
+
+            result = await _fixture.Client.DeleteAsync($"api/hello/0");
+            result.EnsureSuccessStatusCode();
+
+            result = await _fixture.Client.DeleteAsync($"api/users/1");
+            result.EnsureSuccessStatusCode();
         }
 
         [Fact]

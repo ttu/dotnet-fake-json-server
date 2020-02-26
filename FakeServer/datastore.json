@@ -47,10 +47,39 @@
   ],
   "movies": [
     {
-      "name": "Die Hard"
+      "id": "die-hard",
+      "name": "Die Hard",
+      "sequels": []
     },
     {
-      "name": "Predator"
+      "id": "predator",
+      "name": "Predator",
+      "sequels": []
+    },
+    {
+      "id": "7",
+      "name": "Se7en",
+      "sequels": []
+    },
+    {
+      "id": 300,
+      "name": "300",
+      "sequels": [
+        {
+          "id": "3002",
+          "name": "300: Rise of an Empire"
+        }
+      ]
+    },
+    {
+      "id": "true",
+      "name":  "True Story",
+      "sequels": []
+    },
+    {
+      "id": "1984-01-01",
+      "name":  "1984",
+      "sequels": []
     }
   ],
   "families": [

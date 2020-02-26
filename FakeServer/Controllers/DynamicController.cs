@@ -175,7 +175,7 @@ namespace FakeServer.Controllers
             if (_ds.IsItem(collectionId))
                 return BadRequest();
 
-            var result = _ds.GetCollection(collectionId).Find(e => ObjectHelper.GetFieldValue(e, _dsSettings.IdField) == id).FirstOrDefault();
+            var result = _ds.GetCollection(collectionId).Find(e => ObjectHelper.CompareFieldValueWithId(e, _dsSettings.IdField, id)).FirstOrDefault();
 
             if (result == null)
                 return NotFound();
@@ -203,7 +203,7 @@ namespace FakeServer.Controllers
             if (_ds.IsItem(collectionId))
                 return BadRequest();
 
-            var item = _ds.GetCollection(collectionId).AsQueryable().FirstOrDefault(e => ObjectHelper.GetFieldValue(e, _dsSettings.IdField) == id);
+            var item = _ds.GetCollection(collectionId).AsQueryable().FirstOrDefault(e => ObjectHelper.CompareFieldValueWithId(e, _dsSettings.IdField, id));
 
             if (item == null)
                 return BadRequest();

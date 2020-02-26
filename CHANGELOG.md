@@ -4,6 +4,8 @@
 * CHANGED: PATCH methods to require Content-Type: application/json+merge-patch or merge-patch+json
 * ADDED: Content negotiation with Accept-header and support for CSV and XML
 * ADDED: Client Credentials support to token authentication
+* FIXED: Identifiers can be stored in various JSON formats
+* FIXED: Empty collection won't break following datastore operations
 
 ### [0.10.0] - 2019-06-16
 * ADDED: Token endpoint to support username/password in JSON content
@@ -11,7 +13,7 @@
 * CHANGED: Rename Common property from appsettings.json to DataStore
 * CHANGED: Remove authentication.json and add Authentication settings to appsettings.json
 * ADDED: GraphQL endpoint to support operations in query parameter
-* ADDED: Configurable reponse transfrom middleware
+* ADDED: Configurable response transfrom middleware
 
 ### [0.9.1] - 2019-02-08
 * CHANGED: Target framework to .NET Core 2.2

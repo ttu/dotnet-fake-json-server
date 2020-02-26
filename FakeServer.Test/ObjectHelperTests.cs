@@ -54,6 +54,20 @@ namespace FakeServer.Test
         }
 
         [Fact]
+        public void GetIdAsCorrectType_ReturnsDynamicOtherThanString()
+        {
+            Assert.IsType<int>(ObjectHelper.GetIdAsCorrectType("2"));
+            Assert.IsType<double>(ObjectHelper.GetIdAsCorrectType("2.1"));
+            Assert.IsType<string>(ObjectHelper.GetIdAsCorrectType("somevalue"));
+        }
+
+        [Fact]
+        public void GetIdAsCorrectType_ReturnsString_WhenDateInString()
+        {
+            Assert.IsType<string>(ObjectHelper.GetIdAsCorrectType("7/31/2017"));
+        }
+
+        [Fact]
         public void OperatorFunctions()
         {
             Assert.True(ObjectHelper.Funcs[""](2, 2));
