@@ -1,15 +1,20 @@
 ﻿using FakeServer.Common;
 using JsonFlatFileDataStore;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
+using System.Net;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace FakeServer.Controllers
@@ -21,12 +26,18 @@ namespace FakeServer.Controllers
         private readonly IDataStore _ds;
         private readonly ApiSettings _apiSettings;
         private readonly DataStoreSettings _dsSettings;
+        private readonly CachingSettings _cachingSettings;
 
-        public DynamicController(IDataStore ds, IOptions<ApiSettings> apiSettings, IOptions<DataStoreSettings> dsSettings)
+        public DynamicController(
+            IDataStore ds,
+            IOptions<ApiSettings> apiSettings,
+            IOptions<DataStoreSettings> dsSettings,
+            IOptions<CachingSettings> cachingSettings)
         {
             _ds = ds;
             _apiSettings = apiSettings.Value;
             _dsSettings = dsSettings.Value;
+            _cachingSettings = cachingSettings.Value;
         }
 
         /// <summary>
@@ -147,6 +158,21 @@ namespace FakeServer.Controllers
                 results = SortHelper.SortFields(results, options.SortFields);
             }
 
+            if (_cachingSettings.ETag.Enabled)
+            {
+                var content = JsonConvert.SerializeObject(results);
+                string eTag = GenerateETag(content);
+
+                if (IsETagSameInRequest(eTag))
+                {
+                    Response.Headers[HeaderNames.ETag] = eTag;
+
+                    return StatusCode((int)HttpStatusCode.NotModified);
+                }
+
+                Response.Headers[HeaderNames.ETag] = eTag;
+            }
+
             if (_apiSettings.UseResultObject)
             {
                 return Ok(QueryHelper.GetResultObject(results, totalCount, paginationHeader, options));
@@ -180,7 +206,46 @@ namespace FakeServer.Controllers
             if (result == null)
                 return NotFound();
 
+            if (_cachingSettings.ETag.Enabled)
+            {
+                var content = JsonConvert.SerializeObject(result);
+                string eTag = GenerateETag(content);
+
+                if (IsETagSameInRequest(eTag))
+                {
+                    Response.Headers[HeaderNames.ETag] = eTag;
+
+                    return StatusCode((int)HttpStatusCode.NotModified);
+                }
+                
+                Response.Headers[HeaderNames.ETag] = eTag;
+            }
+
             return Ok(result);
+        }
+
+        private bool IsETagSameInRequest(string eTag)
+        {
+            var isETagSame = false;
+
+            if (Request.Headers.ContainsKey(HeaderNames.IfNoneMatch))
+            {
+                var requestETag = Request.Headers[HeaderNames.IfNoneMatch].FirstOrDefault();
+
+                if (eTag == requestETag)
+                    isETagSame = true;
+            }
+
+            return isETagSame;
+        }
+
+        private string GenerateETag(string rawData)
+        {
+            byte[] bytes = Encoding.UTF8.GetBytes(rawData);
+
+            using SHA1Managed sha1 = new SHA1Managed();
+            var hash = sha1.ComputeHash(bytes);
+            return $"\"{Convert.ToBase64String(hash)}\"";
         }
 
         /// <summary>
@@ -260,6 +325,22 @@ namespace FakeServer.Controllers
             if (item == null || _ds.IsItem(collectionId))
                 return BadRequest();
 
+            if (_cachingSettings.ETag.Enabled)
+            {
+                if (Request.Headers.ContainsKey(HeaderNames.IfMatch))
+                {
+                    var result = _ds.GetCollection(collectionId).Find(e => ObjectHelper.CompareFieldValueWithId(e, _dsSettings.IdField, id)).FirstOrDefault();
+
+                    var content = JsonConvert.SerializeObject(result);
+
+                    var eTag = GenerateETag(content);
+
+                    var requestETag = Request.Headers[HeaderNames.IfMatch].FirstOrDefault();
+
+                    if (eTag != requestETag)
+                        return new StatusCodeResult(StatusCodes.Status412PreconditionFailed);
+                }
+            }
             // Make sure that new data has id field correctly
             ObjectHelper.SetFieldValue(item, _dsSettings.IdField, id);
             //item.id = id;
