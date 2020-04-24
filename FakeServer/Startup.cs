@@ -61,6 +61,7 @@ namespace FakeServer
             services.Configure<JobsSettings>(Configuration.GetSection("Jobs"));
             services.Configure<SimulateSettings>(Configuration.GetSection("Simulate"));
             services.Configure<CustomResponseSettings>(Configuration.GetSection("CustomResponse"));
+            services.Configure<CachingSettings>(Configuration.GetSection("Caching"));
 
             services.AddCors(options =>
             {
@@ -105,6 +106,17 @@ namespace FakeServer
                 var jsonFormatter = options.InputFormatters.OfType<NewtonsoftJsonInputFormatter>().First(i => i.GetType() == typeof(NewtonsoftJsonInputFormatter));
                 jsonFormatter.SupportedMediaTypes.Add(new MediaTypeHeaderValue(Constants.JsonMergePatch));
                 jsonFormatter.SupportedMediaTypes.Add(new MediaTypeHeaderValue(Constants.MergePatchJson));
+
+                if (Configuration.GetValue<bool>("Caching:ETag:Enabled"))
+                {
+                    options.CacheProfiles.Add("Default",
+                    new CacheProfile()
+                    {
+                        Location = ResponseCacheLocation.Any,
+                        VaryByHeader = "User-Agent",
+                        Duration = 120
+                    });
+                }
             });
 
             services.AddSwaggerGen(c =>
@@ -189,12 +201,7 @@ namespace FakeServer
             {
                 app.UseTokenProviderMiddleware();
             }
-
-            if (Configuration.GetValue<bool>("Caching:ETag:Enabled"))
-            {
-                app.UseMiddleware<ETagMiddleware>();
-            }
-
+        
             app.UseMiddleware<GraphQLMiddleware>(
                         app.ApplicationServices.GetRequiredService<IDataStore>(),
                         app.ApplicationServices.GetRequiredService<IMessageBus>(),
