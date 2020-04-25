@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using FakeServer.Authentication;
 using FakeServer.Authentication.Basic;
@@ -20,6 +21,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Net.Http.Headers;
+using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerUI;
 
 namespace FakeServer
@@ -69,7 +71,6 @@ namespace FakeServer
             });
 
             var useAuthentication = Configuration.GetValue<bool>("Authentication:Enabled");
-
             if (useAuthentication)
             {
                 if (Configuration["Authentication:AuthenticationType"] == "token")
@@ -105,9 +106,33 @@ namespace FakeServer
                 jsonFormatter.SupportedMediaTypes.Add(new MediaTypeHeaderValue(Constants.MergePatchJson));
             });
 
-            // todo GSA AddSwaggerGen is not useful anymore because we do not need to configure the JSON file for specs
-            // not related, but read:
-            // https://github.com/domaindrivendev/Swashbuckle.AspNetCore/releases/tag/v5.0.0
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Fake JSON API", Version = "v1" });
+
+                if (useAuthentication)
+                {
+                    c.AddSecurityDefinition("basic", new OpenApiSecurityScheme
+                    {
+                        Name = "Authorization",
+                        Type = SecuritySchemeType.Http,
+                        Scheme = "basic",
+                        In = ParameterLocation.Header,
+                        Description = "Basic Authorization in header"
+                    });
+
+                    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                    {{
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference { 
+                                Type = ReferenceType.SecurityScheme, 
+                                Id = "basic" 
+                            }
+                        }, new List<string>()
+                    }});
+                }
+            });
             //services.AddSwaggerGen(c =>
             //{
             //    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Fake JSON API", Version = "v1" });
@@ -207,17 +232,11 @@ namespace FakeServer
                 endpoints.MapControllers();
             });
 
-            // todo GSA UseSwagger is not useful anymore because we do not need to build the JSON file for specs
-            //app.UseSwagger();
+            app.UseSwagger();
 
-            // todo GSA LATER check support for Basic auth for non regression
-
-            // todo GSA swagger ui for OAuth2 flows with swashbuckle:
-            // https://github.com/domaindrivendev/Swashbuckle.AspNetCore#enable-oauth20-flows
-            // customize UI here https://github.com/swagger-api/swagger-ui/blob/v3.10.0/docs/usage/oauth2.md
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger.json", "Fake JSON API V1");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Fake JSON API V1");
                 c.SupportedSubmitMethods(SubmitMethod.Get, SubmitMethod.Head, SubmitMethod.Post, SubmitMethod.Put, SubmitMethod.Patch, SubmitMethod.Delete);
             });
         }

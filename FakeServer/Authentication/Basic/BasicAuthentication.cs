@@ -26,7 +26,7 @@ namespace FakeServer.Authentication.Basic
 
     public static class BasicAuthenticationDefaults
     {
-        public static string AuthenticationScheme => "Basic";
+        public static string AuthenticationScheme => "basic";
     }
 
     public static class BasicAuthenticationExtensions
