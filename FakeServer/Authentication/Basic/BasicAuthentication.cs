@@ -28,13 +28,11 @@ namespace FakeServer.Authentication.Basic
             {
                 c.AddSwaggerDoc();
 
-                c.AddSecurityDefinition("basic", new OpenApiSecurityScheme
+                c.AddSecurityDefinition(BasicAuthenticationDefaults.AuthenticationScheme, new OpenApiSecurityScheme
                 {
-                    Name = "Authorization",
                     Type = SecuritySchemeType.Http,
-                    Scheme = "basic",
-                    In = ParameterLocation.Header,
-                    Description = "Basic Authorization in header"
+                    Scheme = BasicAuthenticationDefaults.AuthenticationScheme,
+                    In = ParameterLocation.Header
                 });
 
                 c.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -43,7 +41,7 @@ namespace FakeServer.Authentication.Basic
                     {
                         Reference = new OpenApiReference {
                             Type = ReferenceType.SecurityScheme,
-                            Id = "basic"
+                            Id = BasicAuthenticationDefaults.AuthenticationScheme
                         }
                     }, new List<string>()
                 }});

@@ -46,7 +46,7 @@ namespace FakeServer.Authentication.Jwt
         public Task Invoke(HttpContext context)
         {
             // If the request path doesn't match, skip
-            if (!context.Request.Path.Equals(_options.LogoutPath, StringComparison.Ordinal))
+            if (!context.Request.Path.Equals(TokenProviderOptions.LogoutPath, StringComparison.Ordinal))
             {
                 return _next(context);
             }

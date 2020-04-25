@@ -6,9 +6,9 @@ namespace FakeServer.Authentication.Jwt
 {
     public class TokenProviderOptions
     {
-        public string Path { get; set; } = $"/{Config.TokenRoute}";
+        public static string Path { get; } = $"/{Config.TokenRoute}";
 
-        public string LogoutPath { get; set; } = $"/{Config.TokenLogoutRoute}";
+        public static string LogoutPath { get; } = $"/{Config.TokenLogoutRoute}";
 
         public string Issuer { get; set; }
 

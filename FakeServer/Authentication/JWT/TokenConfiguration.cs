@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -64,6 +66,36 @@ namespace FakeServer.Authentication.Jwt
                                         }
                                     };
                                 });
+
+            services.AddSwaggerGen(c =>
+            {
+                c.AddSwaggerDoc();
+
+                c.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
+                {
+                    Type = SecuritySchemeType.OAuth2,
+                    Scheme = JwtBearerDefaults.AuthenticationScheme,
+                    Flows = new OpenApiOAuthFlows
+                    {
+                        ClientCredentials = new OpenApiOAuthFlow
+                        {
+                            TokenUrl = new Uri(TokenProviderOptions.Path, UriKind.Relative),
+                            Scopes = new Dictionary<string, string>()
+                        }
+                    }
+                });
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {{
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = JwtBearerDefaults.AuthenticationScheme
+                        }
+                    }, new List<string>()
+                }});
+            });
         }
 
         public static void UseTokenProviderMiddleware(this IApplicationBuilder app)

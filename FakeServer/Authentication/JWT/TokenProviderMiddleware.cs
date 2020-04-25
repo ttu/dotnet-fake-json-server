@@ -28,7 +28,7 @@ namespace FakeServer.Authentication.Jwt
         public async Task Invoke(HttpContext context)
         {
             // If the request path doesn't match, skip
-            if (!context.Request.Path.Equals(_options.Path, StringComparison.Ordinal))
+            if (!context.Request.Path.Equals(TokenProviderOptions.Path, StringComparison.Ordinal))
             {
                 await _next(context);
                 return;
@@ -92,7 +92,7 @@ namespace FakeServer.Authentication.Jwt
                     var authHeader = context.Request.Headers["Authorization"].ToString();
                     var authString = authHeader.Substring("Basic ".Length).Trim();
                     var credentials = Encoding.UTF8.GetString(Convert.FromBase64String(authString)).Split(':');
-                    return (credentials[1], credentials[0], true);
+                    return (credentials[0], credentials[1], true);
                 }
             }
 

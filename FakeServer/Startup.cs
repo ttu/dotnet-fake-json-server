@@ -1,9 +1,6 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using FakeServer.Authentication;
-using FakeServer.Authentication.Basic;
-using FakeServer.Authentication.Custom;
 using FakeServer.Authentication.Jwt;
 using FakeServer.Common;
 using FakeServer.Common.Formatters;
@@ -21,7 +18,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Net.Http.Headers;
-using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerUI;
 
 namespace FakeServer
@@ -157,7 +153,6 @@ namespace FakeServer
             {
                 app.UseTokenProviderMiddleware();
             }
-
 
             if (Configuration.GetValue<bool>("Caching:ETag:Enabled"))
             {

@@ -19,6 +19,11 @@ namespace FakeServer.Authentication.Custom
                 o.DefaultAuthenticateScheme = AllowAllAuthenticationDefaults.AuthenticationScheme;
             })
             .AddAllowAllAuthentication();
+
+            services.AddSwaggerGen(c =>
+            {
+                c.AddSwaggerDoc();
+            });
         }
     }
 
