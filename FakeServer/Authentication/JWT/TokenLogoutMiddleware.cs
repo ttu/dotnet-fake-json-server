@@ -1,10 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 namespace FakeServer.Authentication.Jwt
 {
@@ -33,14 +32,10 @@ namespace FakeServer.Authentication.Jwt
     public class TokenLogoutMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly TokenProviderOptions _options;
 
-        public TokenLogoutMiddleware(
-            RequestDelegate next,
-            IOptions<TokenProviderOptions> options)
+        public TokenLogoutMiddleware(RequestDelegate next)
         {
             _next = next;
-            _options = options.Value;
         }
 
         public Task Invoke(HttpContext context)

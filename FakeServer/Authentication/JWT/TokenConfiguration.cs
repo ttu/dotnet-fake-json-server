@@ -71,6 +71,8 @@ namespace FakeServer.Authentication.Jwt
             {
                 c.AddSwaggerDoc();
 
+                c.DocumentFilter<TokenOperation>();
+
                 c.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
                 {
                     Type = SecuritySchemeType.OAuth2,
@@ -110,7 +112,7 @@ namespace FakeServer.Authentication.Jwt
 
             var opts = Options.Create(options);
             app.UseMiddleware<TokenProviderMiddleware>(opts);
-            app.UseMiddleware<TokenLogoutMiddleware>(opts);
+            app.UseMiddleware<TokenLogoutMiddleware>();
         }
     }
 }
