@@ -3,7 +3,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.OpenApi.Models;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
@@ -21,6 +23,31 @@ namespace FakeServer.Authentication.Basic
                 o.DefaultAuthenticateScheme = BasicAuthenticationDefaults.AuthenticationScheme;
             })
             .AddBasicAuthentication();
+
+            services.AddSwaggerGen(c =>
+            {
+                c.AddSwaggerDoc();
+
+                c.AddSecurityDefinition("basic", new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "basic",
+                    In = ParameterLocation.Header,
+                    Description = "Basic Authorization in header"
+                });
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {{
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "basic"
+                        }
+                    }, new List<string>()
+                }});
+            });
         }
     }
 

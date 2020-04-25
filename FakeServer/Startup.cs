@@ -28,6 +28,8 @@ namespace FakeServer
 {
     public class Startup
     {
+        private AuthenticationType _authenticationType;
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -70,22 +72,8 @@ namespace FakeServer
                     .AllowAnyHeader());
             });
 
-            var useAuthentication = Configuration.GetValue<bool>("Authentication:Enabled");
-            if (useAuthentication)
-            {
-                if (Configuration["Authentication:AuthenticationType"] == "token")
-                {
-                    services.AddJwtBearerAuthentication();
-                }
-                else
-                {
-                    services.AddBasicAuthentication();
-                }
-            }
-            else
-            {
-                services.AddAllowAllAuthentication();
-            }
+            _authenticationType = ConfigureAuthentication.ReadType(Configuration);
+            services.AddAuthentication(_authenticationType);
 
             // TODO: AddControllers
             services.AddMvc()
@@ -105,50 +93,6 @@ namespace FakeServer
                 jsonFormatter.SupportedMediaTypes.Add(new MediaTypeHeaderValue(Constants.JsonMergePatch));
                 jsonFormatter.SupportedMediaTypes.Add(new MediaTypeHeaderValue(Constants.MergePatchJson));
             });
-
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Fake JSON API", Version = "v1" });
-
-                if (useAuthentication)
-                {
-                    c.AddSecurityDefinition("basic", new OpenApiSecurityScheme
-                    {
-                        Name = "Authorization",
-                        Type = SecuritySchemeType.Http,
-                        Scheme = "basic",
-                        In = ParameterLocation.Header,
-                        Description = "Basic Authorization in header"
-                    });
-
-                    c.AddSecurityRequirement(new OpenApiSecurityRequirement
-                    {{
-                        new OpenApiSecurityScheme
-                        {
-                            Reference = new OpenApiReference { 
-                                Type = ReferenceType.SecurityScheme, 
-                                Id = "basic" 
-                            }
-                        }, new List<string>()
-                    }});
-                }
-            });
-            //services.AddSwaggerGen(c =>
-            //{
-            //    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Fake JSON API", Version = "v1" });
-
-            //    var basePath = PlatformServices.Default.Application.ApplicationBasePath;
-            //    var xmlPath = Path.Combine(basePath, "FakeServer.xml");
-            //    c.IncludeXmlComments(xmlPath);
-
-            //    if (useAuthentication)
-            //    {
-            //        c.OperationFilter<AddAuthorizationHeaderParameterOperationFilter>();
-
-            //        if (Configuration["Authentication:AuthenticationType"] == "token")
-            //            c.DocumentFilter<AuthTokenOperation>();
-            //    }
-            //});
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -209,12 +153,11 @@ namespace FakeServer
             app.UseAuthentication();
             app.UseAuthorization();
 
-            var useAuthentication = Configuration.GetValue<bool>("Authentication:Enabled");
-
-            if (useAuthentication && Configuration["Authentication:AuthenticationType"] == "token")
+            if (_authenticationType == AuthenticationType.JwtBearer)
             {
                 app.UseTokenProviderMiddleware();
             }
+
 
             if (Configuration.GetValue<bool>("Caching:ETag:Enabled"))
             {
@@ -224,7 +167,7 @@ namespace FakeServer
             app.UseMiddleware<GraphQLMiddleware>(
                         app.ApplicationServices.GetRequiredService<IDataStore>(),
                         app.ApplicationServices.GetRequiredService<IMessageBus>(),
-                        useAuthentication,
+                        _authenticationType != AuthenticationType.AllowAll,
                         Configuration["DataStore:IdField"]);
 
             app.UseEndpoints(endpoints =>
