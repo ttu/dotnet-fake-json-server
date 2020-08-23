@@ -107,6 +107,22 @@ namespace FakeServer
                 jsonFormatter.SupportedMediaTypes.Add(new MediaTypeHeaderValue(Constants.MergePatchJson));
             });
 
+            if (Configuration.GetValue<bool>("Caching:ETag:Enabled"))
+            {
+                services.AddResponseCaching();
+                services.AddHttpCacheHeaders(
+                    (expirationModelOptions) =>
+                    {
+                        expirationModelOptions.MaxAge = 0;
+                    },
+                    (validationModelOptions) =>
+                    {
+                        // Use only ETag caching
+                        validationModelOptions.NoCache = true;
+                        validationModelOptions.MustRevalidate = true;
+                    });
+            }
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Fake JSON API", Version = "v1" });
@@ -192,7 +208,8 @@ namespace FakeServer
 
             if (Configuration.GetValue<bool>("Caching:ETag:Enabled"))
             {
-                app.UseMiddleware<ETagMiddleware>();
+                app.UseResponseCaching();
+                app.UseHttpCacheHeaders();
             }
 
             app.UseMiddleware<GraphQLMiddleware>(

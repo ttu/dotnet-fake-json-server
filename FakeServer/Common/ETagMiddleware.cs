@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace FakeServer.Common
 {
+    // NOTE: ETagMiddleware is not in use anymore.
+    // It was replaced with https://github.com/KevinDockx/HttpCacheHeaders
+
     // Based on the middleware from:
     // https://gist.github.com/madskristensen/36357b1df9ddbfd123162cd4201124c4
 

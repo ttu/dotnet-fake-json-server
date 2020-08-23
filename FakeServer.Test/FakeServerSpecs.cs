@@ -1099,7 +1099,7 @@ namespace FakeServer.Test
             Assert.Equal("Phil", allUsers[0]["name"].Value<string>());
             Assert.Equal("Box Company", allUsers[0]["work"]["name"].Value<string>());
 
-            var request = new HttpRequestMessage(new HttpMethod("GET"), $"api/users?name=Phil&age=25");
+            var request = new HttpRequestMessage(new HttpMethod("GET"), $"api/users?name=Phil");
 
             result = await _fixture.Client.SendAsync(request);
             var newEtag = result.Headers.ETag.Tag;
@@ -1121,7 +1121,7 @@ namespace FakeServer.Test
             Assert.Equal("Phil", allUsers[0]["name"].Value<string>());
             Assert.Equal("Box Company", allUsers[0]["work"]["name"].Value<string>());
 
-            var request = new HttpRequestMessage(new HttpMethod("GET"), $"api/users?name=Phil&age=25");
+            var request = new HttpRequestMessage(new HttpMethod("GET"), $"api/users?name=Phil");
             request.Headers.IfNoneMatch.Add(new System.Net.Http.Headers.EntityTagHeaderValue(originalEtag));
 
             result = await _fixture.Client.SendAsync(request);
@@ -1134,7 +1134,7 @@ namespace FakeServer.Test
             Assert.Equal(string.Empty, content);
         }
 
-        //[Fact]
+        [Fact]
         public async Task GetItem_ETag_Cached_Put()
         {
             var result = await _fixture.Client.GetAsync($"api/users/1");
