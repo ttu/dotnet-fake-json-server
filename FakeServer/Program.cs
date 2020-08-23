@@ -71,7 +71,10 @@ namespace FakeServer
         private static CommandLineApplication BuildCommandLineApp(
             Func<string[], Dictionary<string, string>, int> invoke)
         {
-            var app = new CommandLineApplication(throwOnUnexpectedArg: false);
+            var app = new CommandLineApplication 
+            {
+                UnrecognizedArgumentHandling = UnrecognizedArgumentHandling.StopParsingAndCollect
+            };
             app.HelpOption();
 
             var optionVersion = app.Option("--version", "Prints the version of the app", CommandOptionType.NoValue);

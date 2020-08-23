@@ -19,7 +19,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.PlatformAbstractions;
 using Microsoft.Net.Http.Headers;
-using Swashbuckle.AspNetCore.Swagger;
+using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using System.IO;
 using System.Linq;
@@ -67,8 +67,7 @@ namespace FakeServer
                 options.AddPolicy("AllowAnyPolicy",
                     builder => builder.AllowAnyOrigin()
                     .AllowAnyMethod()
-                    .AllowAnyHeader()
-                    .AllowCredentials());
+                    .AllowAnyHeader());
             });
 
             var useAuthentication = Configuration.GetValue<bool>("Authentication:Enabled");
@@ -89,10 +88,12 @@ namespace FakeServer
                 services.AddAllowAllAuthentication();
             }
 
+            // TODO: AddControllers
             services.AddMvc()
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+                .AddNewtonsoftJson()
+                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
 
-            services.Configure<MvcOptions>(options => 
+            services.Configure<MvcOptions>(options =>
             {
                 options.RespectBrowserAcceptHeader = true;
                 options.ReturnHttpNotAcceptable = true;
@@ -100,14 +101,15 @@ namespace FakeServer
                 options.OutputFormatters.Add(new CsvOutputFormatter());
                 options.OutputFormatters.Add(new XmlOutputFormatter());
 
-                var jsonFormatter = options.InputFormatters.OfType<JsonInputFormatter>().First(i => i.GetType() == typeof(JsonInputFormatter));
-                jsonFormatter.SupportedMediaTypes.Add(new MediaTypeHeaderValue("application/json+merge-patch"));
-                jsonFormatter.SupportedMediaTypes.Add(new MediaTypeHeaderValue("application/merge-patch+json"));
+                // Add patches to NewtonsoftJsonPatchInputFormatter, not to NewtonsoftJsonPatchInputFormatter
+                var jsonFormatter = options.InputFormatters.OfType<NewtonsoftJsonInputFormatter>().First(i => i.GetType() == typeof(NewtonsoftJsonInputFormatter));
+                jsonFormatter.SupportedMediaTypes.Add(new MediaTypeHeaderValue(Constants.JsonMergePatch));
+                jsonFormatter.SupportedMediaTypes.Add(new MediaTypeHeaderValue(Constants.MergePatchJson));
             });
 
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Info { Title = "Fake JSON API", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Fake JSON API", Version = "v1" });
 
                 var basePath = PlatformServices.Default.Application.ApplicationBasePath;
                 var xmlPath = Path.Combine(basePath, "FakeServer.xml");
@@ -123,7 +125,7 @@ namespace FakeServer
             });
         }
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IApplicationLifetime appLifetime)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseDefaultFiles();
 
@@ -144,6 +146,8 @@ namespace FakeServer
                 // No need to define anything else as this can only be used as a SPA server
                 return;
             }
+
+            app.UseRouting();
 
             app.UseCors("AllowAnyPolicy");
 
@@ -177,6 +181,7 @@ namespace FakeServer
             // Authentication must be always used as we have Authorize attributes in use
             // When Authentication is turned off, special AllowAll hander is used
             app.UseAuthentication();
+            app.UseAuthorization();
 
             var useAuthentication = Configuration.GetValue<bool>("Authentication:Enabled");
 
@@ -196,7 +201,10 @@ namespace FakeServer
                         useAuthentication,
                         Configuration["DataStore:IdField"]);
 
-            app.UseMvc();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
 
             app.UseSwagger();
 

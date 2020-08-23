@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using FakeServer.Common;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -521,7 +522,7 @@ namespace FakeServer.Test
             // Original { "id": 1, "name": "James", "age": 40, "location": "NY", "work": { "name": "ACME", "location": "NY" } },
             var patchData = new { name = "Albert", age = 12, work = new { name = "EMACS" } };
 
-            var content = new StringContent(JsonConvert.SerializeObject(patchData), Encoding.UTF8, "application/json+merge-patch");
+            var content = new StringContent(JsonConvert.SerializeObject(patchData), Encoding.UTF8, Constants.JsonMergePatch);
             var request = new HttpRequestMessage(new HttpMethod("PATCH"), $"api/users/1") { Content = content };
             var result = await _fixture.Client.SendAsync(request);
             result.EnsureSuccessStatusCode();
@@ -540,7 +541,7 @@ namespace FakeServer.Test
             var items = JsonConvert.DeserializeObject<IEnumerable<JObject>>(await result.Content.ReadAsStringAsync());
             Assert.Equal(4, items.Count());
 
-            content = new StringContent(JsonConvert.SerializeObject(new { name = "James", age = 40, work = new { name = "ACME" } }), Encoding.UTF8, "application/merge-patch+json");
+            content = new StringContent(JsonConvert.SerializeObject(new { name = "James", age = 40, work = new { name = "ACME" } }), Encoding.UTF8, Constants.MergePatchJson);
             request = new HttpRequestMessage(new HttpMethod("PATCH"), $"api/users/1") { Content = content };
             result = await _fixture.Client.SendAsync(request);
             result.EnsureSuccessStatusCode();
@@ -732,7 +733,7 @@ namespace FakeServer.Test
             var collection = "configuration_for_patch";
             var newConfig = new { url = "192.168.0.1" };
 
-            var content = new StringContent(JsonConvert.SerializeObject(newConfig), Encoding.UTF8, "application/json+merge-patch");
+            var content = new StringContent(JsonConvert.SerializeObject(newConfig), Encoding.UTF8, Constants.JsonMergePatch);
             var result = await _fixture.Client.PatchAsync($"api/{collection}", content);
             Assert.Equal(HttpStatusCode.NoContent, result.StatusCode);
 
@@ -775,14 +776,14 @@ namespace FakeServer.Test
 
             var patchData = new { name = "Albert", age = 12, work = new { name = "EMACS" } };
 
-            var content = new StringContent(JsonConvert.SerializeObject(patchData), Encoding.UTF8, "application/json+merge-patch");
+            var content = new StringContent(JsonConvert.SerializeObject(patchData), Encoding.UTF8, Constants.JsonMergePatch);
             var request = new HttpRequestMessage(new HttpMethod("PATCH"), $"api/users/1") { Content = content };
             var result = await _fixture.Client.SendAsync(request);
             result.EnsureSuccessStatusCode();
 
             await WebSocketReceiveHandler();
 
-            content = new StringContent(JsonConvert.SerializeObject(new { name = "James", age = 40, work = new { name = "ACME" } }), Encoding.UTF8, "application/json+merge-patch");
+            content = new StringContent(JsonConvert.SerializeObject(new { name = "James", age = 40, work = new { name = "ACME" } }), Encoding.UTF8, Constants.JsonMergePatch);
             request = new HttpRequestMessage(new HttpMethod("PATCH"), $"api/users/1") { Content = content };
             result = await _fixture.Client.SendAsync(request);
             result.EnsureSuccessStatusCode();
@@ -860,7 +861,7 @@ namespace FakeServer.Test
 
             var patchBook = new { author = "Edgar Allen Poe" };
 
-            content = new StringContent(JsonConvert.SerializeObject(patchBook), Encoding.UTF8, "application/json+merge-patch");
+            content = new StringContent(JsonConvert.SerializeObject(patchBook), Encoding.UTF8, Constants.MergePatchJson);
             var request = new HttpRequestMessage(new HttpMethod("PATCH"), $"async/book/0") { Content = content };
             result = await _fixture.Client.SendAsync(request);
             result.EnsureSuccessStatusCode();
@@ -1133,7 +1134,7 @@ namespace FakeServer.Test
             Assert.Equal(string.Empty, content);
         }
 
-        [Fact]
+        //[Fact]
         public async Task GetItem_ETag_Cached_Put()
         {
             var result = await _fixture.Client.GetAsync($"api/users/1");

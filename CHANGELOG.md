@@ -6,6 +6,7 @@
 * ADDED: Client Credentials support to token authentication
 * FIXED: Identifiers can be stored in various JSON formats
 * FIXED: Empty collection won't break following datastore operations
+* CHANGED: Target framework to .NET Core 3.1
 
 ### [0.10.0] - 2019-06-16
 * ADDED: Token endpoint to support username/password in JSON content

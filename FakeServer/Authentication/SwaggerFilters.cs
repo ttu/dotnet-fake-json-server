@@ -1,5 +1,5 @@
 ﻿using FakeServer.Common;
-using Swashbuckle.AspNetCore.Swagger;
+using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Collections.Generic;
 
@@ -7,72 +7,87 @@ namespace FakeServer.Authentication
 {
     internal class AddAuthorizationHeaderParameterOperationFilter : IOperationFilter
     {
-        public void Apply(Operation operation, OperationFilterContext context)
+        public void Apply(OpenApiOperation operation, OperationFilterContext context)
         {
             if (operation.Parameters == null)
-                operation.Parameters = new List<IParameter>();
+                operation.Parameters = new List<OpenApiParameter>();
 
-            operation.Parameters.Add(new NonBodyParameter
+            operation.Parameters.Add(new OpenApiParameter
             {
                 Name = "Authorization",
-                In = "header",
+                In = ParameterLocation.Header,
                 Description = "Authorization header. Usage e.g.: Bearer [access_token]",
                 Required = false,
-                Type = "string"
+                //Type = "string"
             });
         }
     }
 
     internal class AuthTokenOperation : IDocumentFilter
     {
-        public void Apply(SwaggerDocument swaggerDoc, DocumentFilterContext context)
+        public void Apply(OpenApiDocument swaggerDoc, DocumentFilterContext context)
         {
-            swaggerDoc.Paths.Add($"/{Config.TokenRoute}", new PathItem
+            var tokenItem =  new OpenApiPathItem();
+            tokenItem.AddOperation(OperationType.Post, new OpenApiOperation
             {
-                Post = new Operation
-                {
-                    Tags = new List<string> { "Authentication" },
-                    Consumes = new List<string>
+                Tags = new List<OpenApiTag> { new OpenApiTag { Name = "Authentication" } },
+                //Consumes = new List<string> { "application/x-www-form-urlencoded" },
+                Parameters = new List<OpenApiParameter>
                     {
-                        "application/x-www-form-urlencoded"
-                    },
-                    Parameters = new List<IParameter>
-                    {
-                        new NonBodyParameter
+                        new OpenApiParameter
                         {
-                            Type = "string",
+                            //Type = "string",
                             Name = "username",
                             Required = false,
-                            In = "formData"
+                            //In = "formData"
                         },
-                        new NonBodyParameter
+                        new OpenApiParameter
                         {
-                            Type = "string",
+                            //Type = "string",
                             Name = "password",
                             Required = false,
-                            In = "formData"
+                            //In = "formData"
                         }
                     }
-                }
             });
 
-            swaggerDoc.Paths.Add($"/{Config.TokenLogoutRoute}", new PathItem
+            swaggerDoc.Paths.Add($"/{Config.TokenRoute}", tokenItem);
+
+            var logoutItem = new OpenApiPathItem();
+            logoutItem.AddOperation(OperationType.Post, new OpenApiOperation
             {
-                Post = new Operation
-                {
-                    Tags = new List<string> { "Authentication" },
-                    Parameters = new List<IParameter>
+                Tags = new List<OpenApiTag> { new OpenApiTag { Name = "Authentication" } },
+                Parameters = new List<OpenApiParameter>
                     {
-                        new NonBodyParameter
+                        new OpenApiParameter
                         {
-                            Type = "string",
+                            //Type = "string",
                             Name = "Authorization",
                             Required = false,
-                            In = "header"
+                            In = ParameterLocation.Header
                         }
                     }
-                }
             });
+
+            swaggerDoc.Paths.Add($"/{Config.TokenLogoutRoute}", logoutItem);
+
+            //swaggerDoc.Paths.Add($"/{Config.TokenLogoutRoute}", new PathItem
+            //{
+            //    Post = new Operation
+            //    {
+            //        Tags = new List<string> { "Authentication" },
+            //        Parameters = new List<IParameter>
+            //        {
+            //            new NonBodyParameter
+            //            {
+            //                Type = "string",
+            //                Name = "Authorization",
+            //                Required = false,
+            //                In = "header"
+            //            }
+            //        }
+            //    }
+            //});
         }
     }
 }
