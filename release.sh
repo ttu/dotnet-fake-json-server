@@ -10,16 +10,16 @@ declare -a unixOS=("osx-x64" "linux-x64")
 
 for rid in "${winOS[@]}"
 do
-	dotnet publish ./FakeServer/FakeServer.csproj -c release -r $rid /p:PackAsTool=false
-	cd ./FakeServer/bin/release/netcoreapp2.2/$rid/publish/
+	dotnet publish ./FakeServer/FakeServer.csproj -c release -r $rid /p:PackAsTool=false /p:PublishTrimmed=true
+	cd ./FakeServer/bin/release/netcoreapp3.1/$rid/publish/
 	zip -r ../../../../../../releases/fakeserver-$rid.zip .
 	cd ../../../../../../
 done
 
 for rid in "${unixOS[@]}"
 do
-	dotnet publish ./FakeServer/FakeServer.csproj -c release -r $rid /p:PackAsTool=false
-	cd ./FakeServer/bin/release/netcoreapp2.2/$rid/publish/
+	dotnet publish ./FakeServer/FakeServer.csproj -c release -r $rid /p:PackAsTool=false /p:PublishTrimmed=true
+	cd ./FakeServer/bin/release/netcoreapp3.1/$rid/publish/
 	tar -cvzf ../../../../../../releases/fakeserver-$rid.tar.gz *
 	cd ../../../../../../
 done
