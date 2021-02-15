@@ -915,40 +915,32 @@ namespace FakeServer.Test
             }
             */
 
-            string GetAllow(HttpResponseMessage message)
-            {
-                var items = message.ToString().Replace("\r\n", " ").Split(' ');
-
-                var words = items.Select((val, idx) => val == "Allow:" ? items[idx + 1] : null)
-                                 .Where(e => !string.IsNullOrEmpty(e))
-                                 .Select(e => e.Trim());
-
-                return string.Join(", ", words);
-            }
-
+            static bool ContainsAllow(HttpResponseMessage message, IEnumerable<string> methods) =>
+                methods.All(m => message.ToString().Contains(($"Allow: {m}")));
+            
             var request = new HttpRequestMessage(new HttpMethod("OPTIONS"), $"api");
             var result = await _fixture.Client.SendAsync(request);
-            Assert.Equal("GET, HEAD, POST, OPTIONS", GetAllow(result));
+            Assert.True(ContainsAllow(result, new [] {"GET", "HEAD", "POST", "OPTIONS"}));
 
             request = new HttpRequestMessage(new HttpMethod("OPTIONS"), $"api/users");
             result = await _fixture.Client.SendAsync(request);
-            Assert.Equal("GET, HEAD, POST, OPTIONS", GetAllow(result));
+            Assert.True(ContainsAllow(result, new [] {"GET", "HEAD", "POST", "OPTIONS"}));
 
             request = new HttpRequestMessage(new HttpMethod("OPTIONS"), $"api/users/22");
             result = await _fixture.Client.SendAsync(request);
-            Assert.Equal("GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS", GetAllow(result));
+            Assert.True(ContainsAllow(result, new [] {"GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"}));
 
             request = new HttpRequestMessage(new HttpMethod("OPTIONS"), $"async/users");
             result = await _fixture.Client.SendAsync(request);
-            Assert.Equal("POST, OPTIONS", GetAllow(result));
+            Assert.True(ContainsAllow(result, new [] {"POST", "OPTIONS"}));
 
             request = new HttpRequestMessage(new HttpMethod("OPTIONS"), $"async/users/22");
             result = await _fixture.Client.SendAsync(request);
-            Assert.Equal("PUT, PATCH, DELETE, OPTIONS", GetAllow(result));
+            Assert.True(ContainsAllow(result, new [] {"PUT", "PATCH", "DELETE", "OPTIONS"}));
 
             request = new HttpRequestMessage(new HttpMethod("OPTIONS"), $"async/queue/22");
             result = await _fixture.Client.SendAsync(request);
-            Assert.Equal("GET, DELETE, OPTIONS", GetAllow(result));
+            Assert.True(ContainsAllow(result, new [] {"GET", "DELETE", "OPTIONS"}));
         }
 
         [Fact]
