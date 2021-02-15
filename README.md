@@ -43,7 +43,7 @@ Fake JSON Server is a Fake REST API that can be used as a Back End for prototypi
 
 ##### Developed with
  
-* ASP.NET Core 3.1
+* .NET 5
 * Uses [JSON Flat File Data Store](https://github.com/ttu/json-flatfile-datastore) to store data
 * Can be installed as a dotnet global tool [#](#install-as-a-dotnet-global-tool)
 * Can be used without .NET
@@ -194,7 +194,7 @@ $ docker cp [ContainerId]:/app/datastore.json datastore.json
 
 #### Self-contained Application
 
-The self-contained application archive contains Fake JSON Server, .NET Core runtime and all required third-party dependencies. __No installation or prerequisites are needed__.
+The self-contained application archive contains Fake JSON Server, .NET runtime and all required third-party dependencies. __No installation or prerequisites are needed__.
 
 1) Go to [Latest Release](https://github.com/ttu/dotnet-fake-json-server/releases/latest)
 1) Download correct archive matching your OS
