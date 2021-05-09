@@ -74,7 +74,7 @@ namespace FakeServer.Authentication.Custom
             return await Task.FromResult(AuthenticateResult.Success(
                             new AuthenticationTicket(
                                 new ClaimsPrincipal(new ClaimsIdentity("Custom")),
-                                new Microsoft.AspNetCore.Authentication.AuthenticationProperties(),
+                                new AuthenticationProperties(),
                                 AllowAllAuthenticationDefaults.AuthenticationScheme)));
         }
     }
