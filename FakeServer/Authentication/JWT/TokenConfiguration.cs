@@ -66,9 +66,8 @@ namespace FakeServer.Authentication.Jwt
                                 });
         }
 
-        public static void UseTokenProviderMiddleware(this IApplicationBuilder app)
+        public static IOptions<TokenProviderOptions> GetOptions()
         {
-            // Add JWT generation endpoint
             var options = new TokenProviderOptions
             {
                 Audience = _tokenValidationParameters.ValidAudience,
@@ -77,6 +76,14 @@ namespace FakeServer.Authentication.Jwt
             };
 
             var opts = Options.Create(options);
+
+            return opts;
+        }
+
+        public static void UseTokenProviderMiddleware(this IApplicationBuilder app)
+        {
+            // Add JWT generation endpoint
+            var opts = GetOptions();
             app.UseMiddleware<TokenProviderMiddleware>(opts);
             app.UseMiddleware<TokenLogoutMiddleware>(opts);
         }
