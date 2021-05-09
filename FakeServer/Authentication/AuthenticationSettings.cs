@@ -2,7 +2,13 @@
 
 namespace FakeServer.Authentication
 {
-    public class AuthenticationSettings
+    public enum AuthenticationType
+    {
+        AllowAll,
+        JwtBearer,
+        Basic
+    }
+        public class AuthenticationSettings
     {
         public bool Enabled { get; set; }
 
