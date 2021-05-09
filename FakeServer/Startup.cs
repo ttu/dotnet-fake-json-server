@@ -137,7 +137,13 @@ namespace FakeServer
 
                     if (Configuration["Authentication:AuthenticationType"] == "token")
                         c.DocumentFilter<AuthTokenOperation>();
+                    else //Assumption: based on basic auth only
+                    {
+                        c.AddSecurityDefinition(BasicAuthenticationDefaults.AuthenticationScheme, c.GetBasicSecurityDefinition());
+                        c.AddSecurityRequirement(c.GetBasicSecurityRequirement());
+                    }
                 }
+
             });
         }
 
