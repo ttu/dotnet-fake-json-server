@@ -122,13 +122,13 @@ namespace FakeServer
 
                 if (useAuthentication)
                 {
-                    c.OperationFilter<AddAuthorizationHeaderParameterOperationFilter>();
+                    //c.OperationFilter<AddAuthorizationHeaderParameterOperationFilter>();
 
                     if (Configuration["Authentication:AuthenticationType"] == "token")
                     {
                         //need token path for jwt definition
                         var tokenPath = TokenConfiguration.GetOptions().Value.Path;
-                        c.DocumentFilter<AuthTokenOperation>();
+                        c.DocumentFilter<TokenOperation>();
                         c.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, c.GetTokenSecurityDefinition(tokenPath));
                         c.AddSecurityRequirement(c.GetTokenSecurityRequirement());
                     }
