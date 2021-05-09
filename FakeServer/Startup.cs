@@ -126,6 +126,7 @@ namespace FakeServer
 
                     if (Configuration["Authentication:AuthenticationType"] == "token")
                     {
+                        //need token path for jwt definition
                         var tokenPath = TokenConfiguration.GetOptions().Value.Path;
                         c.DocumentFilter<AuthTokenOperation>();
                         c.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, c.GetTokenSecurityDefinition(tokenPath));
@@ -200,9 +201,7 @@ namespace FakeServer
             app.UseAuthentication();
             app.UseAuthorization();
 
-            var useAuthentication = Configuration.GetValue<bool>("Authentication:Enabled");
-
-            if (useAuthentication && Configuration["Authentication:AuthenticationType"] == "token")
+            if (_authenticationType == AuthenticationType.JwtBearer)
             {
                 app.UseTokenProviderMiddleware();
             }
@@ -216,7 +215,7 @@ namespace FakeServer
             app.UseMiddleware<GraphQLMiddleware>(
                         app.ApplicationServices.GetRequiredService<IDataStore>(),
                         app.ApplicationServices.GetRequiredService<IMessageBus>(),
-                        useAuthentication,
+                        _authenticationType != AuthenticationType.AllowAll,
                         Configuration["DataStore:IdField"]);
 
             app.UseEndpoints(endpoints =>
