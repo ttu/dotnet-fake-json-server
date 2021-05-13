@@ -122,11 +122,8 @@ namespace FakeServer
 
                 if (useAuthentication)
                 {
-                    //c.OperationFilter<AddAuthorizationHeaderParameterOperationFilter>();
-
                     if (Configuration["Authentication:AuthenticationType"] == "token")
                     {
-                        //need token path for jwt definition
                         var tokenPath = TokenConfiguration.GetOptions().Value.Path;
                         c.DocumentFilter<TokenOperation>();
                         c.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, c.GetTokenSecurityDefinition(tokenPath));
@@ -134,7 +131,6 @@ namespace FakeServer
                     }
                     else
                     {
-                        //Assumption: based on basic auth only
                         c.AddSecurityDefinition(BasicAuthenticationDefaults.AuthenticationScheme, c.GetBasicSecurityDefinition());
                         c.AddSecurityRequirement(c.GetBasicSecurityRequirement());
                     }

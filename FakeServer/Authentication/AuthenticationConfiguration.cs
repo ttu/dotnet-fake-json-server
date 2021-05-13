@@ -1,4 +1,3 @@
-  
 using System;
 using FakeServer.Authentication.Basic;
 using FakeServer.Authentication.Custom;
