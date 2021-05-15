@@ -10,6 +10,7 @@ using FakeServer.Jobs;
 using FakeServer.Simulate;
 using FakeServer.WebSockets;
 using JsonFlatFileDataStore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -28,6 +29,7 @@ namespace FakeServer
 {
     public class Startup
     {
+        private AuthenticationType _authenticationType;
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -72,21 +74,8 @@ namespace FakeServer
 
             var useAuthentication = Configuration.GetValue<bool>("Authentication:Enabled");
 
-            if (useAuthentication)
-            {
-                if (Configuration["Authentication:AuthenticationType"] == "token")
-                {
-                    services.AddJwtBearerAuthentication();
-                }
-                else
-                {
-                    services.AddBasicAuthentication();
-                }
-            }
-            else
-            {
-                services.AddAllowAllAuthentication();
-            }
+            _authenticationType = AuthenticationConfiguration.ReadType(Configuration);
+            services.AddAuthentication(_authenticationType);
 
             // TODO: AddControllers
             services.AddMvc()
@@ -133,11 +122,20 @@ namespace FakeServer
 
                 if (useAuthentication)
                 {
-                    c.OperationFilter<AddAuthorizationHeaderParameterOperationFilter>();
-
                     if (Configuration["Authentication:AuthenticationType"] == "token")
-                        c.DocumentFilter<AuthTokenOperation>();
+                    {
+                        var tokenPath = TokenConfiguration.GetOptions().Value.Path;
+                        c.DocumentFilter<TokenOperation>();
+                        c.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, c.GetTokenSecurityDefinition(tokenPath));
+                        c.AddSecurityRequirement(c.GetTokenSecurityRequirement());
+                    }
+                    else
+                    {
+                        c.AddSecurityDefinition(BasicAuthenticationDefaults.AuthenticationScheme, c.GetBasicSecurityDefinition());
+                        c.AddSecurityRequirement(c.GetBasicSecurityRequirement());
+                    }
                 }
+
             });
         }
 
@@ -199,9 +197,7 @@ namespace FakeServer
             app.UseAuthentication();
             app.UseAuthorization();
 
-            var useAuthentication = Configuration.GetValue<bool>("Authentication:Enabled");
-
-            if (useAuthentication && Configuration["Authentication:AuthenticationType"] == "token")
+            if (_authenticationType == AuthenticationType.JwtBearer)
             {
                 app.UseTokenProviderMiddleware();
             }
@@ -215,7 +211,7 @@ namespace FakeServer
             app.UseMiddleware<GraphQLMiddleware>(
                         app.ApplicationServices.GetRequiredService<IDataStore>(),
                         app.ApplicationServices.GetRequiredService<IMessageBus>(),
-                        useAuthentication,
+                        _authenticationType != AuthenticationType.AllowAll,
                         Configuration["DataStore:IdField"]);
 
             app.UseEndpoints(endpoints =>
