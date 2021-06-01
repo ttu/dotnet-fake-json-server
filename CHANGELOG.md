@@ -1,6 +1,7 @@
 # Changelog
 
 ### [Unreleased]
+* FIXED: Swagger authentication
 * CHANGED: Target framework to .NET 5
 * CHANGED: PATCH methods to require Content-Type: application/json+merge-patch or merge-patch+json
 * ADDED: Content negotiation with Accept-header and support for CSV and XML

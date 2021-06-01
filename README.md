@@ -132,15 +132,18 @@ Fake JSON Server is a Fake REST API that can be used as a Back End for prototypi
 $ git clone https://github.com/ttu/dotnet-fake-json-server.git
 
 $ cd dotnet-fake-json-server/FakeServer
-$ dotnet run [--file] [--urls]
+$ dotnet run
+```
 
+Start server with defined data-file and url (optional arguments)
+
+```sh
 # Optional arguments:
 #   --file <FILE>    Data store's JSON file (default datastore.json)
 #   --urls <URL>     Server url (default http://localhost:57602)      
 #   --serve <PATH>   Serve static files (default wwwroot)
 #   --version        Prints the version of the app
 
-# Example: Start server
 $ dotnet run --file data.json --urls http://localhost:57602
 ```
 
