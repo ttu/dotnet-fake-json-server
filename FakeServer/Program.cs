@@ -136,6 +136,11 @@ namespace FakeServer
                     // Add urls back to arguments that are passed to WebHost builder
                     app.RemainingArguments.Add("--urls");
                     app.RemainingArguments.Add(optionsUrls.Value());
+                    Console.WriteLine($"Swagger Open API is available on: {optionsUrls.Value()}/swagger");
+                }
+                else
+                {
+                    Console.WriteLine($"Swagger Open API is available on: http://localhost:57603/swagger");
                 }
 
                 if (optionInit.HasValue()) 
