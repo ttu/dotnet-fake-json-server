@@ -310,15 +310,70 @@ namespace FakeServer.Controllers
         }
 
         /// <summary>
-        /// Remove item from collection
+        /// Update Nested item's content
         /// </summary>
+        /// <remarks>
+        /// Patch data contains fields to be updated.
+        ///
+        ///     {
+        ///        "stringField": "some value",
+        ///        "intField": 22,
+        ///        "boolField": true
+        ///     }
+        /// </remarks>
         /// <param name="collectionId">Collection id</param>
-        /// <param name="id">Id of the item to be removed</param>
+        /// <param name="id">Id of the item to be updated</param>
+        /// <param name="path">Rest of the path</param>
+        /// <param name="patchData">Patch data</param>
         /// <returns></returns>
-        /// <response code="204">Item found and removed</response>
-        /// <response code="400">Item is not in a collection</response>
+        /// <response code="204">Item found and updated</response>
+        /// <response code="400">Patch data is empty or item is not in a collection</response>
         /// <response code="404">Item not found</response>
-        [HttpDelete("{collectionId}/{id}")]
+        /// <response code="415">Unsupported content type</response>
+        [HttpPatch("{collectionId}/{id}/{*path}")]
+        [Consumes(Constants.JsonMergePatch, new[] { Constants.MergePatchJson })]
+        public async Task<IActionResult> UpdateNestedItem(string collectionId, [FromRoute][DynamicBinder] dynamic id, string path, [FromBody] JToken patchData)
+        {
+            path = Uri.UnescapeDataString(path);
+
+            if (_ds.IsItem(collectionId))
+                return BadRequest();
+
+            var item = _ds.GetCollection(collectionId).AsQueryable().FirstOrDefault(e => ObjectHelper.CompareFieldValueWithId(e, _dsSettings.IdField, id));
+
+            if (item == null)
+                return BadRequest();
+
+            var nested = ObjectHelper.GetNestedProperty(item, path, _dsSettings.IdField);
+
+            if (nested == null)
+                return NotFound();
+
+            var sourceData = JsonConvert.DeserializeObject<ExpandoObject>(patchData.ToString());
+
+            foreach (KeyValuePair<string, object> kvp in sourceData)
+            {
+                (nested as IDictionary<string, object>)[kvp.Key] = kvp.Value;
+            }
+
+            var success = await _ds.GetCollection(collectionId).UpdateOneAsync(id, item);
+
+            if (success)
+                return NoContent();
+            else
+                return NotFound();
+        }
+
+            /// <summary>
+            /// Remove item from collection
+            /// </summary>
+            /// <param name="collectionId">Collection id</param>
+            /// <param name="id">Id of the item to be removed</param>
+            /// <returns></returns>
+            /// <response code="204">Item found and removed</response>
+            /// <response code="400">Item is not in a collection</response>
+            /// <response code="404">Item not found</response>
+            [HttpDelete("{collectionId}/{id}")]
         public async Task<IActionResult> DeleteItem(string collectionId, [FromRoute][DynamicBinder]dynamic id)
         {
             if (_ds.IsItem(collectionId))
