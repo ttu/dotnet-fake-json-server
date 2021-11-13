@@ -560,6 +560,53 @@ namespace FakeServer.Test
         }
 
         [Fact]
+        public async Task PatchItem_Nested()
+        {
+            // Original Parent { "id": 1, "name": "Millicent", ... , "work": { "companyName": "WAZZU", "address": "137 McClancy Place, Islandia, Ohio, 4193" } },
+            var patchData = new { name = "Kyle", work = new { companyName = "PAWNAGRA", address = "679 Ebony Court, Loma, Puerto Rico, 7716" } };
+
+            var content = new StringContent(JsonConvert.SerializeObject(patchData), Encoding.UTF8, Constants.JsonMergePatch);
+            var request = new HttpRequestMessage(new HttpMethod("PATCH"), $"api/families/19/parents/1") { Content = content };
+            var result = await _fixture.Client.SendAsync(request);
+            result.EnsureSuccessStatusCode();
+
+            result = await _fixture.Client.GetAsync($"api/families/19/parents/1");
+            result.EnsureSuccessStatusCode();
+            var item = JsonConvert.DeserializeObject<JObject>(await result.Content.ReadAsStringAsync());
+            Assert.Equal(patchData.name, item["name"].Value<string>());
+            Assert.Equal(patchData.work.address, item["work"]["address"].Value<string>());
+            Assert.Equal(patchData.work.companyName, item["work"]["companyName"].Value<string>());
+            Assert.Equal("female", item["gender"].Value<string>());
+            Assert.Equal(34, item["age"].Value<int>());
+            Assert.Equal("green", item["eyeColor"].Value<string>());
+            Assert.Equal("millicentbowers@skybold.com", item["email"].Value<string>());
+            Assert.Equal("+1 (916) 436-2886", item["phone"].Value<string>());
+            Assert.Equal("Predator", item["favouriteMovie"].Value<string>());
+
+            result = await _fixture.Client.GetAsync($"api/families/19/parents");
+            result.EnsureSuccessStatusCode();
+            var items = JsonConvert.DeserializeObject<IEnumerable<JObject>>(await result.Content.ReadAsStringAsync());
+            Assert.Equal(2, items.Count());
+
+            content = new StringContent(JsonConvert.SerializeObject(patchData), Encoding.UTF8, Constants.MergePatchJson);
+            request = new HttpRequestMessage(new HttpMethod("PATCH"), $"api/families/19/parents/1") { Content = content };
+            result = await _fixture.Client.SendAsync(request);
+            result.EnsureSuccessStatusCode();
+        }
+
+        [Fact]
+        public async Task PatchItem_Nested_UnsupportedMediaType()
+        {
+            var patchData = new { name = "Kyle", work = new { companyName = "PAWNAGRA", address = "679 Ebony Court, Loma, Puerto Rico, 7716" } };
+
+            var content = new StringContent(JsonConvert.SerializeObject(patchData), Encoding.UTF8, "application/json");
+            var request = new HttpRequestMessage(new HttpMethod("PATCH"), $"api/families/19/parents/1") { Content = content };
+            var result = await _fixture.Client.SendAsync(request);
+
+            Assert.Equal(HttpStatusCode.UnsupportedMediaType, result.StatusCode);
+        }
+
+        [Fact]
         public async Task PostAndDeleteItem_ExistingCollection()
         {
             // Try with "wrong" id
