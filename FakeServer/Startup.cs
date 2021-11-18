@@ -13,11 +13,13 @@ using JsonFlatFileDataStore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.PlatformAbstractions;
 using Microsoft.Net.Http.Headers;
 using Microsoft.OpenApi.Models;
@@ -139,8 +141,22 @@ namespace FakeServer
             });
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        private static void PrintSwaggerUrl(IServerAddressesFeature serverAddressFeature)
         {
+            foreach(var address in serverAddressFeature.Addresses)
+            {
+                System.Console.WriteLine($"Swagger Open API is available on:{address}/swagger");
+            }
+        }
+
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime applicationLifetime)
+        {
+            // register callback for application start event
+            applicationLifetime.ApplicationStarted.Register(() =>
+            {
+                PrintSwaggerUrl(app.ServerFeatures.Get<IServerAddressesFeature>());
+            });
+
             app.UseDefaultFiles();
 
             if (string.IsNullOrEmpty(Configuration["staticFolder"]))
