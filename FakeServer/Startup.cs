@@ -145,7 +145,7 @@ namespace FakeServer
         {
             foreach(var address in serverAddressFeature.Addresses)
             {
-                System.Console.WriteLine($"Swagger Open API is available on:{address}/swagger");
+                System.Console.WriteLine($"Swagger Open API is available on: {address}/swagger");
             }
         }
 
