@@ -79,13 +79,8 @@ namespace FakeServer.Controllers
 
             if (itemType == JsonFlatFileDataStore.ValueType.Item)
                 return GetSingleItem(collectionId);
-            else
-            {
-                if (!QueryHelper.IsQueryValid(Request.Query))
-                    return BadRequest();
-
-                return GetCollectionItem(collectionId, skip, take);
-            }
+            
+            return GetCollectionItem(collectionId, skip, take);
         }
 
         private IActionResult GetSingleItem(string itemId)
@@ -101,6 +96,9 @@ namespace FakeServer.Controllers
 
         private IActionResult GetCollectionItem(string collectionId, int skip, int take)
         {
+            if (!QueryHelper.IsQueryValid(Request.Query))
+                return BadRequest();
+            
             var options = QueryHelper.GetQueryOptions(Request.Query, skip, take);
 
             if (!options.Validate())
