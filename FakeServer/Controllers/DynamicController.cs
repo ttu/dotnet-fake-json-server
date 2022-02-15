@@ -101,16 +101,12 @@ namespace FakeServer.Controllers
 
         private IActionResult GetCollectionItem(string collectionId, int skip, int take)
         {
-            var collection = _ds.GetCollection(collectionId);
-
-            // Collection can actually just be empty, but in this case we handle it as it is not found
-            if (!collection.AsQueryable().Any())
-                return NotFound();
-
             var options = QueryHelper.GetQueryOptions(Request.Query, skip, take);
 
             if (!options.Validate())
                 return BadRequest();
+
+            var collection = _ds.GetCollection(collectionId);
 
             var datas = options.IsTextSearch ? collection.Find(Request.Query["q"]) : collection.AsQueryable();
 
