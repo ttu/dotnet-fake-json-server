@@ -1,6 +1,5 @@
 ﻿using FakeServer.Authentication;
 using FakeServer.Authentication.Basic;
-using FakeServer.Authentication.Custom;
 using FakeServer.Authentication.Jwt;
 using FakeServer.Common;
 using FakeServer.Common.Formatters;
@@ -24,6 +23,7 @@ using Microsoft.Extensions.PlatformAbstractions;
 using Microsoft.Net.Http.Headers;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerUI;
+using System;
 using System.IO;
 using System.Linq;
 
@@ -141,14 +141,6 @@ namespace FakeServer
             });
         }
 
-        private static void PrintSwaggerUrl(IServerAddressesFeature serverAddressFeature)
-        {
-            foreach(var address in serverAddressFeature.Addresses)
-            {
-                System.Console.WriteLine($"Swagger Open API is available on: {address}/swagger");
-            }
-        }
-
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime applicationLifetime)
         {
             // register callback for application start event
@@ -242,6 +234,16 @@ namespace FakeServer
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Fake JSON API V1");
                 c.SupportedSubmitMethods(SubmitMethod.Get, SubmitMethod.Head, SubmitMethod.Post, SubmitMethod.Put, SubmitMethod.Patch, SubmitMethod.Delete);
             });
+        }
+        
+        private static void PrintSwaggerUrl(IServerAddressesFeature serverAddressFeature)
+        {
+            if (serverAddressFeature == null) return;
+            
+            foreach(var address in serverAddressFeature.Addresses)
+            {
+                Console.WriteLine($"Swagger Open API is available on: {address}/swagger");
+            }
         }
     }
 }
