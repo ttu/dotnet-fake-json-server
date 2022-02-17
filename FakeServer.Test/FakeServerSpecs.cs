@@ -670,7 +670,10 @@ namespace FakeServer.Test
             result.EnsureSuccessStatusCode();
 
             result = await _fixture.Client.GetAsync($"api/hello");
-            Assert.Equal(HttpStatusCode.NotFound, result.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+            
+            var itemsShouldBeEmpty = JsonConvert.DeserializeObject<IEnumerable<JObject>>(await result.Content.ReadAsStringAsync());
+            Assert.Empty(itemsShouldBeEmpty);
         }
 
         [Fact]
@@ -706,7 +709,10 @@ namespace FakeServer.Test
             result.EnsureSuccessStatusCode();
 
             result = await _fixture.Client.GetAsync($"api/hello");
-            Assert.Equal(HttpStatusCode.NotFound, result.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+            
+            var itemsShouldBeEmpty = JsonConvert.DeserializeObject<IEnumerable<JObject>>(await result.Content.ReadAsStringAsync());
+            Assert.Empty(itemsShouldBeEmpty);
         }
 
         [Fact]

@@ -632,7 +632,7 @@ $ curl http://localhost:57602/api
 
 200 OK          : Collection is found
 400 Bad Request : Invalid query parameters
-404 Not Found   : Collection is not found or it is empty
+404 Not Found   : Collection is not found
 ```
 
 By default the request returns results in an array. Headers have the collection's total item count (`X-Total-Count`) and pagination links (`Link`).

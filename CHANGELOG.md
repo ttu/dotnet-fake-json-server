@@ -1,6 +1,7 @@
 # Changelog
 
 ### [Unreleased]
+* CHANGED: For empty collections return 200 status code instead of 404
 * FIXED: Swagger authentication
 * CHANGED: Target framework to .NET 5
 * CHANGED: PATCH methods to require Content-Type: application/json+merge-patch or merge-patch+json

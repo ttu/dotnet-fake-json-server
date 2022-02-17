@@ -27,7 +27,7 @@ namespace FakeServer.Test
             var controller = new DynamicController(ds, apiSettings, dsSettings);
 
             var collections = controller.GetKeys();
-            Assert.Equal(6, collections.Count());
+            Assert.Equal(7, collections.Count());
 
             UTHelpers.Down(filePath);
         }
@@ -226,7 +226,31 @@ namespace FakeServer.Test
             Assert.Equal(5, resultObject.offset.Value);
             Assert.Equal(12, resultObject.limit.Value);
             Assert.Equal(20, resultObject.count.Value);
+            
+            UTHelpers.Down(filePath);
+        }
+        
+        [Fact]
+        public void GetItems_EmptyCollection()
+        {
+            var filePath = UTHelpers.Up();
+            var ds = new DataStore(filePath);
+            var apiSettings = Options.Create(new ApiSettings { UseResultObject = true });
+            var dsSettings = Options.Create(new DataStoreSettings());
 
+            var controller = new DynamicController(ds, apiSettings, dsSettings);
+            controller.ControllerContext = new ControllerContext();
+            controller.ControllerContext.HttpContext = new DefaultHttpContext();
+            
+            var result = controller.GetItems("empty_collection") as OkObjectResult;
+
+            var resultObject = JsonConvert.DeserializeObject<dynamic>(JsonConvert.SerializeObject(result.Value));
+
+            Assert.Equal(0, resultObject.results.Count);
+            Assert.Equal(0, resultObject.skip.Value);
+            Assert.Equal(512, resultObject.take.Value);
+            Assert.Equal(0, resultObject.count.Value);
+            
             UTHelpers.Down(filePath);
         }
 
