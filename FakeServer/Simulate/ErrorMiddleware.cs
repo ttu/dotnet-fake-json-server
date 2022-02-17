@@ -10,7 +10,7 @@ namespace FakeServer.Simulate
     {
         private readonly ErrorSettings _settings;
         private readonly RequestDelegate _next;
-        private readonly string[] _skipwords = new string[] { ".html", ".ico", "swagger", "ws" };
+        private readonly string[] _skipWords = { ".html", ".ico", "swagger", "ws" };
 
         public ErrorMiddleware(RequestDelegate next, IOptions<SimulateSettings> settings)
         {
@@ -20,7 +20,7 @@ namespace FakeServer.Simulate
 
         public async Task Invoke(HttpContext context)
         {
-            bool skipCheck = context.Request.Path == "/" || _skipwords.Any(context.Request.Path.ToString().ToLower().Contains);
+            var skipCheck = context.Request.Path == "/" || _skipWords.Any(context.Request.Path.ToString().ToLower().Contains);
 
             if (!skipCheck && _settings.Methods.Contains(context.Request.Method))
             {

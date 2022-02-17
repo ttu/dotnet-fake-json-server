@@ -18,7 +18,7 @@ namespace FakeServer.Authentication.Jwt
                 _headers.Add(jti);
         }
 
-        public bool IsBlacklisted(string header) => GetJtiFromToken(header, out var jti) ? _headers.Contains(jti) : false;
+        public bool IsBlacklisted(string header) => GetJtiFromToken(header, out var jti) && _headers.Contains(jti);
 
         private bool GetJtiFromToken(string header, out string jti)
         {

@@ -76,7 +76,7 @@ namespace FakeServer.CustomResponse
 
                 var scriptResult = await script.RunAsync(globalObject);
 
-                // HACK: Remove string quotemarks from around the _Body
+                // HACK: Remove string quote marks from around the _Body
                 // Original body is e.g. in an array: [{\"id\":1,\"name\":\"Jame\s\"}]
                 // Script will return new { Data = _Body }
                 // Script will set Data as a string { Data = "[{\"id\":1,\"name\":\"Jame\s\"}]" }

@@ -54,14 +54,14 @@ namespace FakeServer.WebSockets
 
             while (webSocket.State == WebSocketState.Open)
             {
-                var buffer = new ArraySegment<Byte>(new Byte[1024]);
+                var buffer = new ArraySegment<byte>(new byte[1024]);
                 var received = await webSocket.ReceiveAsync(buffer, _token);
 
                 switch (received.MessageType)
                 {
                     case WebSocketMessageType.Close:
                         await webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, _token);
-                        _sockets.TryRemove(webSocket.GetHashCode().ToString(), out WebSocket toRemove);
+                        _sockets.TryRemove(webSocket.GetHashCode().ToString(), out var toRemove);
                         return;
                 }
             }

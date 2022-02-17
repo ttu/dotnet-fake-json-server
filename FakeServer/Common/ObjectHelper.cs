@@ -10,7 +10,7 @@ namespace FakeServer.Common
 {
     public static class ObjectHelper
     {
-        public static Dictionary<string, Func<dynamic, dynamic, bool>> Funcs = new Dictionary<string, Func<dynamic, dynamic, bool>>
+        public static Dictionary<string, Func<dynamic, dynamic, bool>> Funcs = new()
         {
             [""] = (a, b) => a == b,
             ["_ne"] = (a, b) => a != b,
@@ -84,10 +84,7 @@ namespace FakeServer.Common
                 returnValue = currentValue;
             }
 
-            if (string.IsNullOrEmpty(tail))
-                return returnValue;
-            else
-                return GetNestedProperty(returnValue, tail, idFieldName);
+            return string.IsNullOrEmpty(tail) ? returnValue : GetNestedProperty(returnValue, tail, idFieldName);
         }
 
         public static dynamic GetFieldValue(object source, string fieldName)
@@ -180,7 +177,7 @@ namespace FakeServer.Common
             return dict.Where(kvp => fields.Contains(kvp.Key)).ToDictionary(k => k.Key, k => k.Value);
         }
 
-        private static readonly List<Func<string, dynamic>> _convertFuncs = new List<Func<string, dynamic>>
+        private static readonly List<Func<string, dynamic>> _convertFuncs = new()
         {
             x => Convert.ToBoolean(x),
             x => Convert.ToInt32(x),
@@ -188,8 +185,7 @@ namespace FakeServer.Common
             x => DateTime.Parse(x, CultureInfo.InvariantCulture)
         };
 
-        private static Lazy<List<Func<string, dynamic>>> _convertFuncsExceptDateTime = new Lazy<List<Func<string, dynamic>>>(
-            () => _convertFuncs.Take(3).ToList());
+        private static Lazy<List<Func<string, dynamic>>> _convertFuncsExceptDateTime = new (() => _convertFuncs.Take(3).ToList());
         
         private static List<Func<string, dynamic>> _convertIdFuncs => _convertFuncsExceptDateTime.Value;
 
