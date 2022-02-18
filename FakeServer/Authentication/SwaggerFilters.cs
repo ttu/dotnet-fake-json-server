@@ -9,8 +9,7 @@ namespace FakeServer.Authentication
     {
         public void Apply(OpenApiOperation operation, OperationFilterContext context)
         {
-            if (operation.Parameters == null)
-                operation.Parameters = new List<OpenApiParameter>();
+            operation.Parameters ??= new List<OpenApiParameter>();
 
             operation.Parameters.Add(new OpenApiParameter
             {
@@ -30,18 +29,18 @@ namespace FakeServer.Authentication
             var tokenItem = new OpenApiPathItem();
             tokenItem.AddOperation(OperationType.Post, new OpenApiOperation
             {
-                Tags = new List<OpenApiTag> { new OpenApiTag { Name = "Authentication" } },
+                Tags = new List<OpenApiTag> { new() { Name = "Authentication" } },
                 //Consumes = new List<string> { "application/x-www-form-urlencoded" },
                 Parameters = new List<OpenApiParameter>
                     {
-                        new OpenApiParameter
+                        new()
                         {
                             //Type = "string",
                             Name = "username",
                             Required = false,
                             //In = "formData"
                         },
-                        new OpenApiParameter
+                        new()
                         {
                             //Type = "string",
                             Name = "password",
@@ -56,10 +55,10 @@ namespace FakeServer.Authentication
             var logoutItem = new OpenApiPathItem();
             logoutItem.AddOperation(OperationType.Post, new OpenApiOperation
             {
-                Tags = new List<OpenApiTag> { new OpenApiTag { Name = "Authentication" } },
+                Tags = new List<OpenApiTag> { new() { Name = "Authentication" } },
                 Parameters = new List<OpenApiParameter>
                     {
-                        new OpenApiParameter
+                        new()
                         {
                             //Type = "string",
                             Name = "Authorization",

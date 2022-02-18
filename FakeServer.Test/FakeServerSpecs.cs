@@ -527,7 +527,7 @@ namespace FakeServer.Test
             var result = await _fixture.Client.SendAsync(request);
             result.EnsureSuccessStatusCode();
 
-            result = await _fixture.Client.GetAsync($"api/users/1"); ;
+            result = await _fixture.Client.GetAsync($"api/users/1");
             result.EnsureSuccessStatusCode();
             var item = JsonConvert.DeserializeObject<JObject>(await result.Content.ReadAsStringAsync());
             Assert.Equal(patchData.name, item["name"].Value<string>());
@@ -853,19 +853,18 @@ namespace FakeServer.Test
         [Fact]
         public async Task Async_PostPutPatchDelete()
         {
-            async Task<HttpResponseMessage> GetWhenStatusNotOk(System.Uri pQueueUrl)
+            async Task<HttpResponseMessage> GetWhenStatusNotOk(Uri pQueueUrl)
             {
-                using (var c = _fixture.CreateClient(false))
+                using var c = _fixture.CreateClient(false);
+
+                while (true)
                 {
-                    while (true)
-                    {
-                        var response = await c.GetAsync(pQueueUrl);
+                    var response = await c.GetAsync(pQueueUrl);
 
-                        if (response.StatusCode != HttpStatusCode.OK)
-                            return response;
+                    if (response.StatusCode != HttpStatusCode.OK)
+                        return response;
 
-                        await Task.Delay(100);
-                    }
+                    await Task.Delay(100);
                 }
             }
 
@@ -1221,7 +1220,7 @@ namespace FakeServer.Test
         }
 
         [Fact]
-        public async Task PostGraphQL()
+        public async Task PostGraphQL_Query()
         {
             var q = @"
                     query {

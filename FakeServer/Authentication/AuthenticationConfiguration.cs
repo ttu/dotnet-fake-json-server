@@ -4,8 +4,6 @@ using FakeServer.Authentication.Custom;
 using FakeServer.Authentication.Jwt;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace FakeServer.Authentication
 {

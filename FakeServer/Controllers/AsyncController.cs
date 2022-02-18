@@ -50,10 +50,10 @@ namespace FakeServer.Controllers
                 return item[_dsSettings.IdField].Value<string>();
             });
 
-            var queuUrl = _jobs.StartNewJob(collectionId, "POST", action);
+            var queueUrl = _jobs.StartNewJob(collectionId, "POST", action);
 
             // TODO: Cancel & delete
-            return new AcceptedResult($"{Request.Scheme}://{Request.Host.Value}/{queuUrl}", null);
+            return new AcceptedResult($"{Request.Scheme}://{Request.Host.Value}/{queueUrl}", null);
         }
 
         /// <summary>
@@ -79,8 +79,8 @@ namespace FakeServer.Controllers
                 return id;
             });
 
-            var queuUrl = _jobs.StartNewJob(collectionId, "PUT", action);
-            return new AcceptedResult($"{Request.Scheme}://{Request.Host.Value}/{queuUrl}", null);
+            var queueUrl = _jobs.StartNewJob(collectionId, "PUT", action);
+            return new AcceptedResult($"{Request.Scheme}://{Request.Host.Value}/{queueUrl}", null);
         }
 
         /// <summary>
@@ -116,8 +116,8 @@ namespace FakeServer.Controllers
                 return id;
             });
 
-            var queuUrl = _jobs.StartNewJob(collectionId, "PATCH", action);
-            return new AcceptedResult($"{Request.Scheme}://{Request.Host.Value}/{queuUrl}", null);
+            var queueUrl = _jobs.StartNewJob(collectionId, "PATCH", action);
+            return new AcceptedResult($"{Request.Scheme}://{Request.Host.Value}/{queueUrl}", null);
         }
 
         /// <summary>
@@ -132,12 +132,12 @@ namespace FakeServer.Controllers
         {
             var action = new Func<dynamic>(() =>
             {
-                var found = _ds.GetCollection(collectionId).DeleteOne(id);
+                _ds.GetCollection(collectionId).DeleteOne(id);
                 return id;
             });
 
-            var queuUrl = _jobs.StartNewJob(collectionId, "DELETE", action);
-            return new AcceptedResult($"{Request.Scheme}://{Request.Host.Value}/{queuUrl}", null);
+            var queueUrl = _jobs.StartNewJob(collectionId, "DELETE", action);
+            return new AcceptedResult($"{Request.Scheme}://{Request.Host.Value}/{queueUrl}", null);
         }
 
         /// <summary>

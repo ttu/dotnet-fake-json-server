@@ -5,14 +5,14 @@ using System.Threading.Tasks;
 
 namespace FakeServer.WebSockets
 {
-    public class NotifyWebSocketMiddlerware
+    public class NotifyWebSocketMiddleware
     {
-        private readonly List<string> _udpateMethods = new List<string> { "POST", "PUT", "PATCH", "DELETE" };
+        private readonly List<string> _updateMethods = new() { "POST", "PUT", "PATCH", "DELETE" };
 
         private readonly RequestDelegate _next;
         private readonly IMessageBus _bus;
 
-        public NotifyWebSocketMiddlerware(RequestDelegate next, IMessageBus bus)
+        public NotifyWebSocketMiddleware(RequestDelegate next, IMessageBus bus)
         {
             _next = next;
             _bus = bus;
@@ -23,7 +23,7 @@ namespace FakeServer.WebSockets
             await _next(context);
 
             if (context.Request.Path.Value.StartsWith($"/{Config.ApiRoute}") &&
-                _udpateMethods.Contains(context.Request.Method) &&
+                _updateMethods.Contains(context.Request.Method) &&
                 (context.Response.StatusCode >= 200 && context.Response.StatusCode < 300))
             {
                 var method = context.Request.Method;

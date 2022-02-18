@@ -9,7 +9,7 @@ namespace FakeServer.Jobs
 {
     public class JobsService
     {
-        private readonly Dictionary<string, Job> _queue = new Dictionary<string, Job>();
+        private readonly Dictionary<string, Job> _queue = new();
         private readonly IMessageBus _bus;
         private readonly Action _delay;
 
@@ -17,16 +17,16 @@ namespace FakeServer.Jobs
         {
             _bus = bus;
 
-            _delay = new Action(() =>
+            _delay = () =>
             {
                 if (jobsSettings.Value.DelayMs > 0)
                     Thread.Sleep(jobsSettings.Value.DelayMs);
-            });
+            };
         }
 
         public string StartNewJob(string collection, string method, Func<dynamic> func)
         {
-            var queueId = Guid.NewGuid().ToString().Substring(0, 5);
+            var queueId = Guid.NewGuid().ToString()[..5];
             var queueUrl = $"async/queue/{queueId}";
 
             var task = Task.Run(() =>
@@ -48,7 +48,7 @@ namespace FakeServer.Jobs
 
         public Job GetJob(string queueId)
         {
-            _queue.TryGetValue(queueId, out Job process);
+            _queue.TryGetValue(queueId, out var process);
             return process;
         }
 

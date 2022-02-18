@@ -122,22 +122,21 @@ namespace FakeServer
                 var xmlPath = Path.Combine(basePath, "FakeServer.xml");
                 c.IncludeXmlComments(xmlPath);
 
-                if (useAuthentication)
+                if (!useAuthentication)
+                    return;
+                
+                if (Configuration["Authentication:AuthenticationType"] == "token")
                 {
-                    if (Configuration["Authentication:AuthenticationType"] == "token")
-                    {
-                        var tokenPath = TokenConfiguration.GetOptions().Value.Path;
-                        c.DocumentFilter<TokenOperation>();
-                        c.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, c.GetTokenSecurityDefinition(tokenPath));
-                        c.AddSecurityRequirement(c.GetTokenSecurityRequirement());
-                    }
-                    else
-                    {
-                        c.AddSecurityDefinition(BasicAuthenticationDefaults.AuthenticationScheme, c.GetBasicSecurityDefinition());
-                        c.AddSecurityRequirement(c.GetBasicSecurityRequirement());
-                    }
+                    var tokenPath = TokenConfiguration.GetOptions().Value.Path;
+                    c.DocumentFilter<TokenOperation>();
+                    c.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, c.GetTokenSecurityDefinition(tokenPath));
+                    c.AddSecurityRequirement(c.GetTokenSecurityRequirement());
                 }
-
+                else
+                {
+                    c.AddSecurityDefinition(BasicAuthenticationDefaults.AuthenticationScheme, c.GetBasicSecurityDefinition());
+                    c.AddSecurityRequirement(c.GetBasicSecurityRequirement());
+                }
             });
         }
 
@@ -151,11 +150,7 @@ namespace FakeServer
 
             app.UseDefaultFiles();
 
-            if (string.IsNullOrEmpty(Configuration["staticFolder"]))
-            {
-                app.UseStaticFiles();
-            }
-            else
+            if (!string.IsNullOrEmpty(Configuration["staticFolder"]))
             {
                 app.UseSpa(spa =>
                 {
@@ -168,6 +163,8 @@ namespace FakeServer
                 // No need to define anything else as this can only be used as a SPA server
                 return;
             }
+
+            app.UseStaticFiles();
 
             app.UseRouting();
 
@@ -197,11 +194,11 @@ namespace FakeServer
 
             app.UseWebSockets();
 
-            app.UseMiddleware<NotifyWebSocketMiddlerware>();
+            app.UseMiddleware<NotifyWebSocketMiddleware>();
             app.UseMiddleware<WebSocketMiddleware>();
 
             // Authentication must be always used as we have Authorize attributes in use
-            // When Authentication is turned off, special AllowAll hander is used
+            // When Authentication is turned off, special AllowAll handler is used
             app.UseAuthentication();
             app.UseAuthorization();
 

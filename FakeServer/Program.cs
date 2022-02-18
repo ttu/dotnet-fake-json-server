@@ -120,7 +120,7 @@ namespace FakeServer
                         return 1;
                     }
 
-                    initialData.Add("staticFolder", Path.GetFullPath(optionServe.Value()));
+                    initialData.Add("staticFolder", Path.GetFullPath(optionServe.Value()!));
                     Console.WriteLine($"Static files: {initialData["staticFolder"]}");
                     // When user defines static files, fake server is used only to server static files
                 }
