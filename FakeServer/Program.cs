@@ -1,5 +1,5 @@
 using McMaster.Extensions.CommandLineUtils;
-using Microsoft.AspNetCore;
+// using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.PlatformAbstractions;
@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using Microsoft.Extensions.Hosting;
 
 namespace FakeServer
 {
@@ -22,12 +23,12 @@ namespace FakeServer
 
         private static int Run(string[] args, Dictionary<string, string> initialData)
         {
-            var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production";
-
             IConfigurationRoot config;
 
             try
             {
+                var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production";
+
                 config = new ConfigurationBuilder()
                          .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                          .AddJsonFile($"appsettings.{env}.json", optional: true)
@@ -59,7 +60,8 @@ namespace FakeServer
             try
             {
                 Log.Information("Starting Fake JSON Server");
-                CreateWebHostBuilder(args).UseConfiguration(config).Build().Run();
+                //CreateWebHostBuilder(args).UseConfiguration(config).Build().Run();
+                CreateHostBuilderInternal(args, config).Build().Run();
                 return 0;
             }
             catch (Exception ex)
@@ -73,11 +75,26 @@ namespace FakeServer
             }
         }
 
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
-            .UseStartup<Startup>()
-            .UseSerilog();
-            
+        // Public CreateHostBuilder is required by in-memory end to end tests
+        public static IHostBuilder CreateHostBuilder(string[] args) => CreateHostBuilderInternal(args);
+        
+        private static IHostBuilder CreateHostBuilderInternal(string[] args, IConfiguration configuration = null) =>
+            Host.CreateDefaultBuilder(args)
+                .ConfigureAppConfiguration(builder =>
+                {
+                    if (configuration != null) builder.AddConfiguration(configuration);
+                })
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.UseStartup<Startup>();
+                })
+                .UseSerilog();
+        
+        // public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
+        //     WebHost.CreateDefaultBuilder(args)
+        //            .UseStartup<Startup>()
+        //            .UseSerilog();
+        
         private static bool IsConfigValid(IConfigurationRoot config) => config["DataStore:IdField"] != null;
 
         private static CommandLineApplication BuildCommandLineApp(
