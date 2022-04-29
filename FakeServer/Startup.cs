@@ -77,7 +77,7 @@ namespace FakeServer
             var useAuthentication = Configuration.GetValue<bool>("Authentication:Enabled");
 
             _authenticationType = AuthenticationConfiguration.ReadType(Configuration);
-            services.AddAuthentication(_authenticationType);
+            services.AddApiAuthentication(_authenticationType);
 
             // TODO: AddControllers
             services.AddMvc()
