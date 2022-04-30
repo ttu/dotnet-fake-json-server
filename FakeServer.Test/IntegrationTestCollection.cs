@@ -41,7 +41,7 @@ namespace FakeServer.Test
                 mainConfiguration.Add("Authentication:Enabled", "true");
                 mainConfiguration.Add("Authentication:AuthenticationType", authenticationType);
 
-                if (authenticationType == "ApiKey")
+                if (authenticationType == "apikey")
                 {
                     mainConfiguration.Add("Authentication:ApiKey", "correct-api-key");
                 }

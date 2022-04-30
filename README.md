@@ -30,7 +30,7 @@ Fake JSON Server is a Fake REST API that can be used as a Back End for prototypi
 * REST API follows best practices from multiple guides 
   * Uses correct Status Codes, Headers, etc.
   * As all guides have slightly different recommendations, this compilation is based on our opinions
-* Token and Basic Authentication [#](#authentication)
+* Token, Basic and API key Authentication [#](#authentication)
 * WebSocket update notifications [#](#websockets)
 * Simulate delay and errors for requests [#](#simulate-delay-and-random-errors)
 * Static files [#](#static-files)
@@ -68,6 +68,7 @@ Fake JSON Server is a Fake REST API that can be used as a Back End for prototypi
   * [Authentication](#authentication)
     + [Token Authentication](#token-authentication)
     + [Basic Authentication](#basic-authentication)
+    + [API key Authentication](#api-key-authentication)
   * [WebSockets](#websockets)
   * [CORS](#cors)
   * [Static Files](#static-files)
@@ -276,9 +277,9 @@ Example queries are in [Insomnia](https://insomnia.rest/) workspace format in [F
 
 Fake REST API supports Token and Basic Authentication. 
 
-Authentication can be disabled from `appsettings.json` by setting Enabled to `false`. `AuthenticationType` options are `token` and `basic`.
+Authentication can be disabled from `appsettings.json` by setting Enabled to `false`. `AuthenticationType` options are `token`, `basic` and `apikey`.
 
-Add allowed usernames/passwords to `Users`-array.
+Add allowed usernames/passwords to `Users`-array. Add optional API key to `ApiKey`-property.
 
 ```json
 "Authentication": {
@@ -286,7 +287,8 @@ Add allowed usernames/passwords to `Users`-array.
   "AuthenticationType": "token",
   "Users": [
       { "Username": "admin", "Password": "root" }
-  ]
+  ],
+  "ApiKey": "abcd1234"
 }
 ```
 
@@ -333,6 +335,14 @@ Add base64 encoded username:password to authorization header e.g. `'Authorizatio
 $ curl -u admin:root http://localhost:57602/api
 # -u argument creates Authorization header with encoded username and password
 $ curl -H 'Authorization: Basic YWRtaW46cm9vdA==' http://localhost:57602/api
+```
+
+#### API key Authentication
+
+Add key set to Authentication settings to `X-API-KEY` header e.g. `X-API-KEY: abcd1234'`.
+
+```sh
+$ curl -H 'X-API-KEY: abcd1234' http://localhost:57602/api
 ```
 
 ### WebSockets

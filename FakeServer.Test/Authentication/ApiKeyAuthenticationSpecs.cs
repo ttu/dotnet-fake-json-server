@@ -15,7 +15,7 @@ namespace FakeServer.Test.Authentication
         public ApiKeyAuthenticationSpecs(IntegrationFixture fixture)
         {
             _fixture = fixture;
-            _fixture.StartServer(authenticationType: "ApiKey");
+            _fixture.StartServer(authenticationType: "apikey");
         }
 
         public void Dispose()
