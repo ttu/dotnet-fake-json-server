@@ -9,16 +9,16 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace FakeServer.Test
+namespace FakeServer.Test.Authentication
 {
     [Collection("Integration collection")]
     [Trait("category", "integration")]
     [Trait("category", "authentication")]
-    public class FakeServerAuthenticationSpecs : IDisposable
+    public class TokenAuthenticationSpecs : IDisposable
     {
         private readonly IntegrationFixture _fixture;
 
-        public FakeServerAuthenticationSpecs(IntegrationFixture fixture)
+        public TokenAuthenticationSpecs(IntegrationFixture fixture)
         {
             _fixture = fixture;
             _fixture.StartServer(authenticationType: "token");

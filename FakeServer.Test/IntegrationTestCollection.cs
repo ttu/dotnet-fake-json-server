@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Net.WebSockets;
 using System.Reflection;
@@ -39,11 +40,16 @@ namespace FakeServer.Test
             {
                 mainConfiguration.Add("Authentication:Enabled", "true");
                 mainConfiguration.Add("Authentication:AuthenticationType", authenticationType);
-                mainConfiguration.Add("Authentication:Users:0:Username", "admin");
-                mainConfiguration.Add("Authentication:Users:0:Password", "root");
 
                 if (authenticationType == "ApiKey")
+                {
                     mainConfiguration.Add("Authentication:ApiKey", "correct-api-key");
+                }
+                else
+                {
+                    mainConfiguration.Add("Authentication:Users:0:Username", "admin");
+                    mainConfiguration.Add("Authentication:Users:0:Password", "root");
+                }
             }
 
             _factory = new WebApplicationFactory<Startup>()
