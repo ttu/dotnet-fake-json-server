@@ -1,4 +1,5 @@
 ﻿using FakeServer.Authentication;
+using FakeServer.Authentication.ApiKey;
 using FakeServer.Authentication.Basic;
 using FakeServer.Authentication.Jwt;
 using FakeServer.Common;
@@ -132,10 +133,15 @@ namespace FakeServer
                     c.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, c.GetTokenSecurityDefinition(tokenPath));
                     c.AddSecurityRequirement(c.GetTokenSecurityRequirement());
                 }
-                else
-                {
+                else if (Configuration["Authentication:AuthenticationType"] == "basic")
+                { 
                     c.AddSecurityDefinition(BasicAuthenticationDefaults.AuthenticationScheme, c.GetBasicSecurityDefinition());
                     c.AddSecurityRequirement(c.GetBasicSecurityRequirement());
+                }
+                else
+                {
+                    c.AddSecurityDefinition(ApiKeyAuthenticationDefaults.AuthenticationScheme, c.GetApiKeySecurityDefinition());
+                    c.AddSecurityRequirement(c.GetApiKeySecurityRequirement());
                 }
             });
         }

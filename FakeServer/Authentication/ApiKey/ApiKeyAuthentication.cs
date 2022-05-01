@@ -28,7 +28,7 @@ namespace FakeServer.Authentication.ApiKey
 
     public static class ApiKeyAuthenticationDefaults
     {
-        public static string AuthenticationScheme => "ApiKey";
+        public static string AuthenticationScheme => "apiKey";
     }
 
     public static class BasicAuthenticationExtensions
@@ -36,20 +36,20 @@ namespace FakeServer.Authentication.ApiKey
         public static AuthenticationBuilder AddApiKeyAuthentication(this AuthenticationBuilder builder)
             => builder.AddApiKeyAuthentication(ApiKeyAuthenticationDefaults.AuthenticationScheme, _ => { });
 
-        public static AuthenticationBuilder AddApiKeyAuthentication(this AuthenticationBuilder builder, Action<BasicTokenOptions> configureOptions)
+        public static AuthenticationBuilder AddApiKeyAuthentication(this AuthenticationBuilder builder, Action<ApiKeyOptions> configureOptions)
             => builder.AddApiKeyAuthentication(ApiKeyAuthenticationDefaults.AuthenticationScheme, configureOptions);
 
-        public static AuthenticationBuilder AddApiKeyAuthentication(this AuthenticationBuilder builder, string authenticationScheme, Action<BasicTokenOptions> configureOptions)
+        public static AuthenticationBuilder AddApiKeyAuthentication(this AuthenticationBuilder builder, string authenticationScheme, Action<ApiKeyOptions> configureOptions)
             => builder.AddApiKeyAuthentication(authenticationScheme, displayName: null, configureOptions: configureOptions);
 
         public static AuthenticationBuilder AddApiKeyAuthentication(this AuthenticationBuilder builder, string authenticationScheme, string displayName,
-            Action<BasicTokenOptions> configureOptions)
+            Action<ApiKeyOptions> configureOptions)
         {
-            builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IPostConfigureOptions<BasicTokenOptions>, BasicTokenPostConfigureOptions>());
-            return builder.AddScheme<BasicTokenOptions, BasicAuthenticationHandler>(authenticationScheme, displayName, configureOptions);
+            builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IPostConfigureOptions<ApiKeyOptions>, ApiKeyPostConfigureOptions>());
+            return builder.AddScheme<ApiKeyOptions, BasicAuthenticationHandler>(authenticationScheme, displayName, configureOptions);
         }
 
-        public static OpenApiSecurityScheme GetBasicSecurityDefinition(this SwaggerGenOptions s)
+        public static OpenApiSecurityScheme GetApiKeySecurityDefinition(this SwaggerGenOptions s)
         {
             return new OpenApiSecurityScheme
             {
@@ -57,7 +57,7 @@ namespace FakeServer.Authentication.ApiKey
             };
         }
 
-        public static OpenApiSecurityRequirement GetBasicSecurityRequirement(this SwaggerGenOptions s)
+        public static OpenApiSecurityRequirement GetApiKeySecurityRequirement(this SwaggerGenOptions s)
         {
             var securityRequirement = new OpenApiSecurityRequirement();
             var scheme = new OpenApiSecurityScheme
@@ -74,24 +74,24 @@ namespace FakeServer.Authentication.ApiKey
         }
     }
 
-    public class BasicTokenPostConfigureOptions : IPostConfigureOptions<BasicTokenOptions>
+    public class ApiKeyPostConfigureOptions : IPostConfigureOptions<ApiKeyOptions>
     {
-        public void PostConfigure(string name, BasicTokenOptions options)
+        public void PostConfigure(string name, ApiKeyOptions options)
         { }
     }
 
-    public class BasicTokenOptions : AuthenticationSchemeOptions
+    public class ApiKeyOptions : AuthenticationSchemeOptions
     {
-        public BasicTokenOptions() : base()
+        public ApiKeyOptions() : base()
         { }
 
         public override void Validate()
         { }
     }
 
-    public class BasicAuthenticationHandler : AuthenticationHandler<BasicTokenOptions>
+    public class BasicAuthenticationHandler : AuthenticationHandler<ApiKeyOptions>
     {
-        public BasicAuthenticationHandler(IOptionsMonitor<BasicTokenOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock)
+        public BasicAuthenticationHandler(IOptionsMonitor<ApiKeyOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock)
             : base(options, logger, encoder, clock)
         { }
 
