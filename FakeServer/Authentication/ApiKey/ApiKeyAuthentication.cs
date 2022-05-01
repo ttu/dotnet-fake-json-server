@@ -31,7 +31,7 @@ namespace FakeServer.Authentication.ApiKey
         public static string AuthenticationScheme => "apiKey";
     }
 
-    public static class BasicAuthenticationExtensions
+    public static class ApiKeyAuthenticationExtensions
     {
         public static AuthenticationBuilder AddApiKeyAuthentication(this AuthenticationBuilder builder)
             => builder.AddApiKeyAuthentication(ApiKeyAuthenticationDefaults.AuthenticationScheme, _ => { });
@@ -46,14 +46,14 @@ namespace FakeServer.Authentication.ApiKey
             Action<ApiKeyOptions> configureOptions)
         {
             builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IPostConfigureOptions<ApiKeyOptions>, ApiKeyPostConfigureOptions>());
-            return builder.AddScheme<ApiKeyOptions, BasicAuthenticationHandler>(authenticationScheme, displayName, configureOptions);
+            return builder.AddScheme<ApiKeyOptions, ApiKeyAuthenticationHandler>(authenticationScheme, displayName, configureOptions);
         }
 
         public static OpenApiSecurityScheme GetApiKeySecurityDefinition(this SwaggerGenOptions s)
         {
             return new OpenApiSecurityScheme
             {
-                Type = SecuritySchemeType.Http, Scheme = ApiKeyAuthenticationDefaults.AuthenticationScheme, In = ParameterLocation.Header
+                Type = SecuritySchemeType.ApiKey, Scheme = ApiKeyAuthenticationDefaults.AuthenticationScheme, In = ParameterLocation.Header, Name = "X-API-KEY"
             };
         }
 
@@ -89,9 +89,9 @@ namespace FakeServer.Authentication.ApiKey
         { }
     }
 
-    public class BasicAuthenticationHandler : AuthenticationHandler<ApiKeyOptions>
+    public class ApiKeyAuthenticationHandler : AuthenticationHandler<ApiKeyOptions>
     {
-        public BasicAuthenticationHandler(IOptionsMonitor<ApiKeyOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock)
+        public ApiKeyAuthenticationHandler(IOptionsMonitor<ApiKeyOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock)
             : base(options, logger, encoder, clock)
         { }
 
