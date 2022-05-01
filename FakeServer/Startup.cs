@@ -1,6 +1,4 @@
 ﻿using FakeServer.Authentication;
-using FakeServer.Authentication.ApiKey;
-using FakeServer.Authentication.Basic;
 using FakeServer.Authentication.Jwt;
 using FakeServer.Common;
 using FakeServer.Common.Formatters;
@@ -10,7 +8,6 @@ using FakeServer.Jobs;
 using FakeServer.Simulate;
 using FakeServer.WebSockets;
 using JsonFlatFileDataStore;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server.Features;
@@ -122,27 +119,8 @@ namespace FakeServer
                 var basePath = PlatformServices.Default.Application.ApplicationBasePath;
                 var xmlPath = Path.Combine(basePath, "FakeServer.xml");
                 c.IncludeXmlComments(xmlPath);
-
-                if (!useAuthentication)
-                    return;
                 
-                if (Configuration["Authentication:AuthenticationType"] == "token")
-                {
-                    var tokenPath = TokenConfiguration.GetOptions().Value.Path;
-                    c.DocumentFilter<TokenOperation>();
-                    c.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, c.GetTokenSecurityDefinition(tokenPath));
-                    c.AddSecurityRequirement(c.GetTokenSecurityRequirement());
-                }
-                else if (Configuration["Authentication:AuthenticationType"] == "basic")
-                { 
-                    c.AddSecurityDefinition(BasicAuthenticationDefaults.AuthenticationScheme, c.GetBasicSecurityDefinition());
-                    c.AddSecurityRequirement(c.GetBasicSecurityRequirement());
-                }
-                else
-                {
-                    c.AddSecurityDefinition(ApiKeyAuthenticationDefaults.AuthenticationScheme, c.GetApiKeySecurityDefinition());
-                    c.AddSecurityRequirement(c.GetApiKeySecurityRequirement());
-                }
+                c.AddAuthenticationConfig(_authenticationType);
             });
         }
 
