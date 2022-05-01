@@ -33,7 +33,7 @@ namespace FakeServer.Test.Authentication
         [Fact]
         public async Task GetUsers_Authorized()
         {
-            _fixture.Client.DefaultRequestHeaders.Add("X-API-Key", "correct-api-key");
+            _fixture.Client.DefaultRequestHeaders.Add("X-API-KEY", "correct-api-key");
 
             var result = await _fixture.Client.GetAsync("api/users");
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
@@ -42,7 +42,7 @@ namespace FakeServer.Test.Authentication
         [Fact]
         public async Task GetUsers_Wrong_Key_Unauthorized()
         {
-            _fixture.Client.DefaultRequestHeaders.Add("X-API-Key", "wrong-api-key");
+            _fixture.Client.DefaultRequestHeaders.Add("X-API-KEY", "wrong-api-key");
 
             var result = await _fixture.Client.GetAsync("api/users");
             Assert.Equal(HttpStatusCode.Unauthorized, result.StatusCode);

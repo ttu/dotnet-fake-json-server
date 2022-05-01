@@ -97,11 +97,11 @@ namespace FakeServer.Authentication.ApiKey
 
         protected override Task<AuthenticateResult> HandleAuthenticateAsync()
         {
-            var authHeader = Context.Request.Headers["X-API-Key"].ToString();
+            var authHeader = Context.Request.Headers["X-API-KEY"].ToString();
 
             var authenticationSettings = Context.RequestServices.GetService(typeof(IOptions<AuthenticationSettings>)) as IOptions<AuthenticationSettings>;
 
-            if (authenticationSettings.Value.ApiKey == authHeader)
+            if (authenticationSettings!.Value.ApiKey == authHeader)
             {
                 return Task.FromResult(AuthenticateResult.Success(
                     new AuthenticationTicket(
