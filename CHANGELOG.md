@@ -1,6 +1,7 @@
 # Changelog
 
 ### [Unreleased]
+* ADDED: API key authentication
 * CHANGED: For empty collections return 200 status code instead of 404
 * FIXED: Swagger authentication
 * CHANGED: Target framework to .NET 5

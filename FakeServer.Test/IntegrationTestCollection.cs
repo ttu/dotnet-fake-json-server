@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Net.WebSockets;
 using System.Reflection;
@@ -39,22 +40,30 @@ namespace FakeServer.Test
             {
                 mainConfiguration.Add("Authentication:Enabled", "true");
                 mainConfiguration.Add("Authentication:AuthenticationType", authenticationType);
-                mainConfiguration.Add("Authentication:Users:0:Username", "admin");
-                mainConfiguration.Add("Authentication:Users:0:Password", "root");
+
+                if (authenticationType == "apikey")
+                {
+                    mainConfiguration.Add("Authentication:ApiKey", "correct-api-key");
+                }
+                else
+                {
+                    mainConfiguration.Add("Authentication:Users:0:Username", "admin");
+                    mainConfiguration.Add("Authentication:Users:0:Password", "root");
+                }
             }
 
             _factory = new WebApplicationFactory<Startup>()
                 .WithWebHostBuilder(builder =>
                 {
                     builder.UseEnvironment("IntegrationTest")
-                        .ConfigureAppConfiguration((ctx, b) =>
-                        {
-                            b.SetBasePath(path)
+                           .ConfigureAppConfiguration((ctx, b) =>
+                           {
+                               b.SetBasePath(path)
                                 .Add(new MemoryConfigurationSource
                                 {
                                     InitialData = mainConfiguration
                                 });
-                        });
+                           });
                 });
 
             Client = _factory.CreateClient();
@@ -62,14 +71,17 @@ namespace FakeServer.Test
 
         public HttpClient CreateClient(bool allowAutoRedirect)
         {
-            return _factory.CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = allowAutoRedirect });
+            return _factory.CreateClient(new WebApplicationFactoryClientOptions
+            {
+                AllowAutoRedirect = allowAutoRedirect
+            });
         }
 
         public async Task<WebSocket> CreateWebSocketClient()
         {
             return await _factory.Server
-                .CreateWebSocketClient()
-                .ConnectAsync(new Uri(_factory.Server.BaseAddress, "ws"), CancellationToken.None);
+                                 .CreateWebSocketClient()
+                                 .ConnectAsync(new Uri(_factory.Server.BaseAddress, "ws"), CancellationToken.None);
         }
 
         public void Dispose()
@@ -97,6 +109,5 @@ namespace FakeServer.Test
 
     [CollectionDefinition("Integration collection")]
     public class IntegrationTestCollection : ICollectionFixture<IntegrationFixture>
-    {
-    }
+    { }
 }

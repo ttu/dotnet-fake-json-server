@@ -1,4 +1,5 @@
 using System;
+using FakeServer.Authentication.ApiKey;
 using FakeServer.Authentication.Basic;
 using FakeServer.Authentication.Custom;
 using FakeServer.Authentication.Jwt;
@@ -11,16 +12,21 @@ namespace FakeServer.Authentication
     {
         public static AuthenticationType ReadType(IConfiguration configuration)
         {
-            if (configuration.GetValue<bool>("Authentication:Enabled"))
+            if (configuration.GetValue<bool>("Authentication:Enabled") == false)
+                return AuthenticationType.AllowAll;
+
+            var authenticationType = configuration["Authentication:AuthenticationType"].ToLower();
+
+            return authenticationType switch
             {
-                return configuration["Authentication:AuthenticationType"] == "token"
-                    ? AuthenticationType.JwtBearer
-                    : AuthenticationType.Basic;
-            }
-            return AuthenticationType.AllowAll;
+                "token" => AuthenticationType.JwtBearer,
+                "basic" => AuthenticationType.Basic,
+                "apikey" => AuthenticationType.ApiKey,
+                _ => throw new ArgumentException($"Invalid authentication type: {authenticationType}"),
+            };
         }
 
-        public static IServiceCollection AddAuthentication(this IServiceCollection services, AuthenticationType type)
+        public static IServiceCollection AddApiAuthentication(this IServiceCollection services, AuthenticationType type)
         {
             switch (type)
             {
@@ -32,6 +38,9 @@ namespace FakeServer.Authentication
                     break;
                 case AuthenticationType.Basic:
                     services.AddBasicAuthentication();
+                    break;
+                case AuthenticationType.ApiKey:
+                    services.AddApiKeyAuthentication();
                     break;
                 default: throw new ArgumentException(nameof(type) + " is not a valid authentication type");
             }

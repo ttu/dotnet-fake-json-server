@@ -1,5 +1,4 @@
 ﻿using FakeServer.Authentication;
-using FakeServer.Authentication.Basic;
 using FakeServer.Authentication.Jwt;
 using FakeServer.Common;
 using FakeServer.Common.Formatters;
@@ -9,7 +8,6 @@ using FakeServer.Jobs;
 using FakeServer.Simulate;
 using FakeServer.WebSockets;
 using JsonFlatFileDataStore;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server.Features;
@@ -77,7 +75,7 @@ namespace FakeServer
             var useAuthentication = Configuration.GetValue<bool>("Authentication:Enabled");
 
             _authenticationType = AuthenticationConfiguration.ReadType(Configuration);
-            services.AddAuthentication(_authenticationType);
+            services.AddApiAuthentication(_authenticationType);
 
             // TODO: AddControllers
             services.AddMvc()
@@ -121,22 +119,8 @@ namespace FakeServer
                 var basePath = PlatformServices.Default.Application.ApplicationBasePath;
                 var xmlPath = Path.Combine(basePath, "FakeServer.xml");
                 c.IncludeXmlComments(xmlPath);
-
-                if (!useAuthentication)
-                    return;
                 
-                if (Configuration["Authentication:AuthenticationType"] == "token")
-                {
-                    var tokenPath = TokenConfiguration.GetOptions().Value.Path;
-                    c.DocumentFilter<TokenOperation>();
-                    c.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, c.GetTokenSecurityDefinition(tokenPath));
-                    c.AddSecurityRequirement(c.GetTokenSecurityRequirement());
-                }
-                else
-                {
-                    c.AddSecurityDefinition(BasicAuthenticationDefaults.AuthenticationScheme, c.GetBasicSecurityDefinition());
-                    c.AddSecurityRequirement(c.GetBasicSecurityRequirement());
-                }
+                c.AddAuthenticationConfig(_authenticationType);
             });
         }
 
