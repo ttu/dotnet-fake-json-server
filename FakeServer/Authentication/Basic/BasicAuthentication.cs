@@ -21,6 +21,7 @@ namespace FakeServer.Authentication.Basic
         {
             services.AddAuthentication(o =>
             {
+                o.DefaultScheme = BasicAuthenticationDefaults.AuthenticationScheme;
                 o.DefaultAuthenticateScheme = BasicAuthenticationDefaults.AuthenticationScheme;
             })
             .AddBasicAuthentication();
@@ -95,6 +96,9 @@ namespace FakeServer.Authentication.Basic
 
     public class BasicAuthenticationHandler : AuthenticationHandler<BasicTokenOptions>
     {
+        // "Basic "
+        private const int HeaderMinLength = 6;
+        
         public BasicAuthenticationHandler(IOptionsMonitor<BasicTokenOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock)
             : base(options, logger, encoder, clock)
         { }
@@ -107,7 +111,7 @@ namespace FakeServer.Authentication.Basic
             {
                 var authenticationSettings = Context.RequestServices.GetService(typeof(IOptions<AuthenticationSettings>)) as IOptions<AuthenticationSettings>;
 
-                var token = authHeader.Substring("Basic ".Length).Trim();
+                var token = authHeader.Substring(HeaderMinLength).Trim();
                 var credentialString = Encoding.UTF8.GetString(Convert.FromBase64String(token));
                 var credentials = credentialString.Split(':');
 
@@ -123,6 +127,7 @@ namespace FakeServer.Authentication.Basic
 
             if (!string.IsNullOrEmpty(authHeader) &&
                 authHeader.StartsWith("basic", StringComparison.OrdinalIgnoreCase) &&
+                authHeader.Length > HeaderMinLength &&
                 Authenticate(out string loginName))
             {
                 var claims = new[] { new Claim("name", loginName), new Claim(ClaimTypes.Role, "Admin") };

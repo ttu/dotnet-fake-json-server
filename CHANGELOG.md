@@ -1,6 +1,7 @@
 # Changelog
 
 ### [Unreleased]
+* FIXED: Basic Authentication unauthenticated result
 * ADDED: API key authentication
 * CHANGED: For empty collections return 200 status code instead of 404
 * FIXED: Swagger authentication
