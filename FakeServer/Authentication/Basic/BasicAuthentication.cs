@@ -17,7 +17,7 @@ namespace FakeServer.Authentication.Basic
 {
     public static class BasicAuthenticationConfiguration
     {
-        public static void AddBasicAuthentication(this IServiceCollection services)
+        public static IServiceCollection AddBasicAuthentication(this IServiceCollection services)
         {
             services.AddAuthentication(o =>
             {
@@ -25,6 +25,8 @@ namespace FakeServer.Authentication.Basic
                 o.DefaultAuthenticateScheme = BasicAuthenticationDefaults.AuthenticationScheme;
             })
             .AddBasicAuthentication();
+
+            return services;
         }
     }
 

@@ -12,13 +12,15 @@ namespace FakeServer.Authentication.Custom
 {
     public static class AllowAllAuthenticationConfiguration
     {
-        public static void AddAllowAllAuthentication(this IServiceCollection services)
+        public static IServiceCollection AddAllowAllAuthentication(this IServiceCollection services)
         {
             services.AddAuthentication(o =>
             {
                 o.DefaultAuthenticateScheme = AllowAllAuthenticationDefaults.AuthenticationScheme;
             })
             .AddAllowAllAuthentication();
+
+            return services;
         }
     }
 
