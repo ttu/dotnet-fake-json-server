@@ -71,7 +71,6 @@ namespace FakeServer.Controllers
                 return BadRequest();
 
             ObjectHelper.SetFieldValue(item, _dsSettings.IdField, id);
-            //item.id = id;
 
             var action = new Func<dynamic>(() =>
             {

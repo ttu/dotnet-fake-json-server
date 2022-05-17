@@ -77,16 +77,12 @@ namespace FakeServer.Controllers
             if (found == false)
                 return NotFound();
 
-            if (itemType == JsonFlatFileDataStore.ValueType.Item)
-                return GetSingleItem(collectionId);
-            
-            return GetCollectionItem(collectionId, skip, take);
+            return itemType == JsonFlatFileDataStore.ValueType.Item ? GetSingleItem(collectionId) : GetCollectionItem(collectionId, skip, take);
         }
 
         private IActionResult GetSingleItem(string itemId)
         {
             var item = _ds.GetItem(itemId);
-
             return item != null ? Ok(item) : NotFound();
         }
 
@@ -141,11 +137,10 @@ namespace FakeServer.Controllers
             {
                 return Ok(QueryHelper.GetResultObject(results, totalCount, paginationHeader, options));
             }
-            {
-                Response.Headers.Add("X-Total-Count", totalCount.ToString());
-                Response.Headers.Add("Link", QueryHelper.GetHeaderLink(paginationHeader));
-                return Ok(results);
-            }
+            
+            Response.Headers.Add("X-Total-Count", totalCount.ToString());
+            Response.Headers.Add("Link", QueryHelper.GetHeaderLink(paginationHeader));
+            return Ok(results);
         }
 
         /// <summary>
@@ -245,7 +240,6 @@ namespace FakeServer.Controllers
 
             // Make sure that new data has id field correctly
             ObjectHelper.SetFieldValue(item, _dsSettings.IdField, id);
-            //item.id = id;
 
             var success = await _ds.GetCollection(collectionId).ReplaceOneAsync(id, item, _apiSettings.UpsertOnPut);
 
@@ -311,8 +305,6 @@ namespace FakeServer.Controllers
         [Consumes(Constants.JsonMergePatch, new[] { Constants.MergePatchJson })]
         public async Task<IActionResult> UpdateNestedItem(string collectionId, [FromRoute][DynamicBinder] dynamic id, string path, [FromBody] JToken patchData)
         {
-            path = Uri.UnescapeDataString(path);
-
             if (_ds.IsItem(collectionId))
                 return BadRequest();
 
@@ -321,7 +313,7 @@ namespace FakeServer.Controllers
             if (item == null)
                 return BadRequest();
 
-            var nested = ObjectHelper.GetNestedProperty(item, path, _dsSettings.IdField);
+            var nested = ObjectHelper.GetNestedProperty(item,  Uri.UnescapeDataString(path), _dsSettings.IdField);
 
             if (nested == null)
                 return NotFound();
