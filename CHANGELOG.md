@@ -1,6 +1,8 @@
 # Changelog
 
 ### [Unreleased]
+
+### [0.11.0] - 2022-05-17
 * FIXED: Basic Authentication unauthorized result
 * ADDED: API key authentication
 * CHANGED: For empty collections return 200 status code instead of 404
