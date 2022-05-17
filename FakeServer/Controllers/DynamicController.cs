@@ -87,11 +87,7 @@ namespace FakeServer.Controllers
         {
             var item = _ds.GetItem(itemId);
 
-            if (item == null)
-                return NotFound();
-
-            // TODO: Add results object or is it needed?
-            return Ok(item);
+            return item != null ? Ok(item) : NotFound();
         }
 
         private IActionResult GetCollectionItem(string collectionId, int skip, int take)
@@ -145,7 +141,6 @@ namespace FakeServer.Controllers
             {
                 return Ok(QueryHelper.GetResultObject(results, totalCount, paginationHeader, options));
             }
-            else
             {
                 Response.Headers.Add("X-Total-Count", totalCount.ToString());
                 Response.Headers.Add("Link", QueryHelper.GetHeaderLink(paginationHeader));
@@ -171,10 +166,7 @@ namespace FakeServer.Controllers
 
             var result = _ds.GetCollection(collectionId).Find(e => ObjectHelper.CompareFieldValueWithId(e, _dsSettings.IdField, id)).FirstOrDefault();
 
-            if (result == null)
-                return NotFound();
-
-            return Ok(result);
+            return result != null ? Ok(result) : NotFound();
         }
 
         /// <summary>
@@ -204,10 +196,7 @@ namespace FakeServer.Controllers
 
             var nested = ObjectHelper.GetNestedProperty(item, path, _dsSettings.IdField);
 
-            if (nested == null)
-                return NotFound();
-
-            return Ok(nested);
+            return nested != null ? Ok(nested) : NotFound();
         }
 
         /// <summary>
@@ -260,10 +249,7 @@ namespace FakeServer.Controllers
 
             var success = await _ds.GetCollection(collectionId).ReplaceOneAsync(id, item, _apiSettings.UpsertOnPut);
 
-            if (success)
-                return NoContent();
-            else
-                return NotFound();
+            return success ? NoContent() : NotFound();
         }
 
         /// <summary>
@@ -297,10 +283,7 @@ namespace FakeServer.Controllers
 
             var success = await _ds.GetCollection(collectionId).UpdateOneAsync(id, sourceData);
 
-            if (success)
-                return NoContent();
-            else
-                return NotFound();
+            return success ? NoContent() : NotFound();
         }
 
         /// <summary>
@@ -352,10 +335,7 @@ namespace FakeServer.Controllers
 
             var success = await _ds.GetCollection(collectionId).UpdateOneAsync(id, item);
 
-            if (success)
-                return NoContent();
-            else
-                return NotFound();
+            return success ? NoContent() : NotFound();
         }
 
             /// <summary>
@@ -375,10 +355,7 @@ namespace FakeServer.Controllers
 
             var success = await _ds.GetCollection(collectionId).DeleteOneAsync(id);
 
-            if (success)
-                return NoContent();
-            else
-                return NotFound();
+            return success ? NoContent() : NotFound();
         }
 
         /// <summary>
@@ -401,10 +378,7 @@ namespace FakeServer.Controllers
 
             var success = await _ds.ReplaceItemAsync(objectId, item, _apiSettings.UpsertOnPut);
 
-            if (success)
-                return NoContent();
-            else
-                return NotFound();
+            return success ? NoContent() : NotFound();
         }
 
         /// <summary>
@@ -437,10 +411,7 @@ namespace FakeServer.Controllers
 
             var success = await _ds.UpdateItemAsync(objectId, sourceData);
 
-            if (success)
-                return NoContent();
-            else
-                return NotFound();
+            return success ? NoContent() : NotFound();
         }
 
         /// <summary>
@@ -459,10 +430,7 @@ namespace FakeServer.Controllers
 
             var success = await _ds.DeleteItemAsync(objectId);
 
-            if (success)
-                return NoContent();
-            else
-                return NotFound();
+            return success ? NoContent() : NotFound();
         }
     }
 }

@@ -174,10 +174,7 @@ namespace FakeServer.Controllers
         [HttpDelete("queue/{queueId}")]
         public IActionResult DeleteQueueItem(string queueId)
         {
-            if (_jobs.DeleteJob(queueId))
-                return NoContent();
-            else
-                return NotFound();
+            return _jobs.DeleteJob(queueId) ? NoContent() : NotFound();
         }
     }
 }
