@@ -37,7 +37,7 @@ namespace FakeServer.Authentication.Jwt
             ClockSkew = TimeSpan.Zero
         };
 
-        public static void AddJwtBearerAuthentication(this IServiceCollection services)
+        public static IServiceCollection AddJwtBearerAuthentication(this IServiceCollection services)
         {
             services.AddSingleton<TokenBlacklistService>();
 
@@ -64,6 +64,8 @@ namespace FakeServer.Authentication.Jwt
                                         }
                                     };
                                 });
+
+            return services;
         }
 
         public static IOptions<TokenProviderOptions> GetOptions()

@@ -15,13 +15,11 @@ namespace FakeServer.Authentication
             switch (authenticationType)
             {
                 case AuthenticationType.JwtBearer:
-                {
                     var tokenPath = TokenConfiguration.GetOptions().Value.Path;
                     c.DocumentFilter<TokenOperation>();
                     c.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, c.GetTokenSecurityDefinition(tokenPath));
                     c.AddSecurityRequirement(c.GetTokenSecurityRequirement());
                     break;
-                }
 
                 case AuthenticationType.Basic:
                     c.AddSecurityDefinition(BasicAuthenticationDefaults.AuthenticationScheme, c.GetBasicSecurityDefinition());

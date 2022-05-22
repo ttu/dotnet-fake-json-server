@@ -15,14 +15,16 @@ namespace FakeServer.Authentication.ApiKey
 {
     public static class ApiKeyAuthenticationConfiguration
     {
-        public static void AddApiKeyAuthentication(this IServiceCollection services)
+        public static IServiceCollection AddApiKeyAuthentication(this IServiceCollection services)
         {
             services.AddAuthentication(o =>
-                    {
-                        o.DefaultScheme = ApiKeyAuthenticationDefaults.AuthenticationScheme;
-                        o.DefaultAuthenticateScheme = ApiKeyAuthenticationDefaults.AuthenticationScheme;
-                    })
-                    .AddApiKeyAuthentication();
+            {
+                o.DefaultScheme = ApiKeyAuthenticationDefaults.AuthenticationScheme;
+                o.DefaultAuthenticateScheme = ApiKeyAuthenticationDefaults.AuthenticationScheme;
+            })
+            .AddApiKeyAuthentication();
+
+            return services;
         }
     }
 

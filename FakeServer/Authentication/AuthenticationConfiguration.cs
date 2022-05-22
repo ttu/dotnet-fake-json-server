@@ -28,24 +28,14 @@ namespace FakeServer.Authentication
 
         public static IServiceCollection AddApiAuthentication(this IServiceCollection services, AuthenticationType type)
         {
-            switch (type)
+            return type switch
             {
-                case AuthenticationType.AllowAll:
-                    services.AddAllowAllAuthentication();
-                    break;
-                case AuthenticationType.JwtBearer:
-                    services.AddJwtBearerAuthentication();
-                    break;
-                case AuthenticationType.Basic:
-                    services.AddBasicAuthentication();
-                    break;
-                case AuthenticationType.ApiKey:
-                    services.AddApiKeyAuthentication();
-                    break;
-                default: throw new ArgumentException(nameof(type) + " is not a valid authentication type");
-            }
-
-            return services;
+                AuthenticationType.AllowAll => services.AddAllowAllAuthentication(),
+                AuthenticationType.JwtBearer => services.AddJwtBearerAuthentication(),
+                AuthenticationType.Basic => services.AddBasicAuthentication(),
+                AuthenticationType.ApiKey => services.AddApiKeyAuthentication(),
+                _ => throw new ArgumentOutOfRangeException(nameof(type), type, "Not a valid authentication type")
+            };
         }
     }
 }
