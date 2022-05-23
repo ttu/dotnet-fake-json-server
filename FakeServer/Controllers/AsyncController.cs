@@ -71,7 +71,6 @@ namespace FakeServer.Controllers
                 return BadRequest();
 
             ObjectHelper.SetFieldValue(item, _dsSettings.IdField, id);
-            //item.id = id;
 
             var action = new Func<dynamic>(() =>
             {
@@ -107,7 +106,7 @@ namespace FakeServer.Controllers
         {
             dynamic sourceData = JsonConvert.DeserializeObject<ExpandoObject>(patchData.ToString());
 
-            if (!((IDictionary<string, Object>)sourceData).Any())
+            if (!((IDictionary<string, object>)sourceData).Any())
                 return BadRequest();
 
             var action = new Func<dynamic>(() =>
@@ -174,10 +173,7 @@ namespace FakeServer.Controllers
         [HttpDelete("queue/{queueId}")]
         public IActionResult DeleteQueueItem(string queueId)
         {
-            if (_jobs.DeleteJob(queueId))
-                return NoContent();
-            else
-                return NotFound();
+            return _jobs.DeleteJob(queueId) ? NoContent() : NotFound();
         }
     }
 }

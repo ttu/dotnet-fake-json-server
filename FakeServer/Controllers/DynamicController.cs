@@ -77,21 +77,13 @@ namespace FakeServer.Controllers
             if (found == false)
                 return NotFound();
 
-            if (itemType == JsonFlatFileDataStore.ValueType.Item)
-                return GetSingleItem(collectionId);
-            
-            return GetCollectionItem(collectionId, skip, take);
+            return itemType == JsonFlatFileDataStore.ValueType.Item ? GetSingleItem(collectionId) : GetCollectionItem(collectionId, skip, take);
         }
 
         private IActionResult GetSingleItem(string itemId)
         {
             var item = _ds.GetItem(itemId);
-
-            if (item == null)
-                return NotFound();
-
-            // TODO: Add results object or is it needed?
-            return Ok(item);
+            return item != null ? Ok(item) : NotFound();
         }
 
         private IActionResult GetCollectionItem(string collectionId, int skip, int take)
@@ -110,14 +102,14 @@ namespace FakeServer.Controllers
 
             foreach (var key in options.QueryParams)
             {
-                string propertyName = key;
-                Func<dynamic, dynamic, bool> compareFunc = ObjectHelper.Funcs[""];
+                var propertyName = key;
+                var compareFunc = ObjectHelper.Funcs[""];
 
                 var idx = key.LastIndexOf("_");
 
                 if (idx != -1)
                 {
-                    var op = key.Substring(idx);
+                    var op = key[idx..];
                     compareFunc = ObjectHelper.Funcs[op];
                     propertyName = key.Replace(op, "");
                 }
@@ -145,12 +137,10 @@ namespace FakeServer.Controllers
             {
                 return Ok(QueryHelper.GetResultObject(results, totalCount, paginationHeader, options));
             }
-            else
-            {
-                Response.Headers.Add("X-Total-Count", totalCount.ToString());
-                Response.Headers.Add("Link", QueryHelper.GetHeaderLink(paginationHeader));
-                return Ok(results);
-            }
+            
+            Response.Headers.Add("X-Total-Count", totalCount.ToString());
+            Response.Headers.Add("Link", QueryHelper.GetHeaderLink(paginationHeader));
+            return Ok(results);
         }
 
         /// <summary>
@@ -171,10 +161,7 @@ namespace FakeServer.Controllers
 
             var result = _ds.GetCollection(collectionId).Find(e => ObjectHelper.CompareFieldValueWithId(e, _dsSettings.IdField, id)).FirstOrDefault();
 
-            if (result == null)
-                return NotFound();
-
-            return Ok(result);
+            return result != null ? Ok(result) : NotFound();
         }
 
         /// <summary>
@@ -204,10 +191,7 @@ namespace FakeServer.Controllers
 
             var nested = ObjectHelper.GetNestedProperty(item, path, _dsSettings.IdField);
 
-            if (nested == null)
-                return NotFound();
-
-            return Ok(nested);
+            return nested != null ? Ok(nested) : NotFound();
         }
 
         /// <summary>
@@ -256,14 +240,10 @@ namespace FakeServer.Controllers
 
             // Make sure that new data has id field correctly
             ObjectHelper.SetFieldValue(item, _dsSettings.IdField, id);
-            //item.id = id;
 
             var success = await _ds.GetCollection(collectionId).ReplaceOneAsync(id, item, _apiSettings.UpsertOnPut);
 
-            if (success)
-                return NoContent();
-            else
-                return NotFound();
+            return success ? NoContent() : NotFound();
         }
 
         /// <summary>
@@ -297,10 +277,7 @@ namespace FakeServer.Controllers
 
             var success = await _ds.GetCollection(collectionId).UpdateOneAsync(id, sourceData);
 
-            if (success)
-                return NoContent();
-            else
-                return NotFound();
+            return success ? NoContent() : NotFound();
         }
 
         /// <summary>
@@ -328,8 +305,6 @@ namespace FakeServer.Controllers
         [Consumes(Constants.JsonMergePatch, new[] { Constants.MergePatchJson })]
         public async Task<IActionResult> UpdateNestedItem(string collectionId, [FromRoute][DynamicBinder] dynamic id, string path, [FromBody] JToken patchData)
         {
-            path = Uri.UnescapeDataString(path);
-
             if (_ds.IsItem(collectionId))
                 return BadRequest();
 
@@ -338,24 +313,21 @@ namespace FakeServer.Controllers
             if (item == null)
                 return BadRequest();
 
-            var nested = ObjectHelper.GetNestedProperty(item, path, _dsSettings.IdField);
+            var nested = ObjectHelper.GetNestedProperty(item,  Uri.UnescapeDataString(path), _dsSettings.IdField);
 
             if (nested == null)
                 return NotFound();
 
             var sourceData = JsonConvert.DeserializeObject<ExpandoObject>(patchData.ToString());
 
-            foreach (KeyValuePair<string, object> kvp in sourceData)
+            foreach (var kvp in sourceData)
             {
-                (nested as IDictionary<string, object>)[kvp.Key] = kvp.Value;
+                ((IDictionary<string, object>)nested)[kvp.Key] = kvp.Value;
             }
 
             var success = await _ds.GetCollection(collectionId).UpdateOneAsync(id, item);
 
-            if (success)
-                return NoContent();
-            else
-                return NotFound();
+            return success ? NoContent() : NotFound();
         }
 
             /// <summary>
@@ -375,10 +347,7 @@ namespace FakeServer.Controllers
 
             var success = await _ds.GetCollection(collectionId).DeleteOneAsync(id);
 
-            if (success)
-                return NoContent();
-            else
-                return NotFound();
+            return success ? NoContent() : NotFound();
         }
 
         /// <summary>
@@ -401,10 +370,7 @@ namespace FakeServer.Controllers
 
             var success = await _ds.ReplaceItemAsync(objectId, item, _apiSettings.UpsertOnPut);
 
-            if (success)
-                return NoContent();
-            else
-                return NotFound();
+            return success ? NoContent() : NotFound();
         }
 
         /// <summary>
@@ -437,10 +403,7 @@ namespace FakeServer.Controllers
 
             var success = await _ds.UpdateItemAsync(objectId, sourceData);
 
-            if (success)
-                return NoContent();
-            else
-                return NotFound();
+            return success ? NoContent() : NotFound();
         }
 
         /// <summary>
@@ -459,10 +422,7 @@ namespace FakeServer.Controllers
 
             var success = await _ds.DeleteItemAsync(objectId);
 
-            if (success)
-                return NoContent();
-            else
-                return NotFound();
+            return success ? NoContent() : NotFound();
         }
     }
 }
