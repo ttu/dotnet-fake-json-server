@@ -102,14 +102,14 @@ namespace FakeServer.Controllers
 
             foreach (var key in options.QueryParams)
             {
-                string propertyName = key;
-                Func<dynamic, dynamic, bool> compareFunc = ObjectHelper.Funcs[""];
+                var propertyName = key;
+                var compareFunc = ObjectHelper.Funcs[""];
 
                 var idx = key.LastIndexOf("_");
 
                 if (idx != -1)
                 {
-                    var op = key.Substring(idx);
+                    var op = key[idx..];
                     compareFunc = ObjectHelper.Funcs[op];
                     propertyName = key.Replace(op, "");
                 }
@@ -320,9 +320,9 @@ namespace FakeServer.Controllers
 
             var sourceData = JsonConvert.DeserializeObject<ExpandoObject>(patchData.ToString());
 
-            foreach (KeyValuePair<string, object> kvp in sourceData)
+            foreach (var kvp in sourceData)
             {
-                (nested as IDictionary<string, object>)[kvp.Key] = kvp.Value;
+                ((IDictionary<string, object>)nested)[kvp.Key] = kvp.Value;
             }
 
             var success = await _ds.GetCollection(collectionId).UpdateOneAsync(id, item);

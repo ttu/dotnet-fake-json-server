@@ -106,7 +106,7 @@ namespace FakeServer.Controllers
         {
             dynamic sourceData = JsonConvert.DeserializeObject<ExpandoObject>(patchData.ToString());
 
-            if (!((IDictionary<string, Object>)sourceData).Any())
+            if (!((IDictionary<string, object>)sourceData).Any())
                 return BadRequest();
 
             var action = new Func<dynamic>(() =>
