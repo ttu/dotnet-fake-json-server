@@ -517,7 +517,19 @@ namespace FakeServer.Test
         }
 
         [Fact]
-        public async Task PatchItem()
+        public async Task PatchItem_UnsupportedMediaType()
+        {
+            var patchData = new { name = "Albert", age = 12, work = new { name = "EMACS" } };
+
+            var content = new StringContent(JsonConvert.SerializeObject(patchData), Encoding.UTF8, "application/json");
+            var request = new HttpRequestMessage(new HttpMethod("PATCH"), $"api/users/1") { Content = content };
+            var result = await _fixture.Client.SendAsync(request);
+
+            Assert.Equal(HttpStatusCode.UnsupportedMediaType, result.StatusCode);
+        }
+        
+        [Fact]
+        public async Task PatchItem_MergePatch()
         {
             // Original { "id": 1, "name": "James", "age": 40, "location": "NY", "work": { "name": "ACME", "location": "NY" } },
             var patchData = new { name = "Albert", age = 12, work = new { name = "EMACS" } };
@@ -548,19 +560,60 @@ namespace FakeServer.Test
         }
 
         [Fact]
-        public async Task PatchItem_UnsupportedMediaType()
+        public async Task PatchItem_JsonPatch()
         {
-            var patchData = new { name = "Albert", age = 12, work = new { name = "EMACS" } };
+            // Original { "id": 1, "name": "James", "age": 40, "location": "NY", "work": { "name": "ACME", "location": "NY" } },
+            var patchDoc = new dynamic[]
+            {
+                new { op = "replace", path = "name", value = "Jimmy" }, 
+                new { op = "replace", path = "work/name", value = "EMACS" }
+            };
+
+            var content = new StringContent(JsonConvert.SerializeObject(patchDoc), Encoding.UTF8, Constants.JsonPatchJson);
+            var request = new HttpRequestMessage(new HttpMethod("PATCH"), $"api/users/1") { Content = content };
+            var result = await _fixture.Client.SendAsync(request);
+            result.EnsureSuccessStatusCode();
+
+            result = await _fixture.Client.GetAsync($"api/users/1");
+            result.EnsureSuccessStatusCode();
+            var item = JsonConvert.DeserializeObject<JObject>(await result.Content.ReadAsStringAsync());
+            Assert.Equal("Jimmy", item["name"].Value<string>());
+            Assert.Equal(40, item["age"].Value<int>());
+            Assert.Equal("NY", item["location"].Value<string>());
+            Assert.Equal("EMACS", item["work"]["name"].Value<string>());
+            Assert.Equal("NY", item["work"]["location"].Value<string>());
+
+            result = await _fixture.Client.GetAsync($"api/users");
+            result.EnsureSuccessStatusCode();
+            var items = JsonConvert.DeserializeObject<IEnumerable<JObject>>(await result.Content.ReadAsStringAsync());
+            Assert.Equal(4, items.Count());
+
+            patchDoc = new dynamic[]
+            {
+                new { op = "replace", path = "name", value = "James" }, 
+                new { op = "replace", path = "work/name", value = "ACME" }
+            };
+            
+            content = new StringContent(JsonConvert.SerializeObject(patchDoc), Encoding.UTF8, Constants.JsonPatchJson);
+            request = new HttpRequestMessage(new HttpMethod("PATCH"), $"api/users/1") { Content = content };
+            result = await _fixture.Client.SendAsync(request);
+            result.EnsureSuccessStatusCode();
+        }
+        
+        [Fact]
+        public async Task PatchItem_Nested_UnsupportedMediaType()
+        {
+            var patchData = new { name = "Kyle", work = new { companyName = "PAWNAGRA", address = "679 Ebony Court, Loma, Puerto Rico, 7716" } };
 
             var content = new StringContent(JsonConvert.SerializeObject(patchData), Encoding.UTF8, "application/json");
-            var request = new HttpRequestMessage(new HttpMethod("PATCH"), $"api/users/1") { Content = content };
+            var request = new HttpRequestMessage(new HttpMethod("PATCH"), $"api/families/19/parents/1") { Content = content };
             var result = await _fixture.Client.SendAsync(request);
 
             Assert.Equal(HttpStatusCode.UnsupportedMediaType, result.StatusCode);
         }
-
+        
         [Fact]
-        public async Task PatchItem_Nested()
+        public async Task PatchItem_MergePatch_Nested()
         {
             // Original Parent { "id": 1, "name": "Millicent", ... , "work": { "companyName": "WAZZU", "address": "137 McClancy Place, Islandia, Ohio, 4193" } },
             var patchData = new { name = "Kyle", work = new { companyName = "PAWNAGRA", address = "679 Ebony Court, Loma, Puerto Rico, 7716" } };
@@ -593,17 +646,52 @@ namespace FakeServer.Test
             result = await _fixture.Client.SendAsync(request);
             result.EnsureSuccessStatusCode();
         }
-
+        
         [Fact]
-        public async Task PatchItem_Nested_UnsupportedMediaType()
+        public async Task PatchItem_JsonPatch_Nested()
         {
-            var patchData = new { name = "Kyle", work = new { companyName = "PAWNAGRA", address = "679 Ebony Court, Loma, Puerto Rico, 7716" } };
+            // Original Parent { "id": 1, "name": "Millicent", ... , "work": { "companyName": "WAZZU", "address": "137 McClancy Place, Islandia, Ohio, 4193" } },
+            var patchDoc = new dynamic[] 
+            {
+                new { op = "replace", path = "name", value = "Kyle" }, 
+                new { op = "replace", path = "work/companyName", value = "PAWNAGRA" }, 
+                new { op = "replace", path = "work/address", value = "679 Ebony Court, Loma, Puerto Rico, 7716" }, 
+            };
 
-            var content = new StringContent(JsonConvert.SerializeObject(patchData), Encoding.UTF8, "application/json");
+            var content = new StringContent(JsonConvert.SerializeObject(patchDoc), Encoding.UTF8, Constants.JsonPatchJson);
             var request = new HttpRequestMessage(new HttpMethod("PATCH"), $"api/families/19/parents/1") { Content = content };
             var result = await _fixture.Client.SendAsync(request);
+            result.EnsureSuccessStatusCode();
 
-            Assert.Equal(HttpStatusCode.UnsupportedMediaType, result.StatusCode);
+            result = await _fixture.Client.GetAsync($"api/families/19/parents/1");
+            result.EnsureSuccessStatusCode();
+            var item = JsonConvert.DeserializeObject<JObject>(await result.Content.ReadAsStringAsync());
+            Assert.Equal("Kyle", item["name"].Value<string>());
+            Assert.Equal("679 Ebony Court, Loma, Puerto Rico, 7716", item["work"]["address"].Value<string>());
+            Assert.Equal("PAWNAGRA", item["work"]["companyName"].Value<string>());
+            Assert.Equal("female", item["gender"].Value<string>());
+            Assert.Equal(34, item["age"].Value<int>());
+            Assert.Equal("green", item["eyeColor"].Value<string>());
+            Assert.Equal("millicentbowers@skybold.com", item["email"].Value<string>());
+            Assert.Equal("+1 (916) 436-2886", item["phone"].Value<string>());
+            Assert.Equal("Predator", item["favouriteMovie"].Value<string>());
+
+            result = await _fixture.Client.GetAsync($"api/families/19/parents");
+            result.EnsureSuccessStatusCode();
+            var items = JsonConvert.DeserializeObject<IEnumerable<JObject>>(await result.Content.ReadAsStringAsync());
+            Assert.Equal(2, items.Count());
+
+            patchDoc = new dynamic[] 
+            {
+                new { op = "replace", path = "name", value = "Millicent" }, 
+                new { op = "replace", path = "work/companyName", value = "WAZZU" }, 
+                new { op = "replace", path = "work/address", value = "137 McClancy Place, Islandia, Ohio, 4193" }, 
+            };
+            
+            content = new StringContent(JsonConvert.SerializeObject(patchDoc), Encoding.UTF8, Constants.JsonPatchJson);
+            request = new HttpRequestMessage(new HttpMethod("PATCH"), $"api/families/19/parents/1") { Content = content };
+            result = await _fixture.Client.SendAsync(request);
+            result.EnsureSuccessStatusCode();
         }
 
         [Fact]

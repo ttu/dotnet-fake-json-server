@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.JsonPatch;
 
 namespace FakeServer.Controllers
 {
@@ -268,7 +269,7 @@ namespace FakeServer.Controllers
         /// <response code="415">Unsupported content type</response>
         [HttpPatch("{collectionId}/{id}")]
         [Consumes(Constants.JsonMergePatch, new[] { Constants.MergePatchJson })]
-        public async Task<IActionResult> UpdateItem(string collectionId, [FromRoute][DynamicBinder]dynamic id, [FromBody]JToken patchData)
+        public async Task<IActionResult> UpdateItemMerge(string collectionId, [FromRoute][DynamicBinder]dynamic id, [FromBody]JToken patchData)
         {
             dynamic sourceData = JsonConvert.DeserializeObject<ExpandoObject>(patchData.ToString());
 
@@ -276,6 +277,52 @@ namespace FakeServer.Controllers
                 return BadRequest();
 
             var success = await _ds.GetCollection(collectionId).UpdateOneAsync(id, sourceData);
+
+            return success ? NoContent() : NotFound();
+        }
+        
+        /// <summary>
+        /// Update item's content
+        /// </summary>
+        /// <remarks>
+        /// Patch document contains fields to be updated.
+        ///
+        ///     [
+        ///        { "op": "test", "path": "/a/b/c", "value": "foo" },
+        ///        { "op": "remove", "path": "/a/b/c" },
+        ///        { "op": "add", "path": "/a/b/c", "value": [ "foo", "bar" ] },
+        ///        { "op": "replace", "path": "/a/b/c", "value": 42 },
+        ///        { "op": "move", "from": "/a/b/c", "path": "/a/b/d" },
+        ///        { "op": "copy", "from": "/a/b/d", "path": "/a/b/e" }
+        ///     ]
+        /// </remarks>
+        /// <param name="collectionId">Collection id</param>
+        /// <param name="id">Id of the item to be updated</param>
+        /// <param name="patchDoc">Patch document</param>
+        /// <returns></returns>
+        /// <response code="204">Item found and updated</response>
+        /// 
+        /// <response code="400">Patch data is empty or item is not in a collection</response>
+        /// <response code="404">Item not found</response>
+        /// <response code="415">Unsupported content type</response>
+        [HttpPatch("{collectionId}/{id}")]
+        [Consumes(Constants.JsonPatchJson)]
+        public async Task<IActionResult> UpdateItemJsonPatch(string collectionId, [FromRoute][DynamicBinder] dynamic id, [FromBody] JsonPatchDocument patchDoc)
+        {
+            if (_ds.IsItem(collectionId))
+                return BadRequest();
+
+            var item = _ds.GetCollection(collectionId).AsQueryable().FirstOrDefault(e => ObjectHelper.CompareFieldValueWithId(e, _dsSettings.IdField, id));
+
+            if (item == null)
+                return NotFound();
+
+            if (patchDoc == null)
+                return BadRequest();
+            
+            patchDoc.ApplyTo(item);
+            
+            var success = await _ds.GetCollection(collectionId).UpdateOneAsync(id, item);
 
             return success ? NoContent() : NotFound();
         }
@@ -303,7 +350,7 @@ namespace FakeServer.Controllers
         /// <response code="415">Unsupported content type</response>
         [HttpPatch("{collectionId}/{id}/{*path}")]
         [Consumes(Constants.JsonMergePatch, new[] { Constants.MergePatchJson })]
-        public async Task<IActionResult> UpdateNestedItem(string collectionId, [FromRoute][DynamicBinder] dynamic id, string path, [FromBody] JToken patchData)
+        public async Task<IActionResult> UpdateNestedItemMerge(string collectionId, [FromRoute][DynamicBinder] dynamic id, string path, [FromBody] JToken patchData)
         {
             if (_ds.IsItem(collectionId))
                 return BadRequest();
@@ -311,7 +358,7 @@ namespace FakeServer.Controllers
             var item = _ds.GetCollection(collectionId).AsQueryable().FirstOrDefault(e => ObjectHelper.CompareFieldValueWithId(e, _dsSettings.IdField, id));
 
             if (item == null)
-                return BadRequest();
+                return NotFound();
 
             var nested = ObjectHelper.GetNestedProperty(item,  Uri.UnescapeDataString(path), _dsSettings.IdField);
 
@@ -329,17 +376,68 @@ namespace FakeServer.Controllers
 
             return success ? NoContent() : NotFound();
         }
+        
+        /// <summary>
+        /// Update Nested item's content
+        /// </summary>
+        /// <remarks>
+        /// Patch document contains fields to be updated.
+        ///
+        ///     [
+        ///        { "op": "test", "path": "/a/b/c", "value": "foo" },
+        ///        { "op": "remove", "path": "/a/b/c" },
+        ///        { "op": "add", "path": "/a/b/c", "value": [ "foo", "bar" ] },
+        ///        { "op": "replace", "path": "/a/b/c", "value": 42 },
+        ///        { "op": "move", "from": "/a/b/c", "path": "/a/b/d" },
+        ///        { "op": "copy", "from": "/a/b/d", "path": "/a/b/e" }
+        ///     ]
+        /// </remarks>
+        /// <param name="collectionId">Collection id</param>
+        /// <param name="id">Id of the item to be updated</param>
+        /// <param name="path">Rest of the path</param>
+        /// <param name="patchDoc">Patch document</param>
+        /// <returns></returns>
+        /// <response code="204">Item found and updated</response>
+        /// <response code="400">Patch data is empty or item is not in a collection</response>
+        /// <response code="404">Item not found</response>
+        /// <response code="415">Unsupported content type</response>
+        [HttpPatch("{collectionId}/{id}/{*path}")]
+        [Consumes(Constants.JsonPatchJson)]
+        public async Task<IActionResult> UpdateNestedItemJsonPatch(string collectionId, [FromRoute][DynamicBinder] dynamic id, string path, [FromBody] JsonPatchDocument patchDoc)
+        {
+            if (_ds.IsItem(collectionId))
+                return BadRequest();
 
-            /// <summary>
-            /// Remove item from collection
-            /// </summary>
-            /// <param name="collectionId">Collection id</param>
-            /// <param name="id">Id of the item to be removed</param>
-            /// <returns></returns>
-            /// <response code="204">Item found and removed</response>
-            /// <response code="400">Item is not in a collection</response>
-            /// <response code="404">Item not found</response>
-            [HttpDelete("{collectionId}/{id}")]
+            var item = _ds.GetCollection(collectionId).AsQueryable().FirstOrDefault(e => ObjectHelper.CompareFieldValueWithId(e, _dsSettings.IdField, id));
+
+            if (item == null)
+                return NotFound();
+            
+            var nested = ObjectHelper.GetNestedProperty(item,  Uri.UnescapeDataString(path), _dsSettings.IdField);
+
+            if (nested == null)
+                return NotFound();
+            
+            if (patchDoc == null)
+                return BadRequest();
+            
+            patchDoc.ApplyTo(nested);
+            
+            var success = await _ds.GetCollection(collectionId).UpdateOneAsync(id, item);
+
+            return success ? NoContent() : NotFound();
+        }
+
+        /// <summary>
+        /// Remove item from collection
+        /// </summary>
+        /// <param name="collectionId">Collection id</param>
+        /// <param name="id">Id of the item to be removed</param>
+        /// <returns></returns>
+        /// <response code="204">Item found and removed</response>
+        /// <response code="400">Item is not in a collection</response>
+        /// <response code="404">Item not found</response>
+        [HttpDelete("{collectionId}/{id}")]
         public async Task<IActionResult> DeleteItem(string collectionId, [FromRoute][DynamicBinder]dynamic id)
         {
             if (_ds.IsItem(collectionId))

@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using System.Net;
+using Microsoft.AspNetCore.JsonPatch;
 
 namespace FakeServer.Controllers
 {
@@ -99,19 +100,70 @@ namespace FakeServer.Controllers
         /// <param name="patchData">Patch data</param>
         /// <returns></returns>
         /// <response code="202">New async operation started</response>
+        /// <response code="404">Item not found</response>
         /// <response code="415">Unsupported content type</response>
         [HttpPatch("{collectionId}/{id}")]
         [Consumes(Constants.JsonMergePatch, new[] { Constants.MergePatchJson })]
-        public IActionResult UpdateItem(string collectionId, [FromRoute][DynamicBinder]dynamic id, [FromBody]JToken patchData)
+        public IActionResult UpdateItemMerge(string collectionId, [FromRoute][DynamicBinder]dynamic id, [FromBody]JToken patchData)
         {
             dynamic sourceData = JsonConvert.DeserializeObject<ExpandoObject>(patchData.ToString());
 
             if (!((IDictionary<string, object>)sourceData).Any())
                 return BadRequest();
 
+            var item = _ds.GetCollection(collectionId).Find(e => ObjectHelper.CompareFieldValueWithId(e, _dsSettings.IdField, id)).FirstOrDefault();
+
+            if (item == null)
+                return NotFound();
+            
             var action = new Func<dynamic>(() =>
             {
                 _ds.GetCollection(collectionId).UpdateOne(id, sourceData);
+                return id;
+            });
+
+            var queueUrl = _jobs.StartNewJob(collectionId, "PATCH", action);
+            return new AcceptedResult($"{Request.Scheme}://{Request.Host.Value}/{queueUrl}", null);
+        }
+        
+        /// <summary>
+        /// Update item's content
+        /// </summary>
+        /// <remarks>
+        /// Patch document contains fields to be updated.
+        ///
+        ///     [
+        ///        { "op": "test", "path": "/a/b/c", "value": "foo" },
+        ///        { "op": "remove", "path": "/a/b/c" },
+        ///        { "op": "add", "path": "/a/b/c", "value": [ "foo", "bar" ] },
+        ///        { "op": "replace", "path": "/a/b/c", "value": 42 },
+        ///        { "op": "move", "from": "/a/b/c", "path": "/a/b/d" },
+        ///        { "op": "copy", "from": "/a/b/d", "path": "/a/b/e" }
+        ///     ]
+        /// </remarks>
+        /// <param name="collectionId"></param>
+        /// <param name="id">Id of the item to be updated</param>
+        /// <param name="patchDoc">Patch document</param>
+        /// <returns></returns>
+        /// <response code="202">New async operation started</response>
+        /// <response code="404">Item not found</response>
+        /// <response code="415">Unsupported content type</response>
+        [HttpPatch("{collectionId}/{id}")]
+        [Consumes(Constants.JsonPatchJson)]
+        public IActionResult UpdateItemJsonPatch(string collectionId, dynamic id, [FromBody] JsonPatchDocument patchDoc)
+        {
+            if (_ds.IsItem(collectionId))
+                return BadRequest();
+
+            var item = _ds.GetCollection(collectionId).AsQueryable().FirstOrDefault(e => ObjectHelper.CompareFieldValueWithId(e, _dsSettings.IdField, id));
+
+            if (item == null)
+                return NotFound();
+
+            var action = new Func<dynamic>(() =>
+            {
+                patchDoc.ApplyTo(item);
+                _ds.GetCollection(collectionId).UpdateOne(id, item);
                 return id;
             });
 
