@@ -1,6 +1,8 @@
 # Changelog
 
 ### [Unreleased]
+* FIXED: Return 404 for merge patch if item not found
+* ADDED: JsonPatch support for PATCH endpoints
 
 ### [0.11.0] - 2022-05-17
 * FIXED: Basic Authentication unauthorized result
@@ -22,7 +24,7 @@
 * CHANGED: Rename Common property from appsettings.json to DataStore
 * CHANGED: Remove authentication.json and add Authentication settings to appsettings.json
 * ADDED: GraphQL endpoint to support operations in query parameter
-* ADDED: Configurable response transfrom middleware
+* ADDED: Configurable response transform middleware
 
 ### [0.9.1] - 2019-02-08
 * CHANGED: Target framework to .NET Core 2.2
