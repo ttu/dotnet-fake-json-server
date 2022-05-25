@@ -529,6 +529,18 @@ namespace FakeServer.Test
         }
         
         [Fact]
+        public async Task PatchItem_MergePatch_NotFound()
+        {
+            var patchData = new { name = "Albert", age = 12, work = new { name = "EMACS" } };
+
+            var content = new StringContent(JsonConvert.SerializeObject(patchData), Encoding.UTF8, Constants.JsonMergePatch);
+            var request = new HttpRequestMessage(new HttpMethod("PATCH"), $"api/users/1234") { Content = content };
+            var result = await _fixture.Client.SendAsync(request);
+
+            Assert.Equal(HttpStatusCode.NotFound, result.StatusCode);
+        }
+        
+        [Fact]
         public async Task PatchItem_MergePatch()
         {
             // Original { "id": 1, "name": "James", "age": 40, "location": "NY", "work": { "name": "ACME", "location": "NY" } },
@@ -610,6 +622,18 @@ namespace FakeServer.Test
             var result = await _fixture.Client.SendAsync(request);
 
             Assert.Equal(HttpStatusCode.UnsupportedMediaType, result.StatusCode);
+        }
+        
+        [Fact]
+        public async Task PatchItem_Nested_MergePatch_NotFound()
+        {
+            var patchData = new { name = "Kyle", work = new { companyName = "PAWNAGRA", address = "679 Ebony Court, Loma, Puerto Rico, 7716" } };
+
+            var content = new StringContent(JsonConvert.SerializeObject(patchData), Encoding.UTF8, Constants.JsonMergePatch);
+            var request = new HttpRequestMessage(new HttpMethod("PATCH"), $"api/families/19/parents/1234") { Content = content };
+            var result = await _fixture.Client.SendAsync(request);
+
+            Assert.Equal(HttpStatusCode.NotFound, result.StatusCode);
         }
         
         [Fact]
