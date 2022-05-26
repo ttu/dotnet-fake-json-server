@@ -491,7 +491,7 @@ namespace FakeServer.Controllers
         /// <response code="415">Unsupported content type</response>
         [HttpPatch("{objectId}")]
         [Consumes(Constants.JsonMergePatch, new[] { Constants.MergePatchJson })]
-        public async Task<IActionResult> UpdateSingleItem(string objectId, [FromBody]JToken patchData)
+        public async Task<IActionResult> UpdateSingleItemMerge(string objectId, [FromBody]JToken patchData)
         {
             dynamic sourceData = JsonConvert.DeserializeObject<ExpandoObject>(patchData.ToString());
 
@@ -499,6 +499,50 @@ namespace FakeServer.Controllers
                 return BadRequest();
 
             var success = await _ds.UpdateItemAsync(objectId, sourceData);
+
+            return success ? NoContent() : NotFound();
+        }
+        
+        /// <summary>
+        /// Update single object's content
+        /// </summary>
+        /// <remarks>
+        /// Patch document contains fields to be updated.
+        ///
+        ///     [
+        ///        { "op": "test", "path": "/a/b/c", "value": "foo" },
+        ///        { "op": "remove", "path": "/a/b/c" },
+        ///        { "op": "add", "path": "/a/b/c", "value": [ "foo", "bar" ] },
+        ///        { "op": "replace", "path": "/a/b/c", "value": 42 },
+        ///        { "op": "move", "from": "/a/b/c", "path": "/a/b/d" },
+        ///        { "op": "copy", "from": "/a/b/d", "path": "/a/b/e" }
+        ///     ]
+        /// </remarks>
+        /// <param name="singleObjectId">Object id</param>
+        /// <param name="patchDoc">Patch document</param>
+        /// <returns></returns>
+        /// <response code="204">Object found and updated</response>
+        /// <response code="400">Patch data is empty</response>
+        /// <response code="404">Object not found</response>
+        /// <response code="415">Unsupported content type</response>
+        [HttpPatch("{singleObjectId}")]
+        [Consumes(Constants.JsonPatchJson)]
+        public async Task<IActionResult> UpdateSingleItemJsonPatch(string singleObjectId, [FromBody] JsonPatchDocument patchDoc)
+        {
+            if (_ds.IsCollection(singleObjectId))
+                return BadRequest();
+
+            if (patchDoc == null)
+                return BadRequest();
+            
+            var item = _ds.GetItem(singleObjectId);
+
+            if (item == null)
+                return NotFound();
+            
+            patchDoc.ApplyTo(item);
+            
+            var success = await _ds.UpdateItemAsync(singleObjectId, item);
 
             return success ? NoContent() : NotFound();
         }
@@ -517,6 +561,9 @@ namespace FakeServer.Controllers
             if (_ds.IsCollection(objectId))
                 return BadRequest();
 
+            
+            
+            
             var success = await _ds.DeleteItemAsync(objectId);
 
             return success ? NoContent() : NotFound();

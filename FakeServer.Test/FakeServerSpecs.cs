@@ -893,7 +893,7 @@ namespace FakeServer.Test
         }
 
         [Fact]
-        public async Task Patch_SingleItem()
+        public async Task Patch_Merge_SingleItem()
         {
             var collection = "configuration_for_patch";
             var newConfig = new { url = "192.168.0.1" };
@@ -906,6 +906,27 @@ namespace FakeServer.Test
             result.EnsureSuccessStatusCode();
             var item = JsonConvert.DeserializeObject<JObject>(await result.Content.ReadAsStringAsync());
             Assert.Equal(newConfig.url, item["url"].Value<string>());
+            Assert.Equal("abba", item["password"].Value<string>());
+        }
+        
+        [Fact]
+        public async Task Patch_JsonPatch_SingleItem()
+        {
+            var collection = "configuration_for_patch";
+            
+            var newConfig = new dynamic[] 
+            {
+                new { op = "replace", path = "url", value = "192.168.0.2" }
+            };
+
+            var content = new StringContent(JsonConvert.SerializeObject(newConfig), Encoding.UTF8, Constants.JsonPatchJson);
+            var result = await _fixture.Client.PatchAsync($"api/{collection}", content);
+            Assert.Equal(HttpStatusCode.NoContent, result.StatusCode);
+
+            result = await _fixture.Client.GetAsync($"api/{collection}");
+            result.EnsureSuccessStatusCode();
+            var item = JsonConvert.DeserializeObject<JObject>(await result.Content.ReadAsStringAsync());
+            Assert.Equal("192.168.0.2", item["url"].Value<string>());
             Assert.Equal("abba", item["password"].Value<string>());
         }
 
