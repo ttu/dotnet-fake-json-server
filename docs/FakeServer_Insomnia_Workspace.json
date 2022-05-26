@@ -1,7 +1,7 @@
 {
     "_type": "export",
     "__export_format": 4,
-    "__export_date": "2022-05-25T15:39:30.024Z",
+    "__export_date": "2022-05-26T06:13:42.141Z",
     "__export_source": "insomnia.desktop.app:v2022.3.0",
     "resources": [
         {
@@ -540,7 +540,7 @@
         {
             "_id": "req_2a6fb6fe90d9477e94cf77f7cdb72ece",
             "parentId": "wrk_76853beb1f054d5ca9a53f87c2e7de11",
-            "modified": 1653492808406,
+            "modified": 1653545478618,
             "created": 1517228661584,
             "url": "{{ baseurl }}/api/families/20",
             "name": "Replace item",
@@ -607,12 +607,44 @@
             "_type": "request"
         },
         {
+            "_id": "req_325490a6e2e943a5ae4d750ec555673e",
+            "parentId": "wrk_76853beb1f054d5ca9a53f87c2e7de11",
+            "modified": 1653545606859,
+            "created": 1653545008752,
+            "url": "{{ baseurl }}/api/users/1",
+            "name": "Update item (JSON Patch)",
+            "description": "",
+            "method": "PATCH",
+            "body": {
+                "mimeType": "application/json",
+                "text": "[\n\t{ \"op\": \"replace\", \"path\": \"age\", \"value\": 41 },\n\t{ \"op\": \"replace\", \"path\": \"work/name\", \"value\": \"Railways Co\" },\n\t{ \"op\": \"replace\", \"path\": \"work/location\", \"value\": \"SF\" },\n\t{ \"op\": \"add\", \"path\": \"notes\", \"value\": \"This is a new field\" }\n]"
+            },
+            "parameters": [],
+            "headers": [
+                {
+                    "id": "pair_612b8f98a1a64d9a8da6ac3437384ccf",
+                    "name": "Content-Type",
+                    "value": "application/json-patch+json"
+                }
+            ],
+            "authentication": {},
+            "metaSortKey": -1517219134978.9062,
+            "isPrivate": false,
+            "settingStoreCookies": true,
+            "settingSendCookies": true,
+            "settingDisableRenderRequestBody": false,
+            "settingEncodeUrl": true,
+            "settingRebuildPath": true,
+            "settingFollowRedirects": "global",
+            "_type": "request"
+        },
+        {
             "_id": "req_d89b32ea05da4134905a4b72e5fdad15",
             "parentId": "wrk_76853beb1f054d5ca9a53f87c2e7de11",
-            "modified": 1653492838159,
+            "modified": 1653545563760,
             "created": 1517230105481,
             "url": "{{ baseurl }}/api/users/1",
-            "name": "Update item",
+            "name": "Update item (Merge Patch)",
             "description": "",
             "method": "PATCH",
             "body": {
@@ -854,7 +886,7 @@
         {
             "_id": "env_a203f5c3be67427586b0ee9d65fa1a35",
             "parentId": "wrk_76853beb1f054d5ca9a53f87c2e7de11",
-            "modified": 1563804054518,
+            "modified": 1653545594346,
             "created": 1517219550466,
             "name": "New Environment",
             "data": {
