@@ -297,21 +297,21 @@ namespace FakeServer.Controllers
         ///     ]
         /// </remarks>
         /// <param name="collectionId">Collection id</param>
-        /// <param name="id">Id of the item to be updated</param>
+        /// <param name="itemId">Id of the item to be updated</param>
         /// <param name="patchDoc">Patch document</param>
         /// <returns></returns>
         /// <response code="204">Item found and updated</response>
         /// <response code="400">Patch data is empty or item is not in a collection</response>
         /// <response code="404">Item not found</response>
         /// <response code="415">Unsupported content type</response>
-        [HttpPatch("{collectionId}/{id}")]
+        [HttpPatch("{collectionId}/{itemId}")]
         [Consumes(Constants.JsonPatchJson)]
-        public async Task<IActionResult> UpdateItemJsonPatch(string collectionId, [FromRoute][DynamicBinder] dynamic id, [FromBody] JsonPatchDocument patchDoc)
+        public async Task<IActionResult> UpdateItemJsonPatch(string collectionId, [FromRoute][DynamicBinder] dynamic itemId, [FromBody] JsonPatchDocument patchDoc)
         {
             if (_ds.IsItem(collectionId))
                 return BadRequest();
 
-            var item = _ds.GetCollection(collectionId).AsQueryable().FirstOrDefault(e => ObjectHelper.CompareFieldValueWithId(e, _dsSettings.IdField, id));
+            var item = _ds.GetCollection(collectionId).AsQueryable().FirstOrDefault(e => ObjectHelper.CompareFieldValueWithId(e, _dsSettings.IdField, itemId));
 
             if (item == null)
                 return NotFound();
@@ -321,7 +321,7 @@ namespace FakeServer.Controllers
             
             patchDoc.ApplyTo(item);
             
-            var success = await _ds.GetCollection(collectionId).UpdateOneAsync(id, item);
+            var success = await _ds.GetCollection(collectionId).UpdateOneAsync(itemId, item);
 
             return success ? NoContent() : NotFound();
         }
@@ -392,7 +392,7 @@ namespace FakeServer.Controllers
         ///     ]
         /// </remarks>
         /// <param name="collectionId">Collection id</param>
-        /// <param name="id">Id of the item to be updated</param>
+        /// <param name="itemId">Id of the item to be updated</param>
         /// <param name="path">Rest of the path</param>
         /// <param name="patchDoc">Patch document</param>
         /// <returns></returns>
@@ -400,14 +400,14 @@ namespace FakeServer.Controllers
         /// <response code="400">Patch data is empty or item is not in a collection</response>
         /// <response code="404">Item not found</response>
         /// <response code="415">Unsupported content type</response>
-        [HttpPatch("{collectionId}/{id}/{*path}")]
+        [HttpPatch("{collectionId}/{itemId}/{*path}")]
         [Consumes(Constants.JsonPatchJson)]
-        public async Task<IActionResult> UpdateNestedItemJsonPatch(string collectionId, [FromRoute][DynamicBinder] dynamic id, string path, [FromBody] JsonPatchDocument patchDoc)
+        public async Task<IActionResult> UpdateNestedItemJsonPatch(string collectionId, [FromRoute][DynamicBinder] dynamic itemId, string path, [FromBody] JsonPatchDocument patchDoc)
         {
             if (_ds.IsItem(collectionId))
                 return BadRequest();
 
-            var item = _ds.GetCollection(collectionId).AsQueryable().FirstOrDefault(e => ObjectHelper.CompareFieldValueWithId(e, _dsSettings.IdField, id));
+            var item = _ds.GetCollection(collectionId).AsQueryable().FirstOrDefault(e => ObjectHelper.CompareFieldValueWithId(e, _dsSettings.IdField, itemId));
 
             if (item == null)
                 return NotFound();
@@ -422,7 +422,7 @@ namespace FakeServer.Controllers
             
             patchDoc.ApplyTo(nested);
             
-            var success = await _ds.GetCollection(collectionId).UpdateOneAsync(id, item);
+            var success = await _ds.GetCollection(collectionId).UpdateOneAsync(itemId, item);
 
             return success ? NoContent() : NotFound();
         }

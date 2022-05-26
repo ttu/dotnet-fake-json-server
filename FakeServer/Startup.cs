@@ -122,10 +122,6 @@ namespace FakeServer
                 c.IncludeXmlComments(xmlPath);
                 
                 c.AddAuthenticationConfig(_authenticationType);
-                
-                // https://github.com/domaindrivendev/Swashbuckle.WebApi/issues/142
-                // NOTE: JSON Patch endpoints are not visible on Swagger
-                c.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
             });
         }
 

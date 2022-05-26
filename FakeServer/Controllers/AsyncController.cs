@@ -142,20 +142,20 @@ namespace FakeServer.Controllers
         ///     ]
         /// </remarks>
         /// <param name="collectionId"></param>
-        /// <param name="id">Id of the item to be updated</param>
+        /// <param name="itemId">Id of the item to be updated</param>
         /// <param name="patchDoc">Patch document</param>
         /// <returns></returns>
         /// <response code="202">New async operation started</response>
         /// <response code="404">Item not found</response>
         /// <response code="415">Unsupported content type</response>
-        [HttpPatch("{collectionId}/{id}")]
+        [HttpPatch("{collectionId}/{itemId}")]
         [Consumes(Constants.JsonPatchJson)]
-        public IActionResult UpdateItemJsonPatch(string collectionId, dynamic id, [FromBody] JsonPatchDocument patchDoc)
+        public IActionResult UpdateItemJsonPatch(string collectionId, dynamic itemId, [FromBody] JsonPatchDocument patchDoc)
         {
             if (_ds.IsItem(collectionId))
                 return BadRequest();
 
-            var item = _ds.GetCollection(collectionId).AsQueryable().FirstOrDefault(e => ObjectHelper.CompareFieldValueWithId(e, _dsSettings.IdField, id));
+            var item = _ds.GetCollection(collectionId).AsQueryable().FirstOrDefault(e => ObjectHelper.CompareFieldValueWithId(e, _dsSettings.IdField, itemId));
 
             if (item == null)
                 return NotFound();
@@ -163,8 +163,8 @@ namespace FakeServer.Controllers
             var action = new Func<dynamic>(() =>
             {
                 patchDoc.ApplyTo(item);
-                _ds.GetCollection(collectionId).UpdateOne(id, item);
-                return id;
+                _ds.GetCollection(collectionId).UpdateOne(itemId, item);
+                return itemId;
             });
 
             var queueUrl = _jobs.StartNewJob(collectionId, "PATCH", action);
