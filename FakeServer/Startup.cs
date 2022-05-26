@@ -92,6 +92,7 @@ namespace FakeServer
 
                 // Add patches to NewtonsoftJsonPatchInputFormatter, not to NewtonsoftJsonPatchInputFormatter
                 var jsonFormatter = options.InputFormatters.OfType<NewtonsoftJsonInputFormatter>().First(i => i.GetType() == typeof(NewtonsoftJsonInputFormatter));
+                jsonFormatter.SupportedMediaTypes.Add(new MediaTypeHeaderValue(Constants.JsonPatchJson));
                 jsonFormatter.SupportedMediaTypes.Add(new MediaTypeHeaderValue(Constants.JsonMergePatch));
                 jsonFormatter.SupportedMediaTypes.Add(new MediaTypeHeaderValue(Constants.MergePatchJson));
             });
@@ -121,6 +122,10 @@ namespace FakeServer
                 c.IncludeXmlComments(xmlPath);
                 
                 c.AddAuthenticationConfig(_authenticationType);
+                
+                // https://github.com/domaindrivendev/Swashbuckle.WebApi/issues/142
+                // NOTE: JSON Patch endpoints are not visible on Swagger
+                c.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
             });
         }
 

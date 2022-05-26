@@ -301,7 +301,6 @@ namespace FakeServer.Controllers
         /// <param name="patchDoc">Patch document</param>
         /// <returns></returns>
         /// <response code="204">Item found and updated</response>
-        /// 
         /// <response code="400">Patch data is empty or item is not in a collection</response>
         /// <response code="404">Item not found</response>
         /// <response code="415">Unsupported content type</response>
