@@ -969,7 +969,35 @@ $ curl -H "Accept: application/json" -H "Content-type: application/json" -X PUT 
 
 #### Update item 
 
-Server supports [JSON merge patches](https://tools.ietf.org/html/rfc7396).
+Server supports [JSON patch](http://jsonpatch.com/) and [JSON merge patch](https://tools.ietf.org/html/rfc7396).
+
+##### JSON Patch
+
+```
+> PATCH /api/{collection}/{id}
+
+Content-type: application/json-patch+json
+
+204 No Content             : Item updated
+400 Bad Request            : PATCH is empty
+404 Not Found              : Item is not found
+415 Unsupported Media Type : Content type is not supported
+```
+
+Set `age` to _41_ and `work.rating` to _3.2_ from user with `id` _1_.
+
+```sh
+$ curl -H "Accept: application/json" -H "Content-type: application/json-patch+json" -X PATCH -d '[{ "op": "replace", "path": "age", "value": 41}, { "op": "replace", "path": "work/rating", "value": 3.2 }]' http://localhost:57602/api/users/1
+```
+
+```json
+[
+  { "op": "replace", "path": "age", "value": 41}, 
+  { "op": "replace", "path": "work/rating", "value": 3.2 }
+] 
+```
+
+##### JSON Merge Patch
 
 ```
 > PATCH /api/{collection}/{id}
