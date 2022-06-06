@@ -8,5 +8,5 @@ script:
   - dotnet restore
   - dotnet build
   - dotnet test FakeServer.Test/FakeServer.Test.csproj
-before_install:
-  - echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
+env:
+  - ASPNETCORE_hostBuilder__reloadConfigOnChange=false
