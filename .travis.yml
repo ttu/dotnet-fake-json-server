@@ -8,3 +8,5 @@ script:
   - dotnet restore
   - dotnet build
   - dotnet test FakeServer.Test/FakeServer.Test.csproj
+env:
+  - DOTNET_USE_POLLING_FILE_WATCHER=true
