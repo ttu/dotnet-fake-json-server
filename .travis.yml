@@ -8,6 +8,5 @@ script:
   - dotnet restore
   - dotnet build
   - dotnet test FakeServer.Test/FakeServer.Test.csproj
-env:
-  - DOTNET_USE_POLLING_FILE_WATCHER=true
-  - DOTNET_HOSTBUILDER__RELOADCONFIGONCHANGE=false
+before_install:
+  - echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
