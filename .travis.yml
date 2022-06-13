@@ -7,6 +7,4 @@ solution: FakeServer.sln
 script:
   - dotnet restore
   - dotnet build
-  - dotnet test FakeServer.Test/FakeServer.Test.csproj
-env:
-  - ASPNETCORE_hostBuilder__reloadConfigOnChange=false
+  - dotnet test FakeServer.Test/FakeServer.Test.csproj -p:ParallelizeTestCollections=false
