@@ -2,7 +2,7 @@ language: csharp
 os: linux
 dist: focal
 mono: none
-dotnet: 5.0.102
+dotnet: 6.0.404
 solution: FakeServer.sln
 script:
   - dotnet restore
