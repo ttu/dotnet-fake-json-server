@@ -14,9 +14,16 @@ jobs:
       name: windows/default
     steps:
       - checkout
+      - restore_cache:
+            keys:
+              - deps-{{ checksum "FakeServer/FakeServer.csproj" }}-{{ checksum "FakeServer.Test/FakeServer.Test.csproj" }}
       - run:
           name: "Install project dependencies"
           command: dotnet.exe restore
+      - save_cache:
+          key: deps-{{ checksum "FakeServer/FakeServer.csproj" }}-{{ checksum "FakeServer.Test/FakeServer.Test.csproj" }}
+          paths:
+            - /root/.nuget/packages
       - run:
           name: "Build application"
           command: dotnet.exe build
