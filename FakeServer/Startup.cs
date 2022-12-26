@@ -17,7 +17,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.PlatformAbstractions;
 using Microsoft.Net.Http.Headers;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerUI;
@@ -77,10 +76,8 @@ namespace FakeServer
             _authenticationType = AuthenticationConfiguration.ReadType(Configuration);
             services.AddApiAuthentication(_authenticationType);
 
-            // TODO: AddControllers
             services.AddMvc()
-                .AddNewtonsoftJson()
-                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+                    .AddNewtonsoftJson();
 
             services.Configure<MvcOptions>(options =>
             {
@@ -117,7 +114,7 @@ namespace FakeServer
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Fake JSON API", Version = "v1" });
 
-                var basePath = PlatformServices.Default.Application.ApplicationBasePath;
+                var basePath = AppContext.BaseDirectory;
                 var xmlPath = Path.Combine(basePath, "FakeServer.xml");
                 c.IncludeXmlComments(xmlPath);
                 

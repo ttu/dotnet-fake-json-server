@@ -2,7 +2,6 @@ using McMaster.Extensions.CommandLineUtils;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.PlatformAbstractions;
 using Serilog;
 using System;
 using System.Collections.Generic;
@@ -53,7 +52,7 @@ namespace FakeServer
 
             Log.Logger = new LoggerConfiguration()
                 .ReadFrom.Configuration(config)
-                .WriteTo.RollingFile(Path.Combine(PlatformServices.Default.Application.ApplicationBasePath, "log-{Date}.txt"))
+                .WriteTo.RollingFile(Path.Combine(AppContext.BaseDirectory, "log-{Date}.txt"))
                 .CreateLogger();
 
             try
