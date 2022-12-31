@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 
 namespace FakeServer
@@ -133,8 +134,9 @@ namespace FakeServer
                 if (optionsUrls.HasValue())
                 {
                     // Add urls back to arguments that are passed to WebHost builder
-                    app.RemainingArguments.Add("--urls");
-                    app.RemainingArguments.Add(optionsUrls.Value());
+                    var urlsArgument = new CommandArgument() { Name = "--urls" };
+                    urlsArgument.TryParse(optionsUrls.Value());
+                    app.AddArgument(urlsArgument);
                 }
 
                 if (optionInit.HasValue()) 
