@@ -36,7 +36,7 @@
     <PackageReference Include="GraphQL" Version="2.4.0" />
     <PackageReference Include="JsonFlatFileDataStore" Version="2.4.0" />
     <PackageReference Include="Marvin.Cache.Headers" Version="6.1.0" />
-    <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="3.1.0" />
+    <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="4.0.2" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.21.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.12" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.12" />

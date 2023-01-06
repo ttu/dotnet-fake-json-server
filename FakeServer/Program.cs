@@ -130,13 +130,6 @@ namespace FakeServer
                     Console.WriteLine($"Static files: default wwwroot");
                 }
 
-                if (optionsUrls.HasValue())
-                {
-                    // Add urls back to arguments that are passed to WebHost builder
-                    app.RemainingArguments.Add("--urls");
-                    app.RemainingArguments.Add(optionsUrls.Value());
-                }
-
                 if (optionInit.HasValue()) 
                 {
                     var baseAppSettingsFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "appsettings.json");
@@ -152,8 +145,16 @@ namespace FakeServer
                     }
                     return 0;
                 }
+                
+                var arguments = new List<string>(app.RemainingArguments);
+                
+                if (optionsUrls.HasValue())
+                {
+                    // Add urls back to arguments that are passed to WebHost builder
+                    arguments.AddRange(new [] { "--urls", optionsUrls.Value()});
+                }
 
-                return invoke(app.RemainingArguments.ToArray(), initialData);
+                return invoke(arguments.ToArray(), initialData);
             });
 
             return app;
