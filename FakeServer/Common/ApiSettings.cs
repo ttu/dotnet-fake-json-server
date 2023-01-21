@@ -1,9 +1,8 @@
-﻿namespace FakeServer.Common
-{
-    public class ApiSettings
-    {
-        public bool UpsertOnPut { get; set; }
+﻿namespace FakeServer.Common;
 
-        public bool UseResultObject { get; set; }
-    }
+public class ApiSettings
+{
+    public bool UpsertOnPut { get; set; }
+
+    public bool UseResultObject { get; set; }
 }

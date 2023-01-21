@@ -1,26 +1,25 @@
-﻿namespace FakeServer.Authentication
+﻿namespace FakeServer.Authentication;
+
+public enum AuthenticationType
 {
-    public enum AuthenticationType
-    {
-        AllowAll,
-        JwtBearer,
-        Basic,
-        ApiKey
-    }
+    AllowAll,
+    JwtBearer,
+    Basic,
+    ApiKey
+}
 
-    public class AuthenticationSettings
-    {
-        public bool Enabled { get; set; }
+public class AuthenticationSettings
+{
+    public bool Enabled { get; set; }
 
-        public IEnumerable<User> Users { get; set; }
+    public IEnumerable<User> Users { get; set; }
 
-        public string ApiKey { get; set; }
-    }
+    public string ApiKey { get; set; }
+}
 
-    public class User
-    {
-        public string Username { get; set; }
+public class User
+{
+    public string Username { get; set; }
 
-        public string Password { get; set; }
-    }
+    public string Password { get; set; }
 }

@@ -1,9 +1,8 @@
-﻿namespace FakeServer.Common
-{
-    public class DataStoreSettings
-    {
-        public string IdField { get; set; } = "id";
+﻿namespace FakeServer.Common;
 
-        public bool EagerDataReload { get; set; }
-    }
+public class DataStoreSettings
+{
+    public string IdField { get; set; } = "id";
+
+    public bool EagerDataReload { get; set; }
 }

@@ -1,56 +1,55 @@
 ﻿using FakeServer.WebSockets;
 using Microsoft.Extensions.Options;
 
-namespace FakeServer.Jobs
+namespace FakeServer.Jobs;
+
+public class JobsService
 {
-    public class JobsService
+    private readonly Dictionary<string, Job> _queue = new();
+    private readonly IMessageBus _bus;
+    private readonly Action _delay;
+
+    public JobsService(IMessageBus bus, IOptions<JobsSettings> jobsSettings)
     {
-        private readonly Dictionary<string, Job> _queue = new();
-        private readonly IMessageBus _bus;
-        private readonly Action _delay;
+        _bus = bus;
 
-        public JobsService(IMessageBus bus, IOptions<JobsSettings> jobsSettings)
+        _delay = () =>
         {
-            _bus = bus;
+            if (jobsSettings.Value.DelayMs > 0)
+                Thread.Sleep(jobsSettings.Value.DelayMs);
+        };
+    }
 
-            _delay = () =>
-            {
-                if (jobsSettings.Value.DelayMs > 0)
-                    Thread.Sleep(jobsSettings.Value.DelayMs);
-            };
-        }
+    public string StartNewJob(string collection, string method, Func<dynamic> func)
+    {
+        var queueId = Guid.NewGuid().ToString()[..5];
+        var queueUrl = $"async/queue/{queueId}";
 
-        public string StartNewJob(string collection, string method, Func<dynamic> func)
+        var task = Task.Run(() =>
         {
-            var queueId = Guid.NewGuid().ToString()[..5];
-            var queueUrl = $"async/queue/{queueId}";
+            _delay();
 
-            var task = Task.Run(() =>
-            {
-                _delay();
+            var itemId = func();
 
-                var itemId = func();
+            var data = new { Method = method, Path = $"{collection}/{itemId}", Collection = collection, ItemId = itemId };
+            _bus.Publish("updated", data);
 
-                var data = new { Method = method, Path = $"{collection}/{itemId}", Collection = collection, ItemId = itemId };
-                _bus.Publish("updated", data);
+            return itemId;
+        });
 
-                return itemId;
-            });
+        _queue.Add(queueId, new Job { Collection = collection, Action = task });
 
-            _queue.Add(queueId, new Job { Collection = collection, Action = task });
+        return queueUrl;
+    }
 
-            return queueUrl;
-        }
+    public Job GetJob(string queueId)
+    {
+        _queue.TryGetValue(queueId, out var process);
+        return process;
+    }
 
-        public Job GetJob(string queueId)
-        {
-            _queue.TryGetValue(queueId, out var process);
-            return process;
-        }
-
-        public bool DeleteJob(string queueId)
-        {
-            return _queue.Remove(queueId);
-        }
+    public bool DeleteJob(string queueId)
+    {
+        return _queue.Remove(queueId);
     }
 }

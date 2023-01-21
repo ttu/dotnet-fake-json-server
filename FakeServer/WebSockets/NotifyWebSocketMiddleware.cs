@@ -1,41 +1,40 @@
 ﻿using FakeServer.Common;
 
-namespace FakeServer.WebSockets
+namespace FakeServer.WebSockets;
+
+public class NotifyWebSocketMiddleware
 {
-    public class NotifyWebSocketMiddleware
+    private readonly List<string> _updateMethods = new() { "POST", "PUT", "PATCH", "DELETE" };
+
+    private readonly RequestDelegate _next;
+    private readonly IMessageBus _bus;
+
+    public NotifyWebSocketMiddleware(RequestDelegate next, IMessageBus bus)
     {
-        private readonly List<string> _updateMethods = new() { "POST", "PUT", "PATCH", "DELETE" };
+        _next = next;
+        _bus = bus;
+    }
 
-        private readonly RequestDelegate _next;
-        private readonly IMessageBus _bus;
+    public async Task Invoke(HttpContext context)
+    {
+        await _next(context);
 
-        public NotifyWebSocketMiddleware(RequestDelegate next, IMessageBus bus)
+        if (context.Request.Path.Value.StartsWith($"/{Config.ApiRoute}") &&
+            _updateMethods.Contains(context.Request.Method) &&
+            (context.Response.StatusCode >= 200 && context.Response.StatusCode < 300))
         {
-            _next = next;
-            _bus = bus;
-        }
+            var method = context.Request.Method;
+            var path = context.Request.Path.Value;
 
-        public async Task Invoke(HttpContext context)
-        {
-            await _next(context);
-
-            if (context.Request.Path.Value.StartsWith($"/{Config.ApiRoute}") &&
-                _updateMethods.Contains(context.Request.Method) &&
-                (context.Response.StatusCode >= 200 && context.Response.StatusCode < 300))
+            if (method == "POST")
             {
-                var method = context.Request.Method;
-                var path = context.Request.Path.Value;
-
-                if (method == "POST")
-                {
-                    var location = context.Response.Headers["Location"].ToString();
-                    var itemId = location.Substring(location.LastIndexOf('/') + 1);
-                    path = $"{path}/{itemId}";
-                }
-
-                var data = ObjectHelper.GetWebSocketMessage(method, path);
-                _bus.Publish("updated", data);
+                var location = context.Response.Headers["Location"].ToString();
+                var itemId = location.Substring(location.LastIndexOf('/') + 1);
+                path = $"{path}/{itemId}";
             }
+
+            var data = ObjectHelper.GetWebSocketMessage(method, path);
+            _bus.Publish("updated", data);
         }
     }
 }
