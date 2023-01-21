@@ -1,14 +1,9 @@
 ﻿using FakeServer.Common;
-using Microsoft.AspNetCore.Http;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace FakeServer.CustomResponse
 {

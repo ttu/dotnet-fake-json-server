@@ -1,15 +1,9 @@
 ﻿using FakeServer.Common;
 using FakeServer.WebSockets;
 using JsonFlatFileDataStore;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
 
 namespace FakeServer.GraphQL
 {

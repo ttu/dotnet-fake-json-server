@@ -1,10 +1,7 @@
 ﻿using FakeServer.Common;
 using FakeServer.WebSockets;
 using Newtonsoft.Json;
-using System;
 using System.Dynamic;
-using System.Linq;
-using System.Threading;
 using Xunit;
 
 namespace FakeServer.Test

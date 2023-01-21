@@ -1,10 +1,7 @@
-using System;
 using FakeServer.Authentication.ApiKey;
 using FakeServer.Authentication.Basic;
 using FakeServer.Authentication.Custom;
 using FakeServer.Authentication.Jwt;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace FakeServer.Authentication
 {

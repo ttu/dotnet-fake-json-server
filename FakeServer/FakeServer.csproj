@@ -23,6 +23,10 @@
     <AssemblyName>FakeServer</AssemblyName>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
   </PropertyGroup>
+
+  <PropertyGroup>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
     
   <!-- 
    This made build on Travis CI fail. Apparently this is fixed in some later .NET Core SDK versions, so uncomment it when it works with Travis.

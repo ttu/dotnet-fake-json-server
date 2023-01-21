@@ -1,8 +1,4 @@
-﻿using System.IO;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-
-namespace FakeServer.Common
+﻿namespace FakeServer.Common
 {
     // ref: https://www.tpeczek.com/2017/10/exploring-head-method-behavior-in.html
     public class HeadMethodMiddleware

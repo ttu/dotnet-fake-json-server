@@ -5,11 +5,8 @@ using GraphQL.Language.AST;
 using GraphQL.Types;
 using GraphQLParser.Exceptions;
 using JsonFlatFileDataStore;
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Dynamic;
-using System.Linq;
 
 namespace FakeServer.GraphQL
 {

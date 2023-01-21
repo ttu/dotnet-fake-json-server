@@ -1,7 +1,6 @@
 ﻿using FakeServer.Common;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
-using System.Collections.Generic;
 
 namespace FakeServer.Authentication
 {

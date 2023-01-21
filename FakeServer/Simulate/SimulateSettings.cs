@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace FakeServer.Simulate
+﻿namespace FakeServer.Simulate
 {
     public class SimulateSettings
     {

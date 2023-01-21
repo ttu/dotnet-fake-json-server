@@ -1,7 +1,4 @@
 ﻿using FakeServer.Common;
-using Microsoft.AspNetCore.Http;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace FakeServer.WebSockets
 {

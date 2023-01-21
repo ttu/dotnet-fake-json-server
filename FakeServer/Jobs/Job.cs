@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-namespace FakeServer.Jobs
+﻿namespace FakeServer.Jobs
 {
     public class Job
     {

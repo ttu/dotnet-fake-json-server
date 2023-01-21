@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace FakeServer.Authentication
+﻿namespace FakeServer.Authentication
 {
     public enum AuthenticationType
     {

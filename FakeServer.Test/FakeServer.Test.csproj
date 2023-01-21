@@ -6,6 +6,10 @@
     <AssemblyName>FakeServer.Test</AssemblyName>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+  
   <ItemGroup>
     <Content Include="..\FakeServer\datastore.json" Link="datastore.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

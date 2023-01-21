@@ -1,7 +1,5 @@
-﻿using System;
-using System.Net.Http.Headers;
+﻿using System.Net.Http.Headers;
 using System.Net;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace FakeServer.Test.Authentication

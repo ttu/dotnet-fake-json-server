@@ -1,9 +1,7 @@
-using System;
 using FakeServer.Authentication.ApiKey;
 using FakeServer.Authentication.Basic;
 using FakeServer.Authentication.Jwt;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Extensions.DependencyInjection;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace FakeServer.Authentication

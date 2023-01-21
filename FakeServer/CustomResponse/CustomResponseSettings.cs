@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace FakeServer.CustomResponse
+﻿namespace FakeServer.CustomResponse
 {
     public class CustomResponseSettings
     {
