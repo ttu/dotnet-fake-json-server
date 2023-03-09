@@ -31,7 +31,9 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/superagent/3.5.2/superagent.min.js"></script>
 
 <script>
-    var app = new Vue({
+    const { createApp } = Vue
+
+    createApp({
         el: '#app',
         data: {
             collections: '',
