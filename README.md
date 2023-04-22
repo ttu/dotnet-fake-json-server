@@ -275,7 +275,7 @@ Example queries are in [Insomnia](https://insomnia.rest/) workspace format in [F
 
 ### Authentication
 
-Fake REST API supports Token and Basic Authentication. 
+Fake REST API supports Token and Basic authentication and API keys. 
 
 Authentication can be disabled from `appsettings.json` by setting Enabled to `false`. `AuthenticationType` options are `token`, `basic` and `apikey`.
 
@@ -317,7 +317,7 @@ Add token to Authorization header:
 $ curl -H 'Authorization: Bearer [TOKEN]' http://localhost:57602/api
 ```
 
-Token authentication has also a logout functionality. By design tokens do not support token invalidation, so logout is implemented by blacklisting tokens.
+Token authentication supports logout functionality. By design, tokens do not support token invalidation and logout is implemented by blacklisting tokens.
 
 ```sh
 $ curl -X POST -d '' -H 'Authorization: Bearer [TOKEN]' http://localhost:57602/logout
@@ -525,9 +525,9 @@ If _string_ is used as the identifiers type, then items must be inserted with `P
 
 #### Return codes
 
-Asynchoronous operations follow the [REST CookBook guide](http://restcookbook.com/Resources/asynchroneous-operations/). Updates will return `202` with location header to queue item. Queue will return `200` while operation is processing and `303` when job is ready with location header to changed or new item.
-
 Method return codes are specified in [REST API Tutorial](http://www.restapitutorial.com/lessons/httpmethods.html).
+
+Asynchoronous operations follow the [REST CookBook guide](http://restcookbook.com/Resources/asynchroneous-operations/). Updates will return `202` with location header to queue item. Queue will return `200` while operation is processing and `303` when job is ready with location header to changed or new item.
 
 #### OPTIONS method
 
