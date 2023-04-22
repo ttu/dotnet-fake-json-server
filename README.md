@@ -1384,8 +1384,8 @@ Response:
 ```json
 {
   "data": {
-    "users": {"
-      id": 1,
+    "users": {
+      "id": 1,
       "name": "Rick",
       "age": 44
     }
