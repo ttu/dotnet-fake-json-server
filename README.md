@@ -633,7 +633,9 @@ $ curl http://localhost:57602/api
 [ "users", "movies", "configuration" ]
 ```
 
-#### Query items (GET)
+#### Query items 
+
+#### Get All items (GET)
 
 ```
 > GET /api/{collection}/{item}
@@ -700,7 +702,7 @@ $ curl http://localhost:57602/api/configuration
 { "ip": "192.168.0.1" }
 ```
 
-##### Slice
+#### Slice
 
 Slicing can be defined with `skip`/`take`, `offset`/`limit` or `page`/`per_page` parameters. By default request returns the first 512 items.
 
