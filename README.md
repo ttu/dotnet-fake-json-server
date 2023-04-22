@@ -18,8 +18,8 @@ Fake JSON Server is a Fake REST API that can be used as a Back End for prototypi
 ##### Why would I use this instead of other Fake Servers?
 
 1) API is built following the best practices and can be used as a reference when building your own API
+1) Contains all common features used with well functioning APIs (see features listed below)
 1) Can be run on Windows, Linux and macOS without any installation or prerequisites from executable or with Docker
-1) See features listed below
 
 ## Features
 
@@ -30,6 +30,7 @@ Fake JSON Server is a Fake REST API that can be used as a Back End for prototypi
 * REST API follows best practices from multiple guides 
   * Uses correct Status Codes, Headers, etc.
   * As all guides have slightly different recommendations, this compilation is based on our opinions
+* Paging, filtering, selecting, text search etc. [#](#slice)
 * Token, Basic and API key Authentication [#](#authentication)
 * WebSocket update notifications [#](#websockets)
 * Simulate delay and errors for requests [#](#simulate-delay-and-random-errors)
@@ -638,7 +639,7 @@ $ curl http://localhost:57602/api
 #### Get All items (GET)
 
 ```
-> GET /api/{collection}/{item}
+> GET /api/{collection}
 
 200 OK          : Collection is found
 400 Bad Request : Invalid query parameters
@@ -764,7 +765,7 @@ $ curl 'http://localhost:57602/api/users?sort=location,+age'
 ]
 ```
 
-##### Child properties
+#### Child properties
 
 Query can have a path to child properties. Property names are separated by periods.
 
@@ -809,7 +810,7 @@ Query will return ACME from the example JSON.
 ]
 ```
 
-##### Filter operators
+#### Filter operators
 
 Query filter can include operators. Operator identifier is added to the end of the field.
 
@@ -835,7 +836,7 @@ $ curl http://localhost:57602/api/users?age_lt=40
 ]
 ```
 
-##### Full-text search
+#### Full-text search
 
 Full-text search can be performed with the `q`-parameter followed by search text. Search is not case sensitive.
 
