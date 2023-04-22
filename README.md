@@ -537,7 +537,7 @@ OPTIONS method will return `Allow` header with a list of HTTP methods that may b
 $ curl -X OPTIONS -v http://localhost:57602/api/
 ```
 
-```json
+```txt
 200 OK
 
 Headers:
@@ -554,7 +554,7 @@ E.g. get user count without downloading large response body.
 $ curl -X HEAD -v http://localhost:57602/api/users
 ```
 
-```json
+```txt
 200 OK
 
 Headers:
@@ -615,7 +615,7 @@ Data used in example requests, unless otherwise stated:
 
 Example JSON generation guide for data used in unit tests [CreateJSON.md](docs/CreateJson.md).
 
-####  List collections 
+####  List collections  (GET)
 
 ```
 > GET /api
@@ -633,10 +633,10 @@ $ curl http://localhost:57602/api
 [ "users", "movies", "configuration" ]
 ```
 
-#### Query
+#### Query items (GET)
 
 ```
-> GET /api/{collection/item}
+> GET /api/{collection}/{item}
 
 200 OK          : Collection is found
 400 Bad Request : Invalid query parameters
@@ -648,7 +648,7 @@ By default the request returns results in an array. Headers have the collection'
 ```sh
 $ curl http://localhost:57602/api/users
 ```
-```json
+```txt
 [
   { "id": 1, "name": "Phil", "age": 40, "location": "NY" },
   { "id": 2, "name": "Larry", "age": 37, "location": "London" },
@@ -870,7 +870,7 @@ $ curl http://localhost:57602/api/users?fields=age,name
 ]
 ```
 
-#### Get item with id 
+#### Get item with id (GET)
 
 ``` 
 > GET /api/{collection}/{id}
@@ -890,7 +890,7 @@ $ curl http://localhost:57602/api/users/1
 { "id": 1, "name": "Phil", "age": 40, "location": "NY" }
 ```
 
-#### Get nested items
+#### Get nested items (GET)
 
 ```
 > GET /api/{collection}/{id}/{restOfThePath}
@@ -924,9 +924,9 @@ $ curl http://localhost:57602/api/company/0/employees/1/address
 { "address": { "city": "London" } }
 ```
 
-#### Add item 
+#### Add item (POST)
 
-```
+```txt
 > POST /api/{collection}
 
 201 Created     : New item is created
@@ -942,7 +942,7 @@ $ curl -H "Accept: application/json" -H "Content-type: application/json" -X POST
 
 Response has new item's id and a Location header that contains the path to the new item.
 
-```json
+```txt
 { "id": 6 }
 
 Headers:
@@ -951,9 +951,9 @@ Location=http://localhost:57602/api/users/6
 
 If collection is empty and new item has an _id-field_ set, it will be used a first _id-value_. If _id-field_ is not set, _id-value_ will start from `0`.
 
-#### Replace item 
+#### Replace item (PUT)
 
-``` 
+```txt
 > PUT /api/{collection}/{id}
 
 204 No Content  : Item is replaced
@@ -967,13 +967,13 @@ Replace user with `id` _1_ with object _{ "name": "Roger", "age": 28, "location"
 $ curl -H "Accept: application/json" -H "Content-type: application/json" -X PUT -d '{ "name": "Roger", "age": 28, "location": "SF" }' http://localhost:57602/api/users/1
 ```
 
-#### Update item 
+#### Update item (PATCH)
 
 Server supports [JSON patch](http://jsonpatch.com/) and [JSON merge patch](https://tools.ietf.org/html/rfc7396).
 
 ##### JSON Patch
 
-```
+```txt
 > PATCH /api/{collection}/{id}
 
 Content-type: application/json-patch+json
@@ -999,7 +999,7 @@ $ curl -H "Accept: application/json" -H "Content-type: application/json-patch+js
 
 ##### JSON Merge Patch
 
-```
+```txt
 > PATCH /api/{collection}/{id}
 
 Content-type: application/json+merge-patch or application/merge-patch+json
@@ -1032,7 +1032,7 @@ _NOTE:_
 
 https://tools.ietf.org/html/rfc7396#section-2
 
-#### Delete item
+#### Delete item (DELETE)
 
 ``` 
 > DELETE /api/{collection}/{id}
@@ -1051,7 +1051,7 @@ $ curl -X DELETE http://localhost:57602/api/users/1
 
 `/async` endpoint has long running operation for each update operation.
 
-```
+```txt
 > POST/PUT/PATCH/DELETE /async/{collection}/{id}
 
 202 Accepted    : New job started
@@ -1069,7 +1069,7 @@ Create new item. Curl has a verbose flag (`-v`). When it is used, curl will prin
 $ curl -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{ "name": "Phil", "age": 40, "location": "NY" }' -v http://localhost:57602/async/users/
 ```
 
-```
+```txt
 > GET /async/queue/{id}
 
 200 OK        : Job running
@@ -1084,7 +1084,7 @@ When Job is ready, status code will be _redirect See Other_. Location header wil
 
 After job is finished, it must be deleted manually
 
-```
+```txt
 > DELETE /async/queue/{id}
 
 204 No Content : Job deleted
@@ -1140,7 +1140,7 @@ OR
 
 Response is in JSON format. It contains `data` and `errors` fields. `errors` field is not present if there are no errors. 
 
-```json
+```txt
 {
   "data": { 
     "users": [ ... ],
@@ -1383,7 +1383,7 @@ $ curl -H "Content-type: application/graphql" -X POST -d "mutation { replaceUser
 ```
 
 Response:
-```
+```json
 {
   "data": {
     "users": {"
@@ -1504,7 +1504,7 @@ return new { Data = _Body, Success = _Context.Response.StatusCode == 200 };
 
 Previous script will have a response body:
 
-```json
+```txt
 {
   "Data": [
     { "id": 1, "name": "James" ...},
@@ -1517,7 +1517,7 @@ Previous script will have a response body:
 
 If response data requires so dynamically named properties, e.g. `users` in the example, then response requires more complex processing.
 
-```json
+```txt
 {
   "Data": {
     "users": [
