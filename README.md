@@ -675,11 +675,9 @@ The return value can also be a JSON object. Set `UseResultObject` to _true_ from
 
 JSON object has items in results array in result field, link object has the pagination info, skip, take and total count fields.
 
-```txt
+```json
 {
-  "results": [
-    ...
-  ],
+  "results": [],
   "link": {
     "Prev": "http://localhost:57602/api/users?offset=5&limit=5",
     "Next": "http://localhost:57602/api/users?offset=15&limit=5",
