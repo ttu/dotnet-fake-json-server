@@ -253,13 +253,13 @@ $ curl http://localhost:57602/api/users?location=NY
 # Get User with Id 1
 $ curl http://localhost:57602/api/users/1
 
-...
+# ...
 
 # Add users to data.json manually
 
 # Get all users
 $ curl http://localhost:57602/api/users/
-...
+# ...
 
 # Or open url http://localhost:57602/swagger/ with browser and use Swagger
 ```
