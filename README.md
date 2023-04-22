@@ -389,7 +389,7 @@ If caching is enabled, _ETag_ is added to response headers.
 $ curl -v 'http://localhost:57602/api/users?age=40'
 ```
 
-```json
+```txt
 200 OK
 
 Headers:
@@ -617,7 +617,7 @@ Example JSON generation guide for data used in unit tests [CreateJSON.md](docs/C
 
 ####  List collections  (GET)
 
-```
+```txt
 > GET /api
 
 200 OK : List of collections
@@ -675,7 +675,7 @@ The return value can also be a JSON object. Set `UseResultObject` to _true_ from
 
 JSON object has items in results array in result field, link object has the pagination info, skip, take and total count fields.
 
-```json
+```txt
 {
   "results": [
     ...
