@@ -18,8 +18,8 @@ Fake JSON Server is a Fake REST API that can be used as a Back End for prototypi
 ##### Why would I use this instead of other Fake Servers?
 
 1) API is built following the best practices and can be used as a reference when building your own API
+1) Contains all common features used with well functioning APIs (see features listed below)
 1) Can be run on Windows, Linux and macOS without any installation or prerequisites from executable or with Docker
-1) See features listed below
 
 ## Features
 
@@ -30,6 +30,7 @@ Fake JSON Server is a Fake REST API that can be used as a Back End for prototypi
 * REST API follows best practices from multiple guides 
   * Uses correct Status Codes, Headers, etc.
   * As all guides have slightly different recommendations, this compilation is based on our opinions
+* Paging, filtering, selecting, text search etc. [#](#slice)
 * Token, Basic and API key Authentication [#](#authentication)
 * WebSocket update notifications [#](#websockets)
 * Simulate delay and errors for requests [#](#simulate-delay-and-random-errors)
@@ -252,13 +253,13 @@ $ curl http://localhost:57602/api/users?location=NY
 # Get User with Id 1
 $ curl http://localhost:57602/api/users/1
 
-...
+# ...
 
 # Add users to data.json manually
 
 # Get all users
 $ curl http://localhost:57602/api/users/
-...
+# ...
 
 # Or open url http://localhost:57602/swagger/ with browser and use Swagger
 ```
@@ -275,7 +276,7 @@ Example queries are in [Insomnia](https://insomnia.rest/) workspace format in [F
 
 ### Authentication
 
-Fake REST API supports Token and Basic Authentication. 
+Fake REST API supports Token and Basic authentication and API keys. 
 
 Authentication can be disabled from `appsettings.json` by setting Enabled to `false`. `AuthenticationType` options are `token`, `basic` and `apikey`.
 
@@ -317,7 +318,7 @@ Add token to Authorization header:
 $ curl -H 'Authorization: Bearer [TOKEN]' http://localhost:57602/api
 ```
 
-Token authentication has also a logout functionality. By design tokens do not support token invalidation, so logout is implemented by blacklisting tokens.
+Token authentication supports logout functionality. By design, tokens do not support token invalidation and logout is implemented by blacklisting tokens.
 
 ```sh
 $ curl -X POST -d '' -H 'Authorization: Bearer [TOKEN]' http://localhost:57602/logout
@@ -389,7 +390,7 @@ If caching is enabled, _ETag_ is added to response headers.
 $ curl -v 'http://localhost:57602/api/users?age=40'
 ```
 
-```json
+```txt
 200 OK
 
 Headers:
@@ -525,9 +526,9 @@ If _string_ is used as the identifiers type, then items must be inserted with `P
 
 #### Return codes
 
-Asynchoronous operations follow the [REST CookBook guide](http://restcookbook.com/Resources/asynchroneous-operations/). Updates will return `202` with location header to queue item. Queue will return `200` while operation is processing and `303` when job is ready with location header to changed or new item.
-
 Method return codes are specified in [REST API Tutorial](http://www.restapitutorial.com/lessons/httpmethods.html).
+
+Asynchoronous operations follow the [REST CookBook guide](http://restcookbook.com/Resources/asynchroneous-operations/). Updates will return `202` with location header to queue item. Queue will return `200` while operation is processing and `303` when job is ready with location header to changed or new item.
 
 #### OPTIONS method
 
@@ -537,7 +538,7 @@ OPTIONS method will return `Allow` header with a list of HTTP methods that may b
 $ curl -X OPTIONS -v http://localhost:57602/api/
 ```
 
-```json
+```txt
 200 OK
 
 Headers:
@@ -554,7 +555,7 @@ E.g. get user count without downloading large response body.
 $ curl -X HEAD -v http://localhost:57602/api/users
 ```
 
-```json
+```txt
 200 OK
 
 Headers:
@@ -615,9 +616,9 @@ Data used in example requests, unless otherwise stated:
 
 Example JSON generation guide for data used in unit tests [CreateJSON.md](docs/CreateJson.md).
 
-####  List collections 
+####  List collections  (GET)
 
-```
+```txt
 > GET /api
 
 200 OK : List of collections
@@ -633,10 +634,12 @@ $ curl http://localhost:57602/api
 [ "users", "movies", "configuration" ]
 ```
 
-#### Query
+#### Query items 
+
+#### Get All items (GET)
 
 ```
-> GET /api/{collection/item}
+> GET /api/{collection}
 
 200 OK          : Collection is found
 400 Bad Request : Invalid query parameters
@@ -648,7 +651,7 @@ By default the request returns results in an array. Headers have the collection'
 ```sh
 $ curl http://localhost:57602/api/users
 ```
-```json
+```txt
 [
   { "id": 1, "name": "Phil", "age": 40, "location": "NY" },
   { "id": 2, "name": "Larry", "age": 37, "location": "London" },
@@ -677,9 +680,7 @@ JSON object has items in results array in result field, link object has the pagi
 
 ```json
 {
-  "results": [
-    ...
-  ],
+  "results": [],
   "link": {
     "Prev": "http://localhost:57602/api/users?offset=5&limit=5",
     "Next": "http://localhost:57602/api/users?offset=15&limit=5",
@@ -702,7 +703,7 @@ $ curl http://localhost:57602/api/configuration
 { "ip": "192.168.0.1" }
 ```
 
-##### Slice
+#### Slice
 
 Slicing can be defined with `skip`/`take`, `offset`/`limit` or `page`/`per_page` parameters. By default request returns the first 512 items.
 
@@ -764,7 +765,7 @@ $ curl 'http://localhost:57602/api/users?sort=location,+age'
 ]
 ```
 
-##### Child properties
+#### Child properties
 
 Query can have a path to child properties. Property names are separated by periods.
 
@@ -809,7 +810,7 @@ Query will return ACME from the example JSON.
 ]
 ```
 
-##### Filter operators
+#### Filter operators
 
 Query filter can include operators. Operator identifier is added to the end of the field.
 
@@ -835,7 +836,7 @@ $ curl http://localhost:57602/api/users?age_lt=40
 ]
 ```
 
-##### Full-text search
+#### Full-text search
 
 Full-text search can be performed with the `q`-parameter followed by search text. Search is not case sensitive.
 
@@ -870,7 +871,7 @@ $ curl http://localhost:57602/api/users?fields=age,name
 ]
 ```
 
-#### Get item with id 
+#### Get item with id (GET)
 
 ``` 
 > GET /api/{collection}/{id}
@@ -890,7 +891,7 @@ $ curl http://localhost:57602/api/users/1
 { "id": 1, "name": "Phil", "age": 40, "location": "NY" }
 ```
 
-#### Get nested items
+#### Get nested items (GET)
 
 ```
 > GET /api/{collection}/{id}/{restOfThePath}
@@ -924,9 +925,9 @@ $ curl http://localhost:57602/api/company/0/employees/1/address
 { "address": { "city": "London" } }
 ```
 
-#### Add item 
+#### Add item (POST)
 
-```
+```txt
 > POST /api/{collection}
 
 201 Created     : New item is created
@@ -942,7 +943,7 @@ $ curl -H "Accept: application/json" -H "Content-type: application/json" -X POST
 
 Response has new item's id and a Location header that contains the path to the new item.
 
-```json
+```txt
 { "id": 6 }
 
 Headers:
@@ -951,9 +952,9 @@ Location=http://localhost:57602/api/users/6
 
 If collection is empty and new item has an _id-field_ set, it will be used a first _id-value_. If _id-field_ is not set, _id-value_ will start from `0`.
 
-#### Replace item 
+#### Replace item (PUT)
 
-``` 
+```txt
 > PUT /api/{collection}/{id}
 
 204 No Content  : Item is replaced
@@ -967,13 +968,13 @@ Replace user with `id` _1_ with object _{ "name": "Roger", "age": 28, "location"
 $ curl -H "Accept: application/json" -H "Content-type: application/json" -X PUT -d '{ "name": "Roger", "age": 28, "location": "SF" }' http://localhost:57602/api/users/1
 ```
 
-#### Update item 
+#### Update item (PATCH)
 
 Server supports [JSON patch](http://jsonpatch.com/) and [JSON merge patch](https://tools.ietf.org/html/rfc7396).
 
 ##### JSON Patch
 
-```
+```txt
 > PATCH /api/{collection}/{id}
 
 Content-type: application/json-patch+json
@@ -999,7 +1000,7 @@ $ curl -H "Accept: application/json" -H "Content-type: application/json-patch+js
 
 ##### JSON Merge Patch
 
-```
+```txt
 > PATCH /api/{collection}/{id}
 
 Content-type: application/json+merge-patch or application/merge-patch+json
@@ -1032,7 +1033,7 @@ _NOTE:_
 
 https://tools.ietf.org/html/rfc7396#section-2
 
-#### Delete item
+#### Delete item (DELETE)
 
 ``` 
 > DELETE /api/{collection}/{id}
@@ -1051,7 +1052,7 @@ $ curl -X DELETE http://localhost:57602/api/users/1
 
 `/async` endpoint has long running operation for each update operation.
 
-```
+```txt
 > POST/PUT/PATCH/DELETE /async/{collection}/{id}
 
 202 Accepted    : New job started
@@ -1069,7 +1070,7 @@ Create new item. Curl has a verbose flag (`-v`). When it is used, curl will prin
 $ curl -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{ "name": "Phil", "age": 40, "location": "NY" }' -v http://localhost:57602/async/users/
 ```
 
-```
+```txt
 > GET /async/queue/{id}
 
 200 OK        : Job running
@@ -1084,7 +1085,7 @@ When Job is ready, status code will be _redirect See Other_. Location header wil
 
 After job is finished, it must be deleted manually
 
-```
+```txt
 > DELETE /async/queue/{id}
 
 204 No Content : Job deleted
@@ -1140,7 +1141,7 @@ OR
 
 Response is in JSON format. It contains `data` and `errors` fields. `errors` field is not present if there are no errors. 
 
-```json
+```txt
 {
   "data": { 
     "users": [ ... ],
@@ -1383,11 +1384,11 @@ $ curl -H "Content-type: application/graphql" -X POST -d "mutation { replaceUser
 ```
 
 Response:
-```
+```json
 {
   "data": {
-    "users": {"
-      id": 1,
+    "users": {
+      "id": 1,
       "name": "Rick",
       "age": 44
     }
@@ -1504,7 +1505,7 @@ return new { Data = _Body, Success = _Context.Response.StatusCode == 200 };
 
 Previous script will have a response body:
 
-```json
+```txt
 {
   "Data": [
     { "id": 1, "name": "James" ...},
@@ -1517,7 +1518,7 @@ Previous script will have a response body:
 
 If response data requires so dynamically named properties, e.g. `users` in the example, then response requires more complex processing.
 
-```json
+```txt
 {
   "Data": {
     "users": [
