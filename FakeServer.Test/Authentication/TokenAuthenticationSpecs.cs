@@ -1,8 +1,8 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System.Net;
+﻿using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Xunit;
 
 namespace FakeServer.Test.Authentication;
@@ -74,8 +74,8 @@ public class TokenAuthenticationSpecs : IDisposable
     {
         var items = new[]
         {
-            new KeyValuePair<string,string>("username","admin"),
-            new KeyValuePair<string,string>("password","root")
+            new KeyValuePair<string, string>("username", "admin"),
+            new KeyValuePair<string, string>("password", "root")
         };
 
         var content = new FormUrlEncodedContent(items);
@@ -104,9 +104,9 @@ public class TokenAuthenticationSpecs : IDisposable
     {
         var postData = new[]
         {
-            new KeyValuePair<string,string>("grant_type", "client_credentials"),
-            new KeyValuePair<string,string>("client_id", "admin"),
-            new KeyValuePair<string,string>("client_secret", "root")
+            new KeyValuePair<string, string>("grant_type", "client_credentials"),
+            new KeyValuePair<string, string>("client_id", "admin"),
+            new KeyValuePair<string, string>("client_secret", "root")
         };
 
         var content = new FormUrlEncodedContent(postData);
@@ -131,8 +131,8 @@ public class TokenAuthenticationSpecs : IDisposable
     {
         var items = new[]
         {
-            new KeyValuePair<string,string>("uname","admin"),
-            new KeyValuePair<string,string>("pwd","root")
+            new KeyValuePair<string, string>("uname", "admin"),
+            new KeyValuePair<string, string>("pwd", "root")
         };
 
         var content = new FormUrlEncodedContent(items);

@@ -23,10 +23,10 @@ public class IntegrationFixture : ICollectionFixture<WebApplicationFactory<Start
 
         var mainConfiguration = new Dictionary<string, string>
         {
-            {"currentPath", path},
-            {"file", _newFilePath},
-            {"DataStore:IdField", "id"},
-            {"Caching:ETag:Enabled", "true"}
+            { "currentPath", path },
+            { "file", _newFilePath },
+            { "DataStore:IdField", "id" },
+            { "Caching:ETag:Enabled", "true" }
         };
 
         if (!string.IsNullOrEmpty(authenticationType))
@@ -49,14 +49,14 @@ public class IntegrationFixture : ICollectionFixture<WebApplicationFactory<Start
             .WithWebHostBuilder(builder =>
             {
                 builder.UseEnvironment("IntegrationTest")
-                       .ConfigureAppConfiguration((ctx, b) =>
-                       {
-                           b.SetBasePath(path)
+                    .ConfigureAppConfiguration((ctx, b) =>
+                    {
+                        b.SetBasePath(path)
                             .Add(new MemoryConfigurationSource
                             {
                                 InitialData = mainConfiguration
                             });
-                       });
+                    });
             });
 
         Client = _factory.CreateClient();
@@ -73,8 +73,8 @@ public class IntegrationFixture : ICollectionFixture<WebApplicationFactory<Start
     public async Task<WebSocket> CreateWebSocketClient()
     {
         return await _factory.Server
-                             .CreateWebSocketClient()
-                             .ConnectAsync(new Uri(_factory.Server.BaseAddress, "ws"), CancellationToken.None);
+            .CreateWebSocketClient()
+            .ConnectAsync(new Uri(_factory.Server.BaseAddress, "ws"), CancellationToken.None);
     }
 
     public void Dispose()
@@ -102,4 +102,5 @@ public class IntegrationFixture : ICollectionFixture<WebApplicationFactory<Start
 
 [CollectionDefinition("Integration collection")]
 public class IntegrationTestCollection : ICollectionFixture<IntegrationFixture>
-{ }
+{
+}

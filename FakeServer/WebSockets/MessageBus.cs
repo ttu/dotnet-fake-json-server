@@ -22,7 +22,7 @@ public class MessageBus : IMessageBus
         {
             // T message should be cloned if it is a reference type, so data can't be changed after new thread is created
             Task.Run(() => { action(message); });
-        };
+        }
     }
 
     public void Subscribe<T>(string topic, Action<T> handler)

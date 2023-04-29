@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
@@ -24,6 +22,7 @@ namespace FakeServer.Authentication.Jwt
                 }
             };
         }
+
         public static OpenApiSecurityRequirement GetTokenSecurityRequirement(this SwaggerGenOptions s)
         {
             var securityRequirement = new OpenApiSecurityRequirement();

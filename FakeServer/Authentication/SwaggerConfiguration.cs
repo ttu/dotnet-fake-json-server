@@ -8,7 +8,7 @@ namespace FakeServer.Authentication;
 
 public static class SwaggerConfiguration
 {
-    public static  void AddAuthenticationConfig(this SwaggerGenOptions c, AuthenticationType authenticationType)
+    public static void AddAuthenticationConfig(this SwaggerGenOptions c, AuthenticationType authenticationType)
     {
         switch (authenticationType)
         {

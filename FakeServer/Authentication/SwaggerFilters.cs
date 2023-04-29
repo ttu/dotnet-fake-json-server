@@ -31,22 +31,22 @@ internal class AuthTokenOperation : IDocumentFilter
             Tags = new List<OpenApiTag> { new() { Name = "Authentication" } },
             //Consumes = new List<string> { "application/x-www-form-urlencoded" },
             Parameters = new List<OpenApiParameter>
+            {
+                new()
                 {
-                    new()
-                    {
-                        //Type = "string",
-                        Name = "username",
-                        Required = false,
-                        //In = "formData"
-                    },
-                    new()
-                    {
-                        //Type = "string",
-                        Name = "password",
-                        Required = false,
-                        //In = "formData"
-                    }
+                    //Type = "string",
+                    Name = "username",
+                    Required = false,
+                    //In = "formData"
+                },
+                new()
+                {
+                    //Type = "string",
+                    Name = "password",
+                    Required = false,
+                    //In = "formData"
                 }
+            }
         });
 
         swaggerDoc.Paths.Add($"/{Config.TokenRoute}", tokenItem);
@@ -56,15 +56,15 @@ internal class AuthTokenOperation : IDocumentFilter
         {
             Tags = new List<OpenApiTag> { new() { Name = "Authentication" } },
             Parameters = new List<OpenApiParameter>
+            {
+                new()
                 {
-                    new()
-                    {
-                        //Type = "string",
-                        Name = "Authorization",
-                        Required = false,
-                        In = ParameterLocation.Header
-                    }
+                    //Type = "string",
+                    Name = "Authorization",
+                    Required = false,
+                    In = ParameterLocation.Header
                 }
+            }
         });
 
         swaggerDoc.Paths.Add($"/{Config.TokenLogoutRoute}", logoutItem);
@@ -98,15 +98,15 @@ internal class TokenOperation : IDocumentFilter
         {
             Tags = new List<OpenApiTag> { new OpenApiTag { Name = "Authentication" } },
             Parameters = new List<OpenApiParameter>
+            {
+                new OpenApiParameter
                 {
-                    new OpenApiParameter
-                    {
-                        //Type = "string",
-                        Name = "Authorization",
-                        Required = false,
-                        In = ParameterLocation.Header
-                    }
+                    //Type = "string",
+                    Name = "Authorization",
+                    Required = false,
+                    In = ParameterLocation.Header
                 }
+            }
         });
 
         swaggerDoc.Paths.Add($"/{Config.TokenLogoutRoute}", logoutItem);

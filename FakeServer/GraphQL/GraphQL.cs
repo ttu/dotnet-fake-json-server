@@ -87,9 +87,9 @@ public static class GraphQL
     }
 
     private static Dictionary<string, Fields> CollectFields(
-       SelectionSet selectionSet,
-       Dictionary<string, Fields> fields = null,
-       List<string> visitedFragmentNames = null)
+        SelectionSet selectionSet,
+        Dictionary<string, Fields> fields = null,
+        List<string> visitedFragmentNames = null)
     {
         if (fields == null)
         {
@@ -110,6 +110,7 @@ public static class GraphQL
                 {
                     fields[name] = Fields.Empty();
                 }
+
                 fields[name].Add(field);
             }
             else if (selection is FragmentSpread)
@@ -343,7 +344,8 @@ public static class GraphQL
         }
     }
 
-    private static Dictionary<string, dynamic> ExecuteMutationFields(dynamic source, dynamic target, Dictionary<string, Fields> fields, string idFieldName, bool isRoot = false)
+    private static Dictionary<string, dynamic> ExecuteMutationFields(dynamic source, dynamic target, Dictionary<string, Fields> fields, string idFieldName,
+        bool isRoot = false)
     {
         return fields.ToDictionary(
             pair => GetResponseName(pair),
@@ -353,8 +355,8 @@ public static class GraphQL
 
                 var fieldsToUse = CollectFields(pair.Value.First().SelectionSet);
                 var collectionName = fieldsToUse.Any()
-                                        ? fieldsToUse.FirstOrDefault().Key
-                                        : allowedActions.Aggregate(pair.Value.First().Name, (e, c) => e.Replace(c, "")).ToLower();
+                    ? fieldsToUse.FirstOrDefault().Key
+                    : allowedActions.Aggregate(pair.Value.First().Name, (e, c) => e.Replace(c, "")).ToLower();
                 var collection = ((IDataStore)source).GetCollection(collectionName);
 
                 if (pair.Value.First().Name.StartsWith("add"))
@@ -364,7 +366,9 @@ public static class GraphQL
                     var success = collection.InsertOne(newItem);
                     var itemId = ((dynamic)newItem).id;
 
-                    dynamic updateData = success ? new { Method = "POST", Path = $"{collectionName}/{itemId}", Collection = collectionName, ItemId = itemId } : null;
+                    dynamic updateData = success
+                        ? new { Method = "POST", Path = $"{collectionName}/{itemId}", Collection = collectionName, ItemId = itemId }
+                        : null;
 
                     ExecutionResult item = GetMutationReturnItem(source, fieldsToUse, itemId, idFieldName);
                     return Tuple.Create(item.Data as object, updateData);
@@ -428,11 +432,11 @@ public static class GraphQL
     private static dynamic GetInputId(KeyValuePair<string, Fields> pair, string idFieldName)
     {
         return ((dynamic)pair.Value.First()
-                                    .Children.First(e => e is Arguments)
-                                    .Children.First(e => ((dynamic)e).Name == "input")
-                                    .Children.First()
-                                    .Children.First(e => ((dynamic)e).Name == idFieldName)
-                                    .Children.First()).Value;
+            .Children.First(e => e is Arguments)
+            .Children.First(e => ((dynamic)e).Name == "input")
+            .Children.First()
+            .Children.First(e => ((dynamic)e).Name == idFieldName)
+            .Children.First()).Value;
     }
 
     private static ExecutionResult GetMutationReturnItem(dynamic source, Dictionary<string, Fields> fieldsToUse, int id, string idFieldName)

@@ -1,7 +1,7 @@
-﻿using FakeServer.Common;
+﻿using System.Dynamic;
+using FakeServer.Common;
 using FakeServer.WebSockets;
 using Newtonsoft.Json;
-using System.Dynamic;
 using Xunit;
 
 namespace FakeServer.Test;

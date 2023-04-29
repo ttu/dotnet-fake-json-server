@@ -26,6 +26,7 @@ namespace FakeServer;
 public class Startup
 {
     private AuthenticationType _authenticationType;
+
     public Startup(IConfiguration configuration)
     {
         Configuration = configuration;
@@ -39,17 +40,15 @@ public class Startup
 
         if (!string.IsNullOrEmpty(folder))
         {
-            services.AddSpaStaticFiles((spa) =>
-            {
-                spa.RootPath = folder;
-            });
+            services.AddSpaStaticFiles((spa) => { spa.RootPath = folder; });
 
             // No need to define anything else as this can only be used as a SPA server
             return;
         }
 
         var jsonFilePath = Path.Combine(Configuration["currentPath"], Configuration["file"]);
-        services.AddSingleton<IDataStore>(new DataStore(jsonFilePath, keyProperty: Configuration["DataStore:IdField"], reloadBeforeGetCollection: Configuration.GetValue<bool>("DataStore:EagerDataReload")));
+        services.AddSingleton<IDataStore>(new DataStore(jsonFilePath, keyProperty: Configuration["DataStore:IdField"],
+            reloadBeforeGetCollection: Configuration.GetValue<bool>("DataStore:EagerDataReload")));
         services.AddSingleton<IMessageBus, MessageBus>();
         services.AddSingleton<JobsService>();
 
@@ -64,8 +63,8 @@ public class Startup
         {
             options.AddPolicy("AllowAnyPolicy",
                 builder => builder.AllowAnyOrigin()
-                .AllowAnyMethod()
-                .AllowAnyHeader());
+                    .AllowAnyMethod()
+                    .AllowAnyHeader());
         });
 
         var useAuthentication = Configuration.GetValue<bool>("Authentication:Enabled");
@@ -74,7 +73,7 @@ public class Startup
         services.AddApiAuthentication(_authenticationType);
 
         services.AddMvc()
-                .AddNewtonsoftJson();
+            .AddNewtonsoftJson();
 
         services.Configure<MvcOptions>(options =>
         {
@@ -95,10 +94,7 @@ public class Startup
         {
             services.AddResponseCaching();
             services.AddHttpCacheHeaders(
-                (expirationModelOptions) =>
-                {
-                    expirationModelOptions.MaxAge = 0;
-                },
+                (expirationModelOptions) => { expirationModelOptions.MaxAge = 0; },
                 (validationModelOptions) =>
                 {
                     // Use only ETag caching
@@ -114,7 +110,7 @@ public class Startup
             var basePath = AppContext.BaseDirectory;
             var xmlPath = Path.Combine(basePath, "FakeServer.xml");
             c.IncludeXmlComments(xmlPath);
-            
+
             c.AddAuthenticationConfig(_authenticationType);
         });
     }
@@ -122,10 +118,7 @@ public class Startup
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime applicationLifetime)
     {
         // register callback for application start event
-        applicationLifetime.ApplicationStarted.Register(() =>
-        {
-            PrintSwaggerUrl(app.ServerFeatures.Get<IServerAddressesFeature>());
-        });
+        applicationLifetime.ApplicationStarted.Register(() => { PrintSwaggerUrl(app.ServerFeatures.Get<IServerAddressesFeature>()); });
 
         app.UseDefaultFiles();
 
@@ -193,15 +186,12 @@ public class Startup
         }
 
         app.UseMiddleware<GraphQLMiddleware>(
-                    app.ApplicationServices.GetRequiredService<IDataStore>(),
-                    app.ApplicationServices.GetRequiredService<IMessageBus>(),
-                    _authenticationType != AuthenticationType.AllowAll,
-                    Configuration["DataStore:IdField"]);
+            app.ApplicationServices.GetRequiredService<IDataStore>(),
+            app.ApplicationServices.GetRequiredService<IMessageBus>(),
+            _authenticationType != AuthenticationType.AllowAll,
+            Configuration["DataStore:IdField"]);
 
-        app.UseEndpoints(endpoints =>
-        {
-            endpoints.MapControllers();
-        });
+        app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
 
         app.UseSwagger();
 
@@ -211,12 +201,12 @@ public class Startup
             c.SupportedSubmitMethods(SubmitMethod.Get, SubmitMethod.Head, SubmitMethod.Post, SubmitMethod.Put, SubmitMethod.Patch, SubmitMethod.Delete);
         });
     }
-    
+
     private static void PrintSwaggerUrl(IServerAddressesFeature serverAddressFeature)
     {
         if (serverAddressFeature == null) return;
-        
-        foreach(var address in serverAddressFeature.Addresses)
+
+        foreach (var address in serverAddressFeature.Addresses)
         {
             Console.WriteLine($"Swagger Open API is available on: {address}/swagger");
         }

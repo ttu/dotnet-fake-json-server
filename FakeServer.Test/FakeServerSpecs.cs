@@ -1,9 +1,9 @@
-﻿using FakeServer.Common;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System.Net;
+﻿using System.Net;
 using System.Net.WebSockets;
 using System.Text;
+using FakeServer.Common;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Xunit;
 
 namespace FakeServer.Test;
@@ -521,7 +521,7 @@ public class FakeServerSpecs : IDisposable
 
         Assert.Equal(HttpStatusCode.UnsupportedMediaType, result.StatusCode);
     }
-    
+
     [Fact]
     public async Task PatchItem_MergePatch_NotFound()
     {
@@ -533,7 +533,7 @@ public class FakeServerSpecs : IDisposable
 
         Assert.Equal(HttpStatusCode.NotFound, result.StatusCode);
     }
-    
+
     [Fact]
     public async Task PatchItem_MergePatch()
     {
@@ -559,7 +559,8 @@ public class FakeServerSpecs : IDisposable
         var items = JsonConvert.DeserializeObject<IEnumerable<JObject>>(await result.Content.ReadAsStringAsync());
         Assert.Equal(4, items.Count());
 
-        content = new StringContent(JsonConvert.SerializeObject(new { name = "James", age = 40, work = new { name = "ACME" } }), Encoding.UTF8, Constants.MergePatchJson);
+        content = new StringContent(JsonConvert.SerializeObject(new { name = "James", age = 40, work = new { name = "ACME" } }), Encoding.UTF8,
+            Constants.MergePatchJson);
         request = new HttpRequestMessage(new HttpMethod("PATCH"), $"api/users/1") { Content = content };
         result = await _fixture.Client.SendAsync(request);
         result.EnsureSuccessStatusCode();
@@ -571,7 +572,7 @@ public class FakeServerSpecs : IDisposable
         // Original { "id": 1, "name": "James", "age": 40, "location": "NY", "work": { "name": "ACME", "location": "NY" } },
         var patchDoc = new dynamic[]
         {
-            new { op = "replace", path = "name", value = "Jimmy" }, 
+            new { op = "replace", path = "name", value = "Jimmy" },
             new { op = "replace", path = "work/name", value = "EMACS" }
         };
 
@@ -596,16 +597,16 @@ public class FakeServerSpecs : IDisposable
 
         patchDoc = new dynamic[]
         {
-            new { op = "replace", path = "name", value = "James" }, 
+            new { op = "replace", path = "name", value = "James" },
             new { op = "replace", path = "work/name", value = "ACME" }
         };
-        
+
         content = new StringContent(JsonConvert.SerializeObject(patchDoc), Encoding.UTF8, Constants.JsonPatchJson);
         request = new HttpRequestMessage(new HttpMethod("PATCH"), $"api/users/1") { Content = content };
         result = await _fixture.Client.SendAsync(request);
         result.EnsureSuccessStatusCode();
     }
-    
+
     [Fact]
     public async Task PatchItem_Nested_UnsupportedMediaType()
     {
@@ -617,7 +618,7 @@ public class FakeServerSpecs : IDisposable
 
         Assert.Equal(HttpStatusCode.UnsupportedMediaType, result.StatusCode);
     }
-    
+
     [Fact]
     public async Task PatchItem_Nested_MergePatch_NotFound()
     {
@@ -629,7 +630,7 @@ public class FakeServerSpecs : IDisposable
 
         Assert.Equal(HttpStatusCode.NotFound, result.StatusCode);
     }
-    
+
     [Fact]
     public async Task PatchItem_MergePatch_Nested()
     {
@@ -664,16 +665,16 @@ public class FakeServerSpecs : IDisposable
         result = await _fixture.Client.SendAsync(request);
         result.EnsureSuccessStatusCode();
     }
-    
+
     [Fact]
     public async Task PatchItem_JsonPatch_Nested()
     {
         // Original Parent { "id": 1, "name": "Millicent", ... , "work": { "companyName": "WAZZU", "address": "137 McClancy Place, Islandia, Ohio, 4193" } },
-        var patchDoc = new dynamic[] 
+        var patchDoc = new dynamic[]
         {
-            new { op = "replace", path = "name", value = "Kyle" }, 
-            new { op = "replace", path = "work/companyName", value = "PAWNAGRA" }, 
-            new { op = "replace", path = "work/address", value = "679 Ebony Court, Loma, Puerto Rico, 7716" }, 
+            new { op = "replace", path = "name", value = "Kyle" },
+            new { op = "replace", path = "work/companyName", value = "PAWNAGRA" },
+            new { op = "replace", path = "work/address", value = "679 Ebony Court, Loma, Puerto Rico, 7716" },
         };
 
         var content = new StringContent(JsonConvert.SerializeObject(patchDoc), Encoding.UTF8, Constants.JsonPatchJson);
@@ -699,13 +700,13 @@ public class FakeServerSpecs : IDisposable
         var items = JsonConvert.DeserializeObject<IEnumerable<JObject>>(await result.Content.ReadAsStringAsync());
         Assert.Equal(2, items.Count());
 
-        patchDoc = new dynamic[] 
+        patchDoc = new dynamic[]
         {
-            new { op = "replace", path = "name", value = "Millicent" }, 
-            new { op = "replace", path = "work/companyName", value = "WAZZU" }, 
-            new { op = "replace", path = "work/address", value = "137 McClancy Place, Islandia, Ohio, 4193" }, 
+            new { op = "replace", path = "name", value = "Millicent" },
+            new { op = "replace", path = "work/companyName", value = "WAZZU" },
+            new { op = "replace", path = "work/address", value = "137 McClancy Place, Islandia, Ohio, 4193" },
         };
-        
+
         content = new StringContent(JsonConvert.SerializeObject(patchDoc), Encoding.UTF8, Constants.JsonPatchJson);
         request = new HttpRequestMessage(new HttpMethod("PATCH"), $"api/families/19/parents/1") { Content = content };
         result = await _fixture.Client.SendAsync(request);
@@ -777,7 +778,7 @@ public class FakeServerSpecs : IDisposable
 
         result = await _fixture.Client.GetAsync($"api/hello");
         Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-        
+
         var itemsShouldBeEmpty = JsonConvert.DeserializeObject<IEnumerable<JObject>>(await result.Content.ReadAsStringAsync());
         Assert.Empty(itemsShouldBeEmpty);
     }
@@ -816,7 +817,7 @@ public class FakeServerSpecs : IDisposable
 
         result = await _fixture.Client.GetAsync($"api/hello");
         Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-        
+
         var itemsShouldBeEmpty = JsonConvert.DeserializeObject<IEnumerable<JObject>>(await result.Content.ReadAsStringAsync());
         Assert.Empty(itemsShouldBeEmpty);
     }
@@ -902,13 +903,13 @@ public class FakeServerSpecs : IDisposable
         Assert.Equal(newConfig.url, item["url"].Value<string>());
         Assert.Equal("abba", item["password"].Value<string>());
     }
-    
+
     [Fact]
     public async Task Patch_JsonPatch_SingleItem()
     {
         var collection = "configuration_for_patch";
-        
-        var newConfig = new dynamic[] 
+
+        var newConfig = new dynamic[]
         {
             new { op = "replace", path = "url", value = "192.168.0.2" }
         };
@@ -963,7 +964,8 @@ public class FakeServerSpecs : IDisposable
 
         await WebSocketReceiveHandler();
 
-        content = new StringContent(JsonConvert.SerializeObject(new { name = "James", age = 40, work = new { name = "ACME" } }), Encoding.UTF8, Constants.JsonMergePatch);
+        content = new StringContent(JsonConvert.SerializeObject(new { name = "James", age = 40, work = new { name = "ACME" } }), Encoding.UTF8,
+            Constants.JsonMergePatch);
         request = new HttpRequestMessage(new HttpMethod("PATCH"), $"api/users/1") { Content = content };
         result = await _fixture.Client.SendAsync(request);
         result.EnsureSuccessStatusCode();
@@ -1103,7 +1105,6 @@ public class FakeServerSpecs : IDisposable
         request = new HttpRequestMessage(new HttpMethod("OPTIONS"), $"async/queue/22");
         result = await _fixture.Client.SendAsync(request);
         Assert.Contains("Allow: GET, DELETE, OPTIONS", result.ToString());
-
     }
 
     [Fact]

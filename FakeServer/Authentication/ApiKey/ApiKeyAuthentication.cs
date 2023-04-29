@@ -13,11 +13,11 @@ public static class ApiKeyAuthenticationConfiguration
     public static IServiceCollection AddApiKeyAuthentication(this IServiceCollection services)
     {
         services.AddAuthentication(o =>
-        {
-            o.DefaultScheme = ApiKeyAuthenticationDefaults.AuthenticationScheme;
-            o.DefaultAuthenticateScheme = ApiKeyAuthenticationDefaults.AuthenticationScheme;
-        })
-        .AddApiKeyAuthentication();
+            {
+                o.DefaultScheme = ApiKeyAuthenticationDefaults.AuthenticationScheme;
+                o.DefaultAuthenticateScheme = ApiKeyAuthenticationDefaults.AuthenticationScheme;
+            })
+            .AddApiKeyAuthentication();
 
         return services;
     }
@@ -36,7 +36,8 @@ public static class ApiKeyAuthenticationExtensions
     public static AuthenticationBuilder AddApiKeyAuthentication(this AuthenticationBuilder builder, Action<ApiKeyOptions> configureOptions)
         => builder.AddApiKeyAuthentication(ApiKeyAuthenticationDefaults.AuthenticationScheme, configureOptions);
 
-    public static AuthenticationBuilder AddApiKeyAuthentication(this AuthenticationBuilder builder, string authenticationScheme, Action<ApiKeyOptions> configureOptions)
+    public static AuthenticationBuilder AddApiKeyAuthentication(this AuthenticationBuilder builder, string authenticationScheme,
+        Action<ApiKeyOptions> configureOptions)
         => builder.AddApiKeyAuthentication(authenticationScheme, displayName: null, configureOptions: configureOptions);
 
     public static AuthenticationBuilder AddApiKeyAuthentication(this AuthenticationBuilder builder, string authenticationScheme, string displayName,
@@ -74,23 +75,27 @@ public static class ApiKeyAuthenticationExtensions
 public class ApiKeyPostConfigureOptions : IPostConfigureOptions<ApiKeyOptions>
 {
     public void PostConfigure(string name, ApiKeyOptions options)
-    { }
+    {
+    }
 }
 
 public class ApiKeyOptions : AuthenticationSchemeOptions
 {
     public ApiKeyOptions() : base()
-    { }
+    {
+    }
 
     public override void Validate()
-    { }
+    {
+    }
 }
 
 public class ApiKeyAuthenticationHandler : AuthenticationHandler<ApiKeyOptions>
 {
     public ApiKeyAuthenticationHandler(IOptionsMonitor<ApiKeyOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock)
         : base(options, logger, encoder, clock)
-    { }
+    {
+    }
 
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
