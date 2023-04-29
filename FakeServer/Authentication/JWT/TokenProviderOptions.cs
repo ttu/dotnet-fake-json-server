@@ -1,6 +1,5 @@
 ﻿using FakeServer.Common;
 using Microsoft.IdentityModel.Tokens;
-using System;
 
 namespace FakeServer.Authentication.Jwt
 {

@@ -1,14 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System;
 using System.IdentityModel.Tokens.Jwt;
-using System.IO;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace FakeServer.Authentication.Jwt
 {
@@ -49,8 +44,8 @@ namespace FakeServer.Authentication.Jwt
             }
 
             (string username, string password, bool isDataValid) = context.Request.HasFormContentType
-                                                                    ? GetFromFormData(context)
-                                                                    : await GetFromJson(context);
+                ? GetFromFormData(context)
+                : await GetFromJson(context);
 
             if (!isDataValid)
             {

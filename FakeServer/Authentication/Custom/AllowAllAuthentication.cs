@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using System.Security.Claims;
+using System.Text.Encodings.Web;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
-using System.Security.Claims;
-using System.Text.Encodings.Web;
 
 namespace FakeServer.Authentication.Custom;
 
@@ -10,11 +10,8 @@ public static class AllowAllAuthenticationConfiguration
 {
     public static IServiceCollection AddAllowAllAuthentication(this IServiceCollection services)
     {
-        services.AddAuthentication(o =>
-        {
-            o.DefaultAuthenticateScheme = AllowAllAuthenticationDefaults.AuthenticationScheme;
-        })
-        .AddAllowAllAuthentication();
+        services.AddAuthentication(o => { o.DefaultAuthenticateScheme = AllowAllAuthenticationDefaults.AuthenticationScheme; })
+            .AddAllowAllAuthentication();
 
         return services;
     }
@@ -28,15 +25,17 @@ public static class AllowAllAuthenticationDefaults
 public static class AllowAllAuthenticationExtensions
 {
     public static AuthenticationBuilder AddAllowAllAuthentication(this AuthenticationBuilder builder)
-           => builder.AddAllowAllAuthentication(AllowAllAuthenticationDefaults.AuthenticationScheme, _ => { });
+        => builder.AddAllowAllAuthentication(AllowAllAuthenticationDefaults.AuthenticationScheme, _ => { });
 
     public static AuthenticationBuilder AddAllowAllAuthentication(this AuthenticationBuilder builder, Action<AllowAllOptions> configureOptions)
-      => builder.AddAllowAllAuthentication(AllowAllAuthenticationDefaults.AuthenticationScheme, configureOptions);
+        => builder.AddAllowAllAuthentication(AllowAllAuthenticationDefaults.AuthenticationScheme, configureOptions);
 
-    public static AuthenticationBuilder AddAllowAllAuthentication(this AuthenticationBuilder builder, string authenticationScheme, Action<AllowAllOptions> configureOptions)
+    public static AuthenticationBuilder AddAllowAllAuthentication(this AuthenticationBuilder builder, string authenticationScheme,
+        Action<AllowAllOptions> configureOptions)
         => builder.AddAllowAllAuthentication(authenticationScheme, displayName: null, configureOptions: configureOptions);
 
-    public static AuthenticationBuilder AddAllowAllAuthentication(this AuthenticationBuilder builder, string authenticationScheme, string displayName, Action<AllowAllOptions> configureOptions)
+    public static AuthenticationBuilder AddAllowAllAuthentication(this AuthenticationBuilder builder, string authenticationScheme, string displayName,
+        Action<AllowAllOptions> configureOptions)
     {
         builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IPostConfigureOptions<AllowAllOptions>, AllowAllPostConfigureOptions>());
         return builder.AddScheme<AllowAllOptions, AllowAllAuthenticationHandler>(authenticationScheme, displayName, configureOptions);
@@ -65,14 +64,15 @@ public class AllowAllAuthenticationHandler : AuthenticationHandler<AllowAllOptio
 {
     public AllowAllAuthenticationHandler(IOptionsMonitor<AllowAllOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock)
         : base(options, logger, encoder, clock)
-    { }
+    {
+    }
 
     protected async override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
         return await Task.FromResult(AuthenticateResult.Success(
-                        new AuthenticationTicket(
-                            new ClaimsPrincipal(new ClaimsIdentity("Custom")),
-                            new AuthenticationProperties(),
-                            AllowAllAuthenticationDefaults.AuthenticationScheme)));
+            new AuthenticationTicket(
+                new ClaimsPrincipal(new ClaimsIdentity("Custom")),
+                new AuthenticationProperties(),
+                AllowAllAuthenticationDefaults.AuthenticationScheme)));
     }
 }

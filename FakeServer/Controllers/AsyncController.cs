@@ -1,15 +1,15 @@
 ﻿using FakeServer.Common;
+using System.Dynamic;
+using System.Net;
 using FakeServer.Jobs;
 using JsonFlatFileDataStore;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System.Dynamic;
-using System.Net;
-using Microsoft.AspNetCore.JsonPatch;
 
 namespace FakeServer.Controllers;
 
@@ -63,7 +63,7 @@ public class AsyncController : Controller
     /// <returns></returns>
     /// <response code="202">New async operation started</response>
     [HttpPut("{collectionId}/{id}")]
-    public IActionResult ReplaceItem(string collectionId, [FromRoute][DynamicBinder]dynamic id, [FromBody]dynamic item)
+    public IActionResult ReplaceItem(string collectionId, [FromRoute] [DynamicBinder] dynamic id, [FromBody] dynamic item)
     {
         if (item == null)
             return BadRequest();
@@ -101,7 +101,7 @@ public class AsyncController : Controller
     /// <response code="415">Unsupported content type</response>
     [HttpPatch("{collectionId}/{id}")]
     [Consumes(Constants.JsonMergePatch, new[] { Constants.MergePatchJson })]
-    public IActionResult UpdateItemMerge(string collectionId, [FromRoute][DynamicBinder]dynamic id, [FromBody]JToken patchData)
+    public IActionResult UpdateItemMerge(string collectionId, [FromRoute] [DynamicBinder] dynamic id, [FromBody] JToken patchData)
     {
         dynamic sourceData = JsonConvert.DeserializeObject<ExpandoObject>(patchData.ToString());
 
@@ -112,7 +112,7 @@ public class AsyncController : Controller
 
         if (item == null)
             return NotFound();
-        
+
         var action = new Func<dynamic>(() =>
         {
             _ds.GetCollection(collectionId).UpdateOne(id, sourceData);
@@ -122,7 +122,7 @@ public class AsyncController : Controller
         var queueUrl = _jobs.StartNewJob(collectionId, "PATCH", action);
         return new AcceptedResult($"{Request.Scheme}://{Request.Host.Value}/{queueUrl}", null);
     }
-    
+
     /// <summary>
     /// Update item's content
     /// </summary>
@@ -176,7 +176,7 @@ public class AsyncController : Controller
     /// <returns></returns>
     /// <response code="202">New async operation started</response>
     [HttpDelete("{collectionId}/{id}")]
-    public IActionResult DeleteItem(string collectionId, [FromRoute][DynamicBinder]dynamic id)
+    public IActionResult DeleteItem(string collectionId, [FromRoute] [DynamicBinder] dynamic id)
     {
         var action = new Func<dynamic>(() =>
         {

@@ -28,10 +28,10 @@ public class CustomResponseMiddleware
         _scripts = _settings.Scripts.Select(s =>
         {
             var script = CSharpScript.Create<object>(s.Script,
-                                                    ScriptOptions.Default
-                                                                    .WithReferences(s.References)
-                                                                    .WithImports(s.Usings),
-                                                    globalsType: typeof(Globals));
+                ScriptOptions.Default
+                    .WithReferences(s.References)
+                    .WithImports(s.Usings),
+                globalsType: typeof(Globals));
 
             script.Compile();
             return script;
@@ -85,8 +85,8 @@ public class CustomResponseMiddleware
                 var bodyCleanEnd = bodyCleanStart + globalObject._Body.Length;
 
                 jsonCleared = jsonCleared
-                          .Remove(bodyCleanEnd, 1)
-                          .Remove(bodyCleanStart - 1, 1);
+                    .Remove(bodyCleanEnd, 1)
+                    .Remove(bodyCleanStart - 1, 1);
             }
 
             var byteArray = Encoding.ASCII.GetBytes(jsonCleared);

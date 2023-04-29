@@ -23,12 +23,12 @@ public class Program
         try
         {
             config = new ConfigurationBuilder()
-                     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                     .AddJsonFile($"appsettings.{env}.json", optional: true)
-                     .AddJsonFile("authentication.json", optional: true, reloadOnChange: true)
-                     .AddInMemoryCollection(initialData)
-                     .AddEnvironmentVariables()
-                     .Build();
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{env}.json", optional: true)
+                .AddJsonFile("authentication.json", optional: true, reloadOnChange: true)
+                .AddInMemoryCollection(initialData)
+                .AddEnvironmentVariables()
+                .Build();
         }
         catch (Exception ex)
         {
@@ -37,7 +37,7 @@ public class Program
             Console.WriteLine("Program will exit...");
             return 1;
         }
-       
+
         if (!IsConfigValid(config))
         {
             Console.WriteLine("\nUpdate appsettings.json to latest version");
@@ -69,15 +69,15 @@ public class Program
 
     public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
         WebHost.CreateDefaultBuilder(args)
-        .UseStartup<Startup>()
-        .UseSerilog();
-        
+            .UseStartup<Startup>()
+            .UseSerilog();
+
     private static bool IsConfigValid(IConfigurationRoot config) => config["DataStore:IdField"] != null;
 
     private static CommandLineApplication BuildCommandLineApp(
         Func<string[], Dictionary<string, string>, int> invoke)
     {
-        var app = new CommandLineApplication 
+        var app = new CommandLineApplication
         {
             UnrecognizedArgumentHandling = UnrecognizedArgumentHandling.StopParsingAndCollect
         };
@@ -101,7 +101,7 @@ public class Program
 
             var initialData = new Dictionary<string, string>()
             {
-                {"file", optionFile.HasValue() ? optionFile.Value() : "datastore.json"}
+                { "file", optionFile.HasValue() ? optionFile.Value() : "datastore.json" }
             };
 
             initialData.TryAdd("currentPath", Directory.GetCurrentDirectory());
@@ -125,35 +125,36 @@ public class Program
                 Console.WriteLine($"Static files: default wwwroot");
             }
 
-            if (optionInit.HasValue()) 
+            if (optionInit.HasValue())
             {
                 var baseAppSettingsFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "appsettings.json");
-                var newAppSettingFile = Path.Combine(initialData["currentPath"],"appsettings.json");
-                if (!File.Exists(newAppSettingFile)) 
+                var newAppSettingFile = Path.Combine(initialData["currentPath"], "appsettings.json");
+                if (!File.Exists(newAppSettingFile))
                 {
                     File.Copy(baseAppSettingsFile, newAppSettingFile);
                     Console.WriteLine($"AppSettings file created in current folder: {initialData["currentPath"]}");
                 }
-                else 
+                else
                 {
                     Console.WriteLine("AppSettings.json file already exists in current folder!");
                 }
+
                 return 0;
             }
-            
+
             var arguments = new List<string>(app.RemainingArguments);
-            
+
             if (optionsUrls.HasValue())
             {
                 // Add urls back to arguments that are passed to WebHost builder
-                arguments.AddRange(new [] { "--urls", optionsUrls.Value()});
+                arguments.AddRange(new[] { "--urls", optionsUrls.Value() });
             }
 
             return invoke(arguments.ToArray(), initialData);
         });
 
         return app;
-    } 
+    }
 
     private static string GetAssemblyVersion()
     {

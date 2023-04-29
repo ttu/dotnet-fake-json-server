@@ -1,7 +1,7 @@
-﻿using Newtonsoft.Json.Linq;
-using System.Dynamic;
+﻿using System.Dynamic;
 using System.Globalization;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json.Linq;
 
 namespace FakeServer.Common;
 
@@ -144,8 +144,8 @@ public static class ObjectHelper
     private static object GetValue(object source, dynamic srcProp)
     {
         return source.GetType() == typeof(ExpandoObject)
-                    ? srcProp.Value
-                    : srcProp.GetValue(source, null);
+            ? srcProp.Value
+            : srcProp.GetValue(source, null);
     }
 
     public static dynamic GetWebSocketMessage(string method, string path)
@@ -182,8 +182,8 @@ public static class ObjectHelper
         x => DateTime.Parse(x, CultureInfo.InvariantCulture)
     };
 
-    private static Lazy<List<Func<string, dynamic>>> _convertFuncsExceptDateTime = new (() => _convertFuncs.Take(3).ToList());
-    
+    private static Lazy<List<Func<string, dynamic>>> _convertFuncsExceptDateTime = new(() => _convertFuncs.Take(3).ToList());
+
     private static List<Func<string, dynamic>> _convertIdFuncs => _convertFuncsExceptDateTime.Value;
 
     private static dynamic GetValueAsCorrectType(string value, List<Func<string, dynamic>> convertFuncs)

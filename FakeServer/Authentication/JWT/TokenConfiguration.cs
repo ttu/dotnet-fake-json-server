@@ -1,11 +1,7 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
+﻿using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FakeServer.Authentication.Jwt
 {
@@ -42,28 +38,28 @@ namespace FakeServer.Authentication.Jwt
             services.AddSingleton<TokenBlacklistService>();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                    .AddJwtBearer(options =>
-                                {
-                                    options.Audience = _tokenValidationParameters.ValidAudience;
-                                    options.ClaimsIssuer = _tokenValidationParameters.ValidIssuer;
-                                    options.TokenValidationParameters = _tokenValidationParameters;
-                                    options.Events = new JwtBearerEvents()
-                                    {
-                                        OnTokenValidated = (context) =>
-                                        {
-                                            var header = context.Request.Headers["Authorization"];
+                .AddJwtBearer(options =>
+                {
+                    options.Audience = _tokenValidationParameters.ValidAudience;
+                    options.ClaimsIssuer = _tokenValidationParameters.ValidIssuer;
+                    options.TokenValidationParameters = _tokenValidationParameters;
+                    options.Events = new JwtBearerEvents()
+                    {
+                        OnTokenValidated = (context) =>
+                        {
+                            var header = context.Request.Headers["Authorization"];
 
-                                            var blacklist = context.HttpContext.RequestServices.GetService<TokenBlacklistService>();
-                                            if (blacklist.IsBlacklisted(header.ToString()))
-                                            {
-                                                context.Response.StatusCode = 401;
-                                                context.Fail(new Exception("Authorization token blacklisted"));
-                                            }
+                            var blacklist = context.HttpContext.RequestServices.GetService<TokenBlacklistService>();
+                            if (blacklist.IsBlacklisted(header.ToString()))
+                            {
+                                context.Response.StatusCode = 401;
+                                context.Fail(new Exception("Authorization token blacklisted"));
+                            }
 
-                                            return Task.CompletedTask;
-                                        }
-                                    };
-                                });
+                            return Task.CompletedTask;
+                        }
+                    };
+                });
 
             return services;
         }

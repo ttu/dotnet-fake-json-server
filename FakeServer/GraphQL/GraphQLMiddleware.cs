@@ -16,7 +16,7 @@ public class GraphQLMiddleware
     private readonly string _idFieldName;
     private readonly string[] _allowedTypes = new[] { "application/graphql", "application/json" };
     private readonly string[] _allowedMethods = new[] { HttpMethods.Get, HttpMethods.Post };
-    
+
     public GraphQLMiddleware(RequestDelegate next, IDataStore datastore, IMessageBus bus, bool authenticationEnabled, string idFieldName)
     {
         _next = next;
@@ -46,8 +46,8 @@ public class GraphQLMiddleware
         }
 
         if (!_allowedMethods.Any(context.Request.Method.Contains) ||
-        (context.Request.Method == HttpMethods.Post && !_allowedTypes.Any(context.Request.ContentType.Contains))
-        )
+            (context.Request.Method == HttpMethods.Post && !_allowedTypes.Any(context.Request.ContentType.Contains))
+           )
         {
             context.Response.StatusCode = (int)HttpStatusCode.NotImplemented;
             await context.Response.WriteAsync(JsonConvert.SerializeObject(new { errors = new[] { "Not implemented" } }));
@@ -72,8 +72,8 @@ public class GraphQLMiddleware
         }
 
         var json = result.Errors?.Any() == true
-                        ? JsonConvert.SerializeObject(new { data = result.Data, errors = result.Errors })
-                        : JsonConvert.SerializeObject(new { data = result.Data });
+            ? JsonConvert.SerializeObject(new { data = result.Data, errors = result.Errors })
+            : JsonConvert.SerializeObject(new { data = result.Data });
 
         result.Notifications?.ForEach(msg => _bus.Publish("updated", msg));
 

@@ -169,7 +169,8 @@ public static class QueryHelper
 
     public static bool IsQueryValid(IQueryCollection query)
     {
-        List<List<string>> validQuerySets = new List<List<string>>{
+        List<List<string>> validQuerySets = new List<List<string>>
+        {
             new List<string> { "skip", "take" },
             new List<string> { "offset", "limit" },
             new List<string> { "page", "per_page" }

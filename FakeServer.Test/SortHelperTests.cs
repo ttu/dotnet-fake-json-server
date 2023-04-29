@@ -1,5 +1,5 @@
-﻿using FakeServer.Common;
-using System.Dynamic;
+﻿using System.Dynamic;
+using FakeServer.Common;
 using Xunit;
 
 namespace FakeServer.Test;

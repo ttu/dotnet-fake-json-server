@@ -1,3 +1,4 @@
+using System.Dynamic;
 using FakeServer.Common;
 using FakeServer.Controllers;
 using JsonFlatFileDataStore;
@@ -6,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System.Dynamic;
 using Xunit;
 
 namespace FakeServer.Test;
@@ -223,10 +223,10 @@ public class DynamicControllerTests
         Assert.Equal(5, resultObject.offset.Value);
         Assert.Equal(12, resultObject.limit.Value);
         Assert.Equal(20, resultObject.count.Value);
-        
+
         UTHelpers.Down(filePath);
     }
-    
+
     [Fact]
     public void GetItems_EmptyCollection()
     {
@@ -238,7 +238,7 @@ public class DynamicControllerTests
         var controller = new DynamicController(ds, apiSettings, dsSettings);
         controller.ControllerContext = new ControllerContext();
         controller.ControllerContext.HttpContext = new DefaultHttpContext();
-        
+
         var result = controller.GetItems("empty_collection") as OkObjectResult;
 
         var resultObject = JsonConvert.DeserializeObject<dynamic>(JsonConvert.SerializeObject(result.Value));
@@ -247,7 +247,7 @@ public class DynamicControllerTests
         Assert.Equal(0, resultObject.skip.Value);
         Assert.Equal(512, resultObject.take.Value);
         Assert.Equal(0, resultObject.count.Value);
-        
+
         UTHelpers.Down(filePath);
     }
 
