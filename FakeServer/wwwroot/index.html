@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8" />
+    <meta charset="utf-8"/>
     <title>Fake JSON Server</title>
 
     <style type="text/css">
@@ -11,20 +11,20 @@
     </style>
 </head>
 <body>
-    <div id="app" v-cloak>
-        <div>
-            <h3>Collections found:</h3>
-            {{ collections }}
-        </div>
-        <br />
-        <div>
-            <h3>Last update:</h3>
-            <div>Method: {{ lastUpdate.method }}</div>
-            <div>Path: {{ lastUpdate.path }}</div>
-            <div>Collection: {{ lastUpdate.collection }}</div>
-            <div>Id: {{ lastUpdate.itemId }}</div>
-        </div>
+<div id="app" v-cloak>
+    <div>
+        <h3>Collections found:</h3>
+        {{ collections }}
     </div>
+    <br/>
+    <div>
+        <h3>Last update:</h3>
+        <div>Method: {{ lastUpdate.method }}</div>
+        <div>Path: {{ lastUpdate.path }}</div>
+        <div>Collection: {{ lastUpdate.collection }}</div>
+        <div>Id: {{ lastUpdate.itemId }}</div>
+    </div>
+</div>
 </body>
 
 <script src="https://unpkg.com/vue"></script>
@@ -51,8 +51,8 @@
         .then(response => {
             app.collections = response.body;
         }).catch(error => {
-            console.log(error.message || error);
-        });
+        console.log(error.message || error);
+    });
 
     const webSocket = new WebSocket(`ws://${window.location.host}/ws`);
 
@@ -60,8 +60,14 @@
         app.lastUpdate = JSON.parse(evt.data);
     };
 
-    webSocket.onopen = () => { console.log('open'); };
-    webSocket.onclose = () => { console.log('closed'); };
-    webSocket.onerror = (evt) => { console.log(evt.data); };
+    webSocket.onopen = () => {
+        console.log('open');
+    };
+    webSocket.onclose = () => {
+        console.log('closed');
+    };
+    webSocket.onerror = (evt) => {
+        console.log(evt.data);
+    };
 </script>
 </html>
