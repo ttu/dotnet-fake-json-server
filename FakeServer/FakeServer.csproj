@@ -1,82 +1,82 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <RuntimeIdentifiers>win-x64;osx-x64;linux-x64</RuntimeIdentifiers>
-	  <PackAsTool>true</PackAsTool>
-	  <IsPackable>true</IsPackable>
-	  <ToolCommandName>fake-server</ToolCommandName>
-	  <PackageId>FakeServer</PackageId>
-    <Authors>Tomi Tuhkanen</Authors>
-    <Company />
-    <Description>Fake JSON Server</Description>
-    <Version>0.11.0</Version>
-    <PackageProjectUrl>https://github.com/ttu/dotnet-fake-json-server</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/ttu/dotnet-fake-json-server</RepositoryUrl>
-    <PackageLicenseUrl></PackageLicenseUrl>
-    <PackageTags>fake json server rest api</PackageTags>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <RuntimeIdentifiers>win-x64;osx-x64;linux-x64</RuntimeIdentifiers>
+        <PackAsTool>true</PackAsTool>
+        <IsPackable>true</IsPackable>
+        <ToolCommandName>fake-server</ToolCommandName>
+        <PackageId>FakeServer</PackageId>
+        <Authors>Tomi Tuhkanen</Authors>
+        <Company/>
+        <Description>Fake JSON Server</Description>
+        <Version>0.11.0</Version>
+        <PackageProjectUrl>https://github.com/ttu/dotnet-fake-json-server</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/ttu/dotnet-fake-json-server</RepositoryUrl>
+        <PackageLicenseUrl></PackageLicenseUrl>
+        <PackageTags>fake json server rest api</PackageTags>
+    </PropertyGroup>
 
-  <PropertyGroup>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <NoWarn>1591;1701;1702;1705</NoWarn>
-    <AssemblyName>FakeServer</AssemblyName>
-    <PackageLicenseFile>LICENSE</PackageLicenseFile>
-  </PropertyGroup>
+    <PropertyGroup>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <NoWarn>1591;1701;1702;1705</NoWarn>
+        <AssemblyName>FakeServer</AssemblyName>
+        <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    </PropertyGroup>
 
-  <PropertyGroup>
-    <ImplicitUsings>enable</ImplicitUsings>
-  </PropertyGroup>
-    
-  <!-- 
-   This made build on Travis CI fail. Apparently this is fixed in some later .NET Core SDK versions, so uncomment it when it works with Travis.
+    <PropertyGroup>
+        <ImplicitUsings>enable</ImplicitUsings>
+    </PropertyGroup>
 
-   error : Duplicate 'Content' items were included. The .NET SDK includes 'Content' items from your project directory by default. You can either remove these items from your project file, or set the 'EnableDefaultContentItems' property to 'false' if you want to explicitly include them in your project file. For more information, see https://aka.ms/sdkimplicititems. The duplicate items were: 'wwwroot/index.html'
-  -->
-  <!--<ItemGroup>
-    <Content Include="wwwroot\index.html" />
-  </ItemGroup>-->
-  <ItemGroup>
-    <PackageReference Include="GraphQL" Version="2.4.0" />
-    <PackageReference Include="JsonFlatFileDataStore" Version="2.4.1" />
-    <PackageReference Include="Marvin.Cache.Headers" Version="6.1.0" />
-    <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="4.0.2" />
-    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.21.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.12" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.12" />
-    <PackageReference Include="Microsoft.AspNetCore.ResponseCaching" Version="2.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.SpaServices" Version="3.1.32" />
-    <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="6.0.12" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="4.4.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="6.0.0" />
-    <PackageReference Include="Pluralize.NET.Core" Version="1.0.0" />
-    <PackageReference Include="Serilog.AspNetCore" Version="6.1.0" />
-    <PackageReference Include="Serilog.Extensions.Logging" Version="3.1.0" />
-    <PackageReference Include="Serilog.Settings.Configuration" Version="3.4.0" />
-    <PackageReference Include="Serilog.Sinks.Console" Version="4.1.0" />
-    <PackageReference Include="Serilog.Sinks.RollingFile" Version="3.3.0" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
-    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.24" />
-    <PackageReference Include="System.Reflection.TypeExtensions" Version="4.7.0" />
-  </ItemGroup>
-  <ItemGroup>
-    <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="1.0.0" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Update="appsettings.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Update="datastore.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\LICENSE">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
-  </ItemGroup>
+    <!-- 
+     This made build on Travis CI fail. Apparently this is fixed in some later .NET Core SDK versions, so uncomment it when it works with Travis.
+  
+     error : Duplicate 'Content' items were included. The .NET SDK includes 'Content' items from your project directory by default. You can either remove these items from your project file, or set the 'EnableDefaultContentItems' property to 'false' if you want to explicitly include them in your project file. For more information, see https://aka.ms/sdkimplicititems. The duplicate items were: 'wwwroot/index.html'
+    -->
+    <!--<ItemGroup>
+      <Content Include="wwwroot\index.html" />
+    </ItemGroup>-->
+    <ItemGroup>
+        <PackageReference Include="GraphQL" Version="2.4.0"/>
+        <PackageReference Include="JsonFlatFileDataStore" Version="2.4.1"/>
+        <PackageReference Include="Marvin.Cache.Headers" Version="6.1.0"/>
+        <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="4.0.2"/>
+        <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.21.0"/>
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.12"/>
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.12"/>
+        <PackageReference Include="Microsoft.AspNetCore.ResponseCaching" Version="2.2.0"/>
+        <PackageReference Include="Microsoft.AspNetCore.SpaServices" Version="3.1.32"/>
+        <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="6.0.12"/>
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="4.4.0"/>
+        <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="6.0.0"/>
+        <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="6.0.0"/>
+        <PackageReference Include="Pluralize.NET.Core" Version="1.0.0"/>
+        <PackageReference Include="Serilog.AspNetCore" Version="6.1.0"/>
+        <PackageReference Include="Serilog.Extensions.Logging" Version="3.1.0"/>
+        <PackageReference Include="Serilog.Settings.Configuration" Version="3.4.0"/>
+        <PackageReference Include="Serilog.Sinks.Console" Version="4.1.0"/>
+        <PackageReference Include="Serilog.Sinks.RollingFile" Version="3.3.0"/>
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0"/>
+        <PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.24"/>
+        <PackageReference Include="System.Reflection.TypeExtensions" Version="4.7.0"/>
+    </ItemGroup>
+    <ItemGroup>
+        <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="1.0.0"/>
+    </ItemGroup>
+    <ItemGroup>
+        <Content Update="appsettings.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <Content Update="datastore.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        </Content>
+    </ItemGroup>
+    <ItemGroup>
+        <None Include="..\LICENSE">
+            <Pack>True</Pack>
+            <PackagePath></PackagePath>
+        </None>
+    </ItemGroup>
 
 </Project>
