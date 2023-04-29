@@ -5,153 +5,152 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace FakeServer.Authentication.Jwt
+namespace FakeServer.Authentication.Jwt;
+
+public class TokenProviderMiddleware
 {
-    public class TokenProviderMiddleware
+    private readonly RequestDelegate _next;
+    private readonly TokenProviderOptions _options;
+
+    public TokenProviderMiddleware(
+        RequestDelegate next,
+        IOptions<TokenProviderOptions> options)
     {
-        private readonly RequestDelegate _next;
-        private readonly TokenProviderOptions _options;
+        _next = next;
+        _options = options.Value;
+    }
 
-        public TokenProviderMiddleware(
-            RequestDelegate next,
-            IOptions<TokenProviderOptions> options)
+    public async Task Invoke(HttpContext context)
+    {
+        // If the request path doesn't match, skip
+        if (!context.Request.Path.Equals(_options.Path, StringComparison.Ordinal))
         {
-            _next = next;
-            _options = options.Value;
+            await _next(context);
+            return;
         }
 
-        public async Task Invoke(HttpContext context)
+        // Request must be POST with Content-Type: application/x-www-form-urlencoded or application/json
+        if (!context.Request.Method.Equals("POST"))
         {
-            // If the request path doesn't match, skip
-            if (!context.Request.Path.Equals(_options.Path, StringComparison.Ordinal))
-            {
-                await _next(context);
-                return;
-            }
-
-            // Request must be POST with Content-Type: application/x-www-form-urlencoded or application/json
-            if (!context.Request.Method.Equals("POST"))
-            {
-                context.Response.StatusCode = 400;
-                await context.Response.WriteAsync("Only POST method allowed.");
-                return;
-            }
-            else if (!context.Request.HasFormContentType && !context.Request.ContentType.StartsWith("application/json"))
-            {
-                context.Response.StatusCode = 400;
-                await context.Response.WriteAsync("Only Content-Type: application/x-www-form-urlencoded or application/json are allowed.");
-                return;
-            }
-
-            (string username, string password, bool isDataValid) = context.Request.HasFormContentType
-                ? GetFromFormData(context)
-                : await GetFromJson(context);
-
-            if (!isDataValid)
-            {
-                context.Response.StatusCode = 400;
-                await context.Response.WriteAsync("Authentication must be defined with username and password fields");
-                return;
-            }
-
-            await GenerateToken(context, username, password);
+            context.Response.StatusCode = 400;
+            await context.Response.WriteAsync("Only POST method allowed.");
+            return;
+        }
+        else if (!context.Request.HasFormContentType && !context.Request.ContentType.StartsWith("application/json"))
+        {
+            context.Response.StatusCode = 400;
+            await context.Response.WriteAsync("Only Content-Type: application/x-www-form-urlencoded or application/json are allowed.");
+            return;
         }
 
-        private async Task<(string username, string password, bool validData)> GetFromJson(HttpContext context)
+        (string username, string password, bool isDataValid) = context.Request.HasFormContentType
+            ? GetFromFormData(context)
+            : await GetFromJson(context);
+
+        if (!isDataValid)
         {
-            string body;
-
-            using (var streamReader = new StreamReader(context.Request.Body))
-            {
-                body = await streamReader.ReadToEndAsync().ConfigureAwait(true);
-            }
-
-            var jsonBody = JObject.Parse(body);
-
-            if (!jsonBody.ContainsKey("username") || !jsonBody.ContainsKey("password"))
-                return (string.Empty, string.Empty, false);
-
-            return (jsonBody["username"].Value<string>(), jsonBody["password"].Value<string>(), true);
+            context.Response.StatusCode = 400;
+            await context.Response.WriteAsync("Authentication must be defined with username and password fields");
+            return;
         }
 
-        private (string username, string password, bool validData) GetFromFormData(HttpContext context)
+        await GenerateToken(context, username, password);
+    }
+
+    private async Task<(string username, string password, bool validData)> GetFromJson(HttpContext context)
+    {
+        string body;
+
+        using (var streamReader = new StreamReader(context.Request.Body))
         {
-            if (context.Request.Form != null && context.Request.Form.ContainsKey("grant_type") && context.Request.Form["grant_type"] == "client_credentials")
-            {
-                if (context.Request.Form.ContainsKey("client_id"))
-                {
-                    return (context.Request.Form["client_id"], context.Request.Form["client_secret"], true);
-                }
-                else
-                {
-                    var authHeader = context.Request.Headers["Authorization"].ToString();
-                    var authString = authHeader.Substring("Basic ".Length).Trim();
-                    var credentials = Encoding.UTF8.GetString(Convert.FromBase64String(authString)).Split(':');
-                    return (credentials[0], credentials[1], true);
-                }
-            }
-
-            if (!context.Request.Form.ContainsKey("username") || !context.Request.Form.ContainsKey("password"))
-                return (string.Empty, string.Empty, false);
-
-            return (context.Request.Form["username"], context.Request.Form["password"], true);
+            body = await streamReader.ReadToEndAsync().ConfigureAwait(true);
         }
 
-        private async Task GenerateToken(HttpContext context, string username, string password)
+        var jsonBody = JObject.Parse(body);
+
+        if (!jsonBody.ContainsKey("username") || !jsonBody.ContainsKey("password"))
+            return (string.Empty, string.Empty, false);
+
+        return (jsonBody["username"].Value<string>(), jsonBody["password"].Value<string>(), true);
+    }
+
+    private (string username, string password, bool validData) GetFromFormData(HttpContext context)
+    {
+        if (context.Request.Form != null && context.Request.Form.ContainsKey("grant_type") && context.Request.Form["grant_type"] == "client_credentials")
         {
-            var authenticationSettings = context.RequestServices.GetService(typeof(IOptions<AuthenticationSettings>)) as IOptions<AuthenticationSettings>;
-
-            var identity = await GetIdentity(username, password, authenticationSettings.Value);
-
-            if (identity == null)
+            if (context.Request.Form.ContainsKey("client_id"))
             {
-                context.Response.StatusCode = 400;
-                await context.Response.WriteAsync("Invalid username or password.");
-                return;
+                return (context.Request.Form["client_id"], context.Request.Form["client_secret"], true);
             }
-
-            var now = DateTime.UtcNow;
-
-            // Specifically add the jti (random nonce), iat (issued timestamp), and sub (subject/user) claims.
-            // You can add other claims here, if you want:
-            var claims = new[]
+            else
             {
-                new Claim(JwtRegisteredClaimNames.Sub, username),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(JwtRegisteredClaimNames.Iat, new DateTimeOffset(now).ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64)
-            };
-
-            // Create the JWT and write it to a string
-            var jwt = new JwtSecurityToken(
-                issuer: _options.Issuer,
-                audience: _options.Audience,
-                claims: claims,
-                notBefore: now,
-                expires: now.Add(_options.Expiration),
-                signingCredentials: _options.SigningCredentials);
-
-            var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
-
-            var response = new
-            {
-                access_token = encodedJwt,
-                expires_in = (int)_options.Expiration.TotalSeconds
-            };
-
-            // Serialize and return the response
-            context.Response.ContentType = "application/json";
-            await context.Response.WriteAsync(JsonConvert.SerializeObject(response, new JsonSerializerSettings { Formatting = Formatting.Indented }));
+                var authHeader = context.Request.Headers["Authorization"].ToString();
+                var authString = authHeader.Substring("Basic ".Length).Trim();
+                var credentials = Encoding.UTF8.GetString(Convert.FromBase64String(authString)).Split(':');
+                return (credentials[0], credentials[1], true);
+            }
         }
 
-        private Task<ClaimsIdentity> GetIdentity(string username, string password, AuthenticationSettings authenticationSettings)
-        {
-            if (authenticationSettings.Users.Any(e => e.Username == username && e.Password == password))
-            {
-                return Task.FromResult(new ClaimsIdentity(new System.Security.Principal.GenericIdentity(username, "Token"), new Claim[] { }));
-            }
+        if (!context.Request.Form.ContainsKey("username") || !context.Request.Form.ContainsKey("password"))
+            return (string.Empty, string.Empty, false);
 
-            // Credentials are invalid, or account doesn't exist
-            return Task.FromResult<ClaimsIdentity>(null);
+        return (context.Request.Form["username"], context.Request.Form["password"], true);
+    }
+
+    private async Task GenerateToken(HttpContext context, string username, string password)
+    {
+        var authenticationSettings = context.RequestServices.GetService(typeof(IOptions<AuthenticationSettings>)) as IOptions<AuthenticationSettings>;
+
+        var identity = await GetIdentity(username, password, authenticationSettings.Value);
+
+        if (identity == null)
+        {
+            context.Response.StatusCode = 400;
+            await context.Response.WriteAsync("Invalid username or password.");
+            return;
         }
+
+        var now = DateTime.UtcNow;
+
+        // Specifically add the jti (random nonce), iat (issued timestamp), and sub (subject/user) claims.
+        // You can add other claims here, if you want:
+        var claims = new[]
+        {
+            new Claim(JwtRegisteredClaimNames.Sub, username),
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new Claim(JwtRegisteredClaimNames.Iat, new DateTimeOffset(now).ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64)
+        };
+
+        // Create the JWT and write it to a string
+        var jwt = new JwtSecurityToken(
+            issuer: _options.Issuer,
+            audience: _options.Audience,
+            claims: claims,
+            notBefore: now,
+            expires: now.Add(_options.Expiration),
+            signingCredentials: _options.SigningCredentials);
+
+        var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
+
+        var response = new
+        {
+            access_token = encodedJwt,
+            expires_in = (int)_options.Expiration.TotalSeconds
+        };
+
+        // Serialize and return the response
+        context.Response.ContentType = "application/json";
+        await context.Response.WriteAsync(JsonConvert.SerializeObject(response, new JsonSerializerSettings { Formatting = Formatting.Indented }));
+    }
+
+    private Task<ClaimsIdentity> GetIdentity(string username, string password, AuthenticationSettings authenticationSettings)
+    {
+        if (authenticationSettings.Users.Any(e => e.Username == username && e.Password == password))
+        {
+            return Task.FromResult(new ClaimsIdentity(new System.Security.Principal.GenericIdentity(username, "Token"), new Claim[] { }));
+        }
+
+        // Credentials are invalid, or account doesn't exist
+        return Task.FromResult<ClaimsIdentity>(null);
     }
 }
