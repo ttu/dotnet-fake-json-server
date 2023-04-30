@@ -1,8 +1,8 @@
+using System.Diagnostics;
+using System.Reflection;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.AspNetCore;
 using Serilog;
-using System.Diagnostics;
-using System.Reflection;
 
 namespace FakeServer;
 

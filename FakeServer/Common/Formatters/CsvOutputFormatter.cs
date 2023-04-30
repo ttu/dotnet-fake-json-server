@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc.Formatters;
-using Microsoft.Net.Http.Headers;
-using System.Dynamic;
+﻿using System.Dynamic;
 using System.Text;
+using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.Net.Http.Headers;
 
 namespace FakeServer.Common.Formatters;
 
@@ -15,13 +15,15 @@ public class CsvOutputFormatter : TextOutputFormatter
     }
 
     protected override bool CanWriteType(Type type) =>
-            typeof(ExpandoObject).IsAssignableFrom(type) || typeof(IEnumerable<object>).IsAssignableFrom(type) ? base.CanWriteType(type) : false;
+        typeof(ExpandoObject).IsAssignableFrom(type) || typeof(IEnumerable<object>).IsAssignableFrom(type) ? base.CanWriteType(type) : false;
 
     public async override Task WriteResponseBodyAsync(OutputFormatterWriteContext context, Encoding selectedEncoding)
     {
         string itemsToString(string acc, dynamic multiItems) => multiItems is IEnumerable<object> collection
-                                                                ? collection.Aggregate(acc, itemsToString)
-                                                                : string.IsNullOrEmpty(acc) ? multiItems : $"{acc},{multiItems}";
+            ? collection.Aggregate(acc, itemsToString)
+            : string.IsNullOrEmpty(acc)
+                ? multiItems
+                : $"{acc},{multiItems}";
 
         string multipleItemsToCsv(IEnumerable<object> itemCollection)
         {
@@ -42,9 +44,9 @@ public class CsvOutputFormatter : TextOutputFormatter
     }
 
     private IEnumerable<IEnumerable<dynamic>> HandleExpandoCollection(IEnumerable<object> collection) =>
-                                    collection.Select(item => item is IEnumerable<object> col
-                                                                ? HandleExpandoCollection(col)
-                                                                : HandleExpando(item as ExpandoObject));
+        collection.Select(item => item is IEnumerable<object> col
+            ? HandleExpandoCollection(col)
+            : HandleExpando(item as ExpandoObject));
 
     private IEnumerable<dynamic> HandleExpando(ExpandoObject item) =>
         item.Select(field =>

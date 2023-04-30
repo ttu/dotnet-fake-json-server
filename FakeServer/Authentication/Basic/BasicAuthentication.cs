@@ -14,11 +14,11 @@ public static class BasicAuthenticationConfiguration
     public static IServiceCollection AddBasicAuthentication(this IServiceCollection services)
     {
         services.AddAuthentication(o =>
-        {
-            o.DefaultScheme = BasicAuthenticationDefaults.AuthenticationScheme;
-            o.DefaultAuthenticateScheme = BasicAuthenticationDefaults.AuthenticationScheme;
-        })
-        .AddBasicAuthentication();
+            {
+                o.DefaultScheme = BasicAuthenticationDefaults.AuthenticationScheme;
+                o.DefaultAuthenticateScheme = BasicAuthenticationDefaults.AuthenticationScheme;
+            })
+            .AddBasicAuthentication();
 
         return services;
     }
@@ -32,19 +32,22 @@ public static class BasicAuthenticationDefaults
 public static class BasicAuthenticationExtensions
 {
     public static AuthenticationBuilder AddBasicAuthentication(this AuthenticationBuilder builder)
-           => builder.AddBasicAuthentication(BasicAuthenticationDefaults.AuthenticationScheme, _ => { });
+        => builder.AddBasicAuthentication(BasicAuthenticationDefaults.AuthenticationScheme, _ => { });
 
     public static AuthenticationBuilder AddBasicAuthentication(this AuthenticationBuilder builder, Action<BasicTokenOptions> configureOptions)
-      => builder.AddBasicAuthentication(BasicAuthenticationDefaults.AuthenticationScheme, configureOptions);
+        => builder.AddBasicAuthentication(BasicAuthenticationDefaults.AuthenticationScheme, configureOptions);
 
-    public static AuthenticationBuilder AddBasicAuthentication(this AuthenticationBuilder builder, string authenticationScheme, Action<BasicTokenOptions> configureOptions)
+    public static AuthenticationBuilder AddBasicAuthentication(this AuthenticationBuilder builder, string authenticationScheme,
+        Action<BasicTokenOptions> configureOptions)
         => builder.AddBasicAuthentication(authenticationScheme, displayName: null, configureOptions: configureOptions);
 
-    public static AuthenticationBuilder AddBasicAuthentication(this AuthenticationBuilder builder, string authenticationScheme, string displayName, Action<BasicTokenOptions> configureOptions)
+    public static AuthenticationBuilder AddBasicAuthentication(this AuthenticationBuilder builder, string authenticationScheme, string displayName,
+        Action<BasicTokenOptions> configureOptions)
     {
         builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IPostConfigureOptions<BasicTokenOptions>, BasicTokenPostConfigureOptions>());
         return builder.AddScheme<BasicTokenOptions, BasicAuthenticationHandler>(authenticationScheme, displayName, configureOptions);
     }
+
     public static OpenApiSecurityScheme GetBasicSecurityDefinition(this SwaggerGenOptions s)
     {
         return new OpenApiSecurityScheme
@@ -54,6 +57,7 @@ public static class BasicAuthenticationExtensions
             In = ParameterLocation.Header
         };
     }
+
     public static OpenApiSecurityRequirement GetBasicSecurityRequirement(this SwaggerGenOptions s)
     {
         var securityRequirement = new OpenApiSecurityRequirement();
@@ -94,10 +98,11 @@ public class BasicAuthenticationHandler : AuthenticationHandler<BasicTokenOption
 {
     // "Basic "
     private const int HeaderMinLength = 6;
-    
+
     public BasicAuthenticationHandler(IOptionsMonitor<BasicTokenOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock)
         : base(options, logger, encoder, clock)
-    { }
+    {
+    }
 
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
@@ -119,7 +124,9 @@ public class BasicAuthenticationHandler : AuthenticationHandler<BasicTokenOption
 
             name = string.Empty;
             return false;
-        };
+        }
+
+        ;
 
         if (!string.IsNullOrEmpty(authHeader) &&
             authHeader.StartsWith("basic", StringComparison.OrdinalIgnoreCase) &&
@@ -130,10 +137,10 @@ public class BasicAuthenticationHandler : AuthenticationHandler<BasicTokenOption
             var identity = new ClaimsIdentity(claims, BasicAuthenticationDefaults.AuthenticationScheme);
 
             return Task.FromResult(AuthenticateResult.Success(
-                      new AuthenticationTicket(
-                          new ClaimsPrincipal(identity),
-                          new AuthenticationProperties(),
-                          BasicAuthenticationDefaults.AuthenticationScheme)));
+                new AuthenticationTicket(
+                    new ClaimsPrincipal(identity),
+                    new AuthenticationProperties(),
+                    BasicAuthenticationDefaults.AuthenticationScheme)));
         }
         else
         {

@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc.Formatters;
-using Microsoft.Net.Http.Headers;
-using System.Dynamic;
+﻿using System.Dynamic;
 using System.Text;
 using System.Xml.Linq;
+using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.Net.Http.Headers;
 using Pluralize.NET.Core;
 
 namespace FakeServer.Common.Formatters;
@@ -18,7 +18,7 @@ public class XmlOutputFormatter : TextOutputFormatter
     }
 
     protected override bool CanWriteType(Type type) =>
-            typeof(ExpandoObject).IsAssignableFrom(type) || typeof(IEnumerable<object>).IsAssignableFrom(type) ? base.CanWriteType(type) : false;
+        typeof(ExpandoObject).IsAssignableFrom(type) || typeof(IEnumerable<object>).IsAssignableFrom(type) ? base.CanWriteType(type) : false;
 
     private static Pluralizer _pluralizer = new Pluralizer();
 
@@ -31,19 +31,22 @@ public class XmlOutputFormatter : TextOutputFormatter
 
             if (fields.Value is IEnumerable<object> innerList)
             {
-                var children = innerList.Select((i) => ((ExpandoObject)i).Aggregate(new XElement($"{_pluralizer.Singularize(fields.Key)}"), HandleExpandoField));
+                var children = innerList.Select((i) =>
+                    ((ExpandoObject)i).Aggregate(new XElement($"{_pluralizer.Singularize(fields.Key)}"), HandleExpandoField));
                 element = new XElement(_pluralizer.Pluralize(fields.Key), children);
             }
             else
             {
                 element = fields.Value is ExpandoObject expando
-                             ? expando.Aggregate(new XElement(fields.Key), HandleExpandoField)
-                             : new XElement(fields.Key, fields.Value);
+                    ? expando.Aggregate(new XElement(fields.Key), HandleExpandoField)
+                    : new XElement(fields.Key, fields.Value);
             }
 
             acc.Add(element);
             return acc;
-        };
+        }
+
+        ;
 
         XElement MultipleItemsToXml(string name, IEnumerable<object> itemCollection)
         {
