@@ -15,13 +15,13 @@ Fake JSON Server is a Fake REST API that can be used as a Back End for prototypi
 * No database, data is stored to a single JSON file
 * No setup required, just start the server and API is ready to be used with any data
 
-##### Why would I use this instead of other Fake Servers?
+### Why to use this?
 
 1) API is built following the best practices and can be used as a reference when building your own API
 1) Contains all common features used with well functioning APIs (see features listed below)
 1) Can be run on Windows, Linux and macOS without any installation or prerequisites from executable or with Docker
 
-## Features
+### Features
 
 * Supported HTTP methods [#](#routes-functionalities-and-examples)
   * All methods for CRUD operations (_GET, PUT, POST, PATCH, DELETE_)
@@ -42,10 +42,10 @@ Fake JSON Server is a Fake REST API that can be used as a Back End for prototypi
 * Configurable custom response transformation [#](#custom-response-transformation)
 * _Experimental_ GraphQL query and mutation support [#](#graphql)
 
-##### Developed with
+### Developed with
  
 * .NET 6
-* Uses [JSON Flat File Data Store](https://github.com/ttu/json-flatfile-datastore) to store data
+* Data is stored to a JSON-file with [JSON Flat File Data Store](https://github.com/ttu/json-flatfile-datastore)
 * Can be installed as a dotnet global tool [#](#install-as-a-dotnet-global-tool)
 * Can be used without .NET
   * Docker [#](#docker) 
@@ -57,65 +57,67 @@ Fake JSON Server is a Fake REST API that can be used as a Back End for prototypi
 <summary>Click to here to see contents </summary>
 
 - [Get started](#get-started)
-    + [Start with .NET CLI](#start-with-net-cli)
-    + [Install as a dotnet global tool](#install-as-a-dotnet-global-tool)
+    + [.NET CLI](#net-cli)
+    + [Dotnet global tool](#dotnet-global-tool)
     + [Docker](#docker)
-    + [Self-contained Application](#self-contained-application)
+    + [Self-contained application](#self-contained-application)
     + [Serve static files](#serve-static-files)
+- [Examples](#examples)
     + [Quick example](#quick-example)
     + [Example project](#example-project)
     + [Example queries](#example-queries)
 - [Features](#features-1)
   * [Authentication](#authentication)
-    + [Token Authentication](#token-authentication)
-    + [Basic Authentication](#basic-authentication)
-    + [API key Authentication](#api-key-authentication)
+    + [Token authentication](#token-authentication)
+    + [Basic authentication](#basic-authentication)
+    + [API key authentication](#api-key-authentication)
   * [WebSockets](#websockets)
   * [CORS](#cors)
-  * [Static Files](#static-files)
+  * [Static files](#static-files)
   * [Swagger](#swagger)
   * [Caching and avoiding mid-air collisions with ETag](#caching-and-avoiding-mid-air-collisions-with-etag)
     + [Caching of unchanged resources](#caching-of-unchanged-resources)
     + [Avoiding mid-air collisions](#avoiding-mid-air-collisions)
   * [Content Negotiaton](#content-negotiaton)
+  * [Simulate Delay and Random Errors](#simulate-delay-and-random-errors)
+  * [Configurable Custom Response Transformation](#custom-response-transformation)
+  * [Logging](#logging)
 - [Routes, Functionalities and Examples](#routes--functionalities-and-examples)
-    + [Routes](#routes)
     + [Collections and objects](#collections-and-objects)
+    + [Routes](#routes)
     + [Identifiers](#identifiers)
-    + [Return codes](#return-codes)
-    + [OPTIONS method](#options-method)
-    + [HEAD method](#head-method)
+    + [HTTP return codes](#http-return-codes)
+    + [Data Store Id-field name](#data-store-id-field-name)
     + [Eager data reload](#eager-data-reload)
     + [Reload](#reload)
   * [Endpoints](#endpoints)
-      - [Example JSON data](#example-json-data)
-    + [List collections](#list-collections)
-    + [Query](#query)
+    + [JSON data used in examples](#json-data-used-in-examples)
+    + [List collections (GET)](#list-collections-(get))
+    + [Query items (GET)](#query-items-(get))
       - [Slice](#slice)
-      - [Pagination headers](#pagination-headers)
-    + [Filter](#filter)
-      - [Child properties](#child-properties)
-      - [Filter operators](#filter-operators)
+        - [Pagination headers](#pagination-headers)
+      - [Filter](#filter)
+        - [Filter operators](#filter-operators)
+        - [Child properties](#child-properties)
       - [Full-text search](#full-text-search)
       - [Select Fields](#select-fields)
-    + [Get item with id](#get-item-with-id)
-    + [Get nested items](#get-nested-items)
-    + [Add item](#add-item)
-    + [Replace item](#replace-item)
-    + [Update item](#update-item)
-    + [Delete item](#delete-item)
+    + [Get item with id (GET)](#get-item-with-id-(get))
+      - [Get nested items](#get-nested-items)
+    + [Add item (POST)](#add-item-(post))
+    + [Replace item (PUT)](#replace-item-(put))
+    + [Update item (PATCH)](#update-item-(patch))
+    + [Delete item (DELETE)](#delete-item-(delete))
+  * [OPTIONS method](#options-method)
+  * [HEAD method](#head-method)
   * [Async Operations](#async-operations)
       - [Job delay](#job-delay)
   * [GraphQL](#graphql)
     + [Query](#query-1)
     + [Mutation](#mutation)
       - [Add item](#add-item-1)
-    + [Update Item](#update-item)
+      - [Update Item](#update-item)
       - [Replace item](#replace-item-1)
       - [Delete item](#delete-item-1)
-  * [Simulate Delay and Random Errors](#simulate-delay-and-random-errors)
-  * [Configurable Custom Response Transformation](#custom-response-transformation)
-- [Logging](#logging)
 - [Guidelines](#guidelines)
 - [Other Links](#other-links)
 - [Releases](#releases)
@@ -127,7 +129,7 @@ Fake JSON Server is a Fake REST API that can be used as a Back End for prototypi
 
 ## Get started
 
-#### Start with .NET CLI
+### .NET CLI
 
 ```sh
 # Get source code from GitHub
@@ -149,7 +151,7 @@ Start server with defined data-file and url (optional arguments)
 $ dotnet run --file data.json --urls http://localhost:57602
 ```
 
-#### Install as a dotnet global tool
+### Dotnet global tool
  
 Server can be installed as a [dotnet global tool](https://docs.microsoft.com/en-us/dotnet/core/tools/global-tools). Settings files are then located at `%USERPROFILE%\.dotnet\tools` (_Windows_) and `$HOME/.dotnet/tools` (_Linux/macOS_). By default data stores's JSON file will be created to execution directory.
 
@@ -164,7 +166,7 @@ $ fake-server --file data.json --urls http://localhost:57602
 $ dotnet tool update --global FakeServer
 ```
 
-#### Docker
+### Docker
 
 If you don't have .NET installed, you can run the server with Docker.
 
@@ -195,7 +197,7 @@ $ docker cp datastore.json fakeapi:/app/datastore.json
 $ docker cp fakeapi:/app/datastore.json datastore.json
 ```
 
-#### Self-contained Application
+### Self-contained application
 
 The self-contained application archive contains Fake JSON Server, .NET runtime and all required third-party dependencies. __No installation or prerequisites are needed__.
 
@@ -213,7 +215,7 @@ $ chmod +x FakeServer
 $ ./FakeServer
 ```
 
-#### Serve static files
+### Serve static files
 
 Fake Server can serve static files. Location of files can be absolute or relative to the current location.
 
@@ -232,7 +234,9 @@ $ fake-server --serve ./build
 
 When user defines static files, it is assumed that user is serving a single page app and then REST API is not working. If API is needed, start other instance of Fake Server.
 
-#### Quick example
+## Examples
+
+### Quick example
 
 ```sh
 # List collections (should be empty, if data.json didn't exist before)
@@ -264,11 +268,11 @@ $ curl http://localhost:57602/api/users/
 # Or open url http://localhost:57602/swagger/ with browser and use Swagger
 ```
 
-#### Example project
+### Example project
 
 [Redux TodoMVC example](https://github.com/ttu/todomvc-fake-server) modified to use Fake JSON Server as a Back End.
 
-#### Example queries
+### Example queries
 
 Example queries are in [Insomnia](https://insomnia.rest/) workspace format in [FakeServer_Insomnia_Workspace.json](https://github.com/ttu/dotnet-fake-json-server/blob/master/docs/FakeServer_Insomnia_Workspace.json). 
 
@@ -293,7 +297,7 @@ Add allowed usernames/passwords to `Users`-array. Add optional API key to `ApiKe
 }
 ```
 
-#### Token Authentication
+#### Token authentication
 
 API has a token provider middleware which provides an endpoint for token generation `/token`. Endpoint supports `'content-type: multipart/form-data` and `content-type: application/json`. Username and password must be in `username` and `password` fields.
 
@@ -326,7 +330,7 @@ $ curl -X POST -d '' -H 'Authorization: Bearer [TOKEN]' http://localhost:57602/l
 
 The implementation is quite similiar to SimpleTokenProvider and more info on that can be found from [GitHub](https://github.com/nbarbettini/SimpleTokenProvider) and [StormPath's blog post](https://stormpath.com/blog/token-authentication-asp-net-core).
 
-#### Basic Authentication
+#### Basic authentication
 
 > NOTE: It is not recommended to use Basic Authentication in production as base64 is a reversible encoding
 
@@ -338,7 +342,7 @@ $ curl -u admin:root http://localhost:57602/api
 $ curl -H 'Authorization: Basic YWRtaW46cm9vdA==' http://localhost:57602/api
 ```
 
-#### API key Authentication
+#### API key authentication
 
 Add key set to Authentication settings to `X-API-KEY` header e.g. `X-API-KEY: abcd1234'`.
 
@@ -360,7 +364,7 @@ API will send the latest update's method (`POST, PUT, PATCH, DELETE`), path, col
 
 CORS is enabled and it allows everything.
 
-### Static Files
+### Static files
 
 `GET /`
 
@@ -409,7 +413,7 @@ $ curl -H "If-None-Match: \"5yZCXmjhk5ozJyTK4-OJkkd_X18\"" 'http://localhost:576
 
 If the `PUT` request contains the `If-Match` header, the header's value is compared to the item to be updated. If the value matches to the item's checksum then items is updated, else `412 Precondition Failed` is returned.
 
-#### Content Negotiaton
+### Content negotiaton
 
 Client can determine what type of representation is desired with `Accept` header. By default data is returned in JSON (`text/json`, `application/json`).
 
@@ -431,7 +435,153 @@ $ curl -H "Accept: text/csv" http://localhost:57603/api/users
 
 If content types is not supported `406 Not Acceptable` is returned.
 
-## Routes, Functionalities and Examples
+### Simulate Delay and Random Errors
+
+Delay and errors can be configured from `appsettings.json`.
+
+Delay can be simulated by setting `Simulate.Delay.Enabled` to _true_. The inbound request is delayed. The length of the delay is randomly chosen between `MinMs`and `MaxMs`. Delay can be configured for only certain HTTP Methods, e.g. only POST updates have delay and all GET requests are handled normally.
+
+```json
+"Simulate": {
+    "Delay": {
+      "Enabled": true,
+      "Methods": [ "GET", "POST", "PUT", "PATCH", "DELETE" ],
+      "MinMs": 2000,
+      "MaxMs": 5000
+    }
+}
+```
+
+Random errors can be simulated by setting `Simulate.Error.Enabled` to _true_. Error is thrown if set `Probability` is greater or equal to randomly chosen value between 1 and 100. Error can be configured for only certain HTTP Methods.
+
+```json
+"Simulate": {
+    "Error": {
+      "Enabled": true,
+      "Methods": [ "POST", "PUT", "PATCH", "DELETE" ],
+      "Probability": 50
+    }
+}
+```
+
+Error simulation is always skipped for Swagger, WebSocket (ws) and for any html file.
+
+### Custom Response Transformation
+
+Fake Server has a custom response middleware to transform reponse body with C#-scripts.
+
+Multiple scripts can be configured and if path matches multiple scipts, last match will be used.
+
+```json
+"CustomResponse": {
+    "Enabled": true,
+    "Scripts": [
+        {
+            "Script": "return new { Data = _Body, Success = _Context.Response.StatusCode == 200 };",
+            "Methods": [ "GET" ],
+            "Paths": [ "api" ],
+            "Usings": [ "System", "Microsoft.AspNetCore.Http" ],
+            "References": [ "Microsoft.AspNetCore" ]
+        },
+        {
+            "Script": "return new { Data = \"illegal operation\" };",
+            "Methods": [ "GET" ],
+            "Paths": [ "api/users" ],
+            "Usings": [ "System", "Microsoft.AspNetCore.Http" ],
+            "References": [ "Microsoft.AspNetCore" ]
+      }
+    ]
+}
+```
+
+C# code is executed as a csscript and it has some special reacy processed objects.
+
+```csharp
+// HttpContext
+public HttpContext _Context;
+// Collection id parsed from the Request path
+public string _CollectionId;
+// Original Response Body encoded to string
+public string _Body;
+// Request Http Method
+public string _Method;
+```
+
+Example script creates new anonymous object
+```csahrp
+return new { Data = _Body, Success = _Context.Response.StatusCode == 200 };
+```
+
+Previous script will have a response body:
+
+```txt
+{
+  "Data": [
+    { "id": 1, "name": "James" ...},
+    { "id": 2, "name": "Phil", ... },
+    ...
+  ],
+  "Success": true
+}
+```
+
+If response data requires so dynamically named properties, e.g. `users` in the example, then response requires more complex processing.
+
+```txt
+{
+  "Data": {
+    "users": [
+      { "id": 1, "name": "James" ...},
+      { "id": 2, "name": "Phil", ... },
+      ...
+    ]
+  },
+  "Success": true
+}
+```
+
+C#-code for the processing would be following:
+
+```csharp
+var data = new ExpandoObject();
+var dataItems = data as IDictionary<string, object>;
+dataItems.Add(_CollectionId, _Body);
+
+var body = new ExpandoObject();
+var items = body as IDictionary<string, object>;
+items.Add("Data", data);
+items.Add("Success", _Context.Response.StatusCode == 200);
+return body;
+```
+
+Script also would need `System.Collections.Generic` and `System.Dynamic` as imports. 
+
+```json
+{
+    "Script": "var data = new ExpandoObject();var dataItems = data as IDictionary<string, object>;dataItems.Add(_CollectionId, _Body);var body = new ExpandoObject();var items = body as IDictionary<string, object>;items.Add(\"Data\", data);items.Add(\"Success\", _Context.Response.StatusCode == 200);return body;",
+    "Methods": [ "GET" ],
+    "Paths": [ "api" ],
+    "Usings": [ "System", "System.Dynamic", "System.Collections.Generic", "Microsoft.AspNetCore.Http" ],
+    "References": [ "Microsoft.AspNetCore" ]
+}
+```
+
+### Logging
+
+Fake JSON Server writes a log file to the application base path (execution folder).
+
+Console logging can be enabled from `appsettings.json` by adding a new item to _Serilog.WriteTo_-array.
+
+```json
+"Serilog": {
+  "WriteTo": [
+    { "Name": "File" },
+    { "Name": "Console" }
+  ]
+}
+```
+
+## Routes, functionalities and examples
 
 ```
 GET      /
@@ -465,7 +615,7 @@ OPTIONS  /async/*
 POST     /graphql
 ```
 
-#### Collections and objects
+### Collections and objects
 
 Fake JSON Server is designed for prototyping, so by default it supports only resources in a collection.
 
@@ -479,7 +629,7 @@ If the JSON-file has a single object on a root level, then the route from that p
 ```
 
 
-#### Routes
+### Routes
 
 Dynamic routes are defined by the name of item's collection and id: `api/{collection}/{id}`. All examples below use `users` as a collection name.
 
@@ -509,7 +659,7 @@ $ curl 'http://localhost:57602/api/users?skip=5&take=20'
 $ curl 'http://localhost:57602/users?skip=5&take=20'
 ```
 
-#### Identifiers
+### Identifiers
 
 `id` is used as the identifier field. By default Id field's type is _integer_. `POST` will always use integer as id field's type.
 
@@ -524,45 +674,13 @@ $ curl 'http://localhost:57602/users?skip=5&take=20'
 
 If _string_ is used as the identifiers type, then items must be inserted with `PUT` and  `UpsertOnPut` must be set to _true_ from `appsettings.json`.
 
-#### Return codes
+### HTTP return codes
 
 Method return codes are specified in [REST API Tutorial](http://www.restapitutorial.com/lessons/httpmethods.html).
 
 Asynchoronous operations follow the [REST CookBook guide](http://restcookbook.com/Resources/asynchroneous-operations/). Updates will return `202` with location header to queue item. Queue will return `200` while operation is processing and `303` when job is ready with location header to changed or new item.
 
-#### OPTIONS method
-
-OPTIONS method will return `Allow` header with a list of HTTP methods that may be used on the resource.
-
-```sh
-$ curl -X OPTIONS -v http://localhost:57602/api/
-```
-
-```txt
-200 OK
-
-Headers:
-Allow: GET, POST, OPTIONS
-```
-
-#### HEAD method
-
-HEAD method can be used to get the metadata and headers without receiving response body.
-
-E.g. get user count without downloading large response body.
-
-```sh
-$ curl -X HEAD -v http://localhost:57602/api/users
-```
-
-```txt
-200 OK
-
-Headers:
-X-Total-Count: 1249
-```
-
-#### Data Store Id-field name
+### Data Store Id-field name
 
 Name of the Id-field used by Data Store can be configure from `appsettings.json`. Default name for the id-field is `id`.
 
@@ -572,7 +690,7 @@ Name of the Id-field used by Data Store can be configure from `appsettings.json`
 }
 ```
 
-#### Eager data reload
+### Eager data reload
 
 By default Data Store updates its internal data on every request by reading the data from the JSON file. 
 
@@ -588,7 +706,7 @@ For performance reasons `EagerDataReload` can be changed to _false_. Then the da
 
 If `EagerDataReload` is _false_ and JSON file is updated manually, reload endpoint must be called if new data will be queried before any updates. 
 
-#### Reload
+### Reload
 
 Reload endpoint can be used to reload JSON data from the file to Data Store. Endpoint is in Admin controller, so it is usable also with Swagger.
 
@@ -598,7 +716,7 @@ $ curl -X POST http://localhost:57602/admin/reload --data ""
 
 ### Endpoints
 
-##### Example JSON data
+#### JSON data used in examples
 
 Data used in example requests, unless otherwise stated:
 
@@ -616,7 +734,7 @@ Data used in example requests, unless otherwise stated:
 
 Example JSON generation guide for data used in unit tests [CreateJSON.md](docs/CreateJson.md).
 
-####  List collections  (GET)
+#### List collections (GET)
 
 ```txt
 > GET /api
@@ -634,9 +752,7 @@ $ curl http://localhost:57602/api
 [ "users", "movies", "configuration" ]
 ```
 
-#### Query items 
-
-#### Get All items (GET)
+#### Query items (GET)
 
 ```
 > GET /api/{collection}
@@ -703,7 +819,7 @@ $ curl http://localhost:57602/api/configuration
 { "ip": "192.168.0.1" }
 ```
 
-#### Slice
+##### Slice
 
 Slicing can be defined with `skip`/`take`, `offset`/`limit` or `page`/`per_page` parameters. By default request returns the first 512 items.
 
@@ -718,32 +834,13 @@ $ curl 'http://localhost:57602/api/users?offset=10&limit=10'
 $ curl 'http://localhost:57602/api/users?page=2&per_page=10'
 ```
 
-##### Pagination headers
+###### Pagination headers
 
 Link items are optional, so e.g. if requested items are starting from index 0, then the prev and first page link won't be added to the Link header.
 
 Headers follow [GitHub Developer](https://developer.github.com/v3/guides/traversing-with-pagination/) guide.
 
-#### Filter
-
-```
-> GET api/{collection}?field=value&otherField=value
-```
-
-Get all users whose `age` equals to _40_.
-
-```sh
-$ curl 'http://localhost:57602/api/users?age=40'
-```
-
-```json
-[ 
- { "id": 1, "name": "Phil", "age": 40, "location": "NY" },
- { "id": 3, "name": "Thomas", "age": 40, "location": "London" }
-]
-```
-
-#### Sort
+##### Sort
 
 ```
 > GET api/{collection}?sort=[+/-]field,[+/-]otherField
@@ -765,7 +862,52 @@ $ curl 'http://localhost:57602/api/users?sort=location,+age'
 ]
 ```
 
-#### Child properties
+##### Filter
+
+```
+> GET api/{collection}?field=value&otherField=value
+```
+
+Get all users whose `age` equals to _40_.
+
+```sh
+$ curl 'http://localhost:57602/api/users?age=40'
+```
+
+```json
+[ 
+ { "id": 1, "name": "Phil", "age": 40, "location": "NY" },
+ { "id": 3, "name": "Thomas", "age": 40, "location": "London" }
+]
+```
+
+###### Filter operators
+
+Query filter can include operators. Operator identifier is added to the end of the field.
+
+```
+> GET api/{collection}?field{operator}=value
+
+=     : Equal to
+_ne=  : Not equal
+_lt=  : Less than
+_gt=  : Greater than
+_lte= : Less than or equal to
+_gte= : Greater than or equal to
+```
+
+Query users with `age` less than _40_.
+
+```sh
+$ curl http://localhost:57602/api/users?age_lt=40
+```
+```json
+[ 
+  { "id": 2, "name": "Larry", "age": 37, "location": "London" }
+]
+```
+
+###### Filter with child properties
 
 Query can have a path to child properties. Property names are separated by periods.
 
@@ -810,33 +952,13 @@ Query will return ACME from the example JSON.
 ]
 ```
 
-#### Filter operators
 
-Query filter can include operators. Operator identifier is added to the end of the field.
 
-```
-> GET api/{collection}?field{operator}=value
 
-=     : Equal to
-_ne=  : Not equal
-_lt=  : Less than
-_gt=  : Greater than
-_lte= : Less than or equal to
-_gte= : Greater than or equal to
-```
 
-Query users with `age` less than _40_.
 
-```sh
-$ curl http://localhost:57602/api/users?age_lt=40
-```
-```json
-[ 
-  { "id": 2, "name": "Larry", "age": 37, "location": "London" }
-]
-```
 
-#### Full-text search
+##### Full-text search
 
 Full-text search can be performed with the `q`-parameter followed by search text. Search is not case sensitive.
 
@@ -850,7 +972,7 @@ Get all users that contain text _London_ in the value of any of it's properties.
 $ curl http://localhost:57602/api/users?q=london
 ```
 
-##### Select Fields
+##### Select fields
 
 Choose which fields to include in the results. Field names are separated by comma.
 
@@ -891,7 +1013,7 @@ $ curl http://localhost:57602/api/users/1
 { "id": 1, "name": "Phil", "age": 40, "location": "NY" }
 ```
 
-#### Get nested items (GET)
+##### Get nested items
 
 ```
 > GET /api/{collection}/{id}/{restOfThePath}
@@ -1048,6 +1170,38 @@ Delete user with id _1_.
 $ curl -X DELETE http://localhost:57602/api/users/1
 ```
 
+#### OPTIONS method
+
+OPTIONS method will return `Allow` header with a list of HTTP methods that may be used on the resource.
+
+```sh
+$ curl -X OPTIONS -v http://localhost:57602/api/
+```
+
+```txt
+200 OK
+
+Headers:
+Allow: GET, POST, OPTIONS
+```
+
+#### HEAD method
+
+HEAD method can be used to get the metadata and headers without receiving response body.
+
+E.g. get user count without downloading large response body.
+
+```sh
+$ curl -X HEAD -v http://localhost:57602/api/users
+```
+
+```txt
+200 OK
+
+Headers:
+X-Total-Count: 1249
+```
+
 ### Async Operations
 
 `/async` endpoint has long running operation for each update operation.
@@ -1092,7 +1246,7 @@ After job is finished, it must be deleted manually
 404 Not Found  : Job not found
 ```
 
-##### Job delay
+#### Job delay
 
 Delay for operations can be set from `appsettings.json`. With long delay it is easier to simulate long running jobs.
 
@@ -1309,7 +1463,7 @@ Response:
 }
 ```
 
-#### Update Item
+##### Update Item
 
 `update{collection}`
 
@@ -1426,152 +1580,6 @@ Response:
 }
 ```
 
-### Simulate Delay and Random Errors
-
-Delay and errors can be configured from `appsettings.json`.
-
-Delay can be simulated by setting `Simulate.Delay.Enabled` to _true_. The inbound request is delayed. The length of the delay is randomly chosen between `MinMs`and `MaxMs`. Delay can be configured for only certain HTTP Methods, e.g. only POST updates have delay and all GET requests are handled normally.
-
-```json
-"Simulate": {
-    "Delay": {
-      "Enabled": true,
-      "Methods": [ "GET", "POST", "PUT", "PATCH", "DELETE" ],
-      "MinMs": 2000,
-      "MaxMs": 5000
-    }
-}
-```
-
-Random errors can be simulated by setting `Simulate.Error.Enabled` to _true_. Error is thrown if set `Probability` is greater or equal to randomly chosen value between 1 and 100. Error can be configured for only certain HTTP Methods.
-
-```json
-"Simulate": {
-    "Error": {
-      "Enabled": true,
-      "Methods": [ "POST", "PUT", "PATCH", "DELETE" ],
-      "Probability": 50
-    }
-}
-```
-
-Error simulation is always skipped for Swagger, WebSocket (ws) and for any html file.
-
-### Custom Response Transformation
-
-Fake Server has a custom response middleware to transform reponse body with C#-scripts.
-
-Multiple scripts can be configured and if path matches multiple scipts, last match will be used.
-
-```json
-"CustomResponse": {
-    "Enabled": true,
-    "Scripts": [
-        {
-            "Script": "return new { Data = _Body, Success = _Context.Response.StatusCode == 200 };",
-            "Methods": [ "GET" ],
-            "Paths": [ "api" ],
-            "Usings": [ "System", "Microsoft.AspNetCore.Http" ],
-            "References": [ "Microsoft.AspNetCore" ]
-        },
-        {
-            "Script": "return new { Data = \"illegal operation\" };",
-            "Methods": [ "GET" ],
-            "Paths": [ "api/users" ],
-            "Usings": [ "System", "Microsoft.AspNetCore.Http" ],
-            "References": [ "Microsoft.AspNetCore" ]
-      }
-    ]
-}
-```
-
-C# code is executed as a csscript and it has some special reacy processed objects.
-
-```csharp
-// HttpContext
-public HttpContext _Context;
-// Collection id parsed from the Request path
-public string _CollectionId;
-// Original Response Body encoded to string
-public string _Body;
-// Request Http Method
-public string _Method;
-```
-
-Example script creates new anonymous object
-```csahrp
-return new { Data = _Body, Success = _Context.Response.StatusCode == 200 };
-```
-
-Previous script will have a response body:
-
-```txt
-{
-  "Data": [
-    { "id": 1, "name": "James" ...},
-    { "id": 2, "name": "Phil", ... },
-    ...
-  ],
-  "Success": true
-}
-```
-
-If response data requires so dynamically named properties, e.g. `users` in the example, then response requires more complex processing.
-
-```txt
-{
-  "Data": {
-    "users": [
-      { "id": 1, "name": "James" ...},
-      { "id": 2, "name": "Phil", ... },
-      ...
-    ]
-  },
-  "Success": true
-}
-```
-
-C#-code for the processing would be following:
-
-```csharp
-var data = new ExpandoObject();
-var dataItems = data as IDictionary<string, object>;
-dataItems.Add(_CollectionId, _Body);
-
-var body = new ExpandoObject();
-var items = body as IDictionary<string, object>;
-items.Add("Data", data);
-items.Add("Success", _Context.Response.StatusCode == 200);
-return body;
-```
-
-Script also would need `System.Collections.Generic` and `System.Dynamic` as imports. 
-
-```json
-{
-    "Script": "var data = new ExpandoObject();var dataItems = data as IDictionary<string, object>;dataItems.Add(_CollectionId, _Body);var body = new ExpandoObject();var items = body as IDictionary<string, object>;items.Add(\"Data\", data);items.Add(\"Success\", _Context.Response.StatusCode == 200);return body;",
-    "Methods": [ "GET" ],
-    "Paths": [ "api" ],
-    "Usings": [ "System", "System.Dynamic", "System.Collections.Generic", "Microsoft.AspNetCore.Http" ],
-    "References": [ "Microsoft.AspNetCore" ]
-}
-```
-
-## Logging
-
-Fake JSON Server writes a log file to the application base path (execution folder).
-
-Console logging can be enabled from `appsettings.json` by adding a new item to _Serilog.WriteTo_-array.
-
-```json
-"Serilog": {
-  "WriteTo": [
-    { "Name": "File" },
-    { "Name": "Console" }
-  ]
-}
-```
-
 ## Guidelines
 
 API follows best practices and recommendations from these guides:
@@ -1585,7 +1593,7 @@ API follows best practices and recommendations from these guides:
 * [MDN Web Docs: ETag](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/ETag)
 * [Designing GraphQL Mutations](https://dev-blog.apollodata.com/designing-graphql-mutations-e09de826ed97)
 * [IETF Tools](https://tools.ietf.org/id/draft-snell-merge-patch-02.html#rfc.section.2)
- 
+
 ## Other Links
 
 * [Benchmark with wrk](docs/BenchmarkWrk.md)
