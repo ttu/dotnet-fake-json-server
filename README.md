@@ -21,6 +21,12 @@ Fake JSON Server is a Fake REST API that can be used as a Back End for prototypi
 1) Contains all common features used with well functioning APIs (see features listed below)
 1) Can be run on Windows, Linux and macOS without any installation or prerequisites from executable or with Docker
 
+### Docs website
+
+[https://ttu.github.io/dotnet-fake-json-server/](https://ttu.github.io/dotnet-fake-json-server/)
+
+---
+
 ### Features
 
 * Supported HTTP methods [#](#routes-functionalities-and-examples)
@@ -45,11 +51,8 @@ Fake JSON Server is a Fake REST API that can be used as a Back End for prototypi
 ### Developed with
  
 * .NET 6
+* ASP.NET Core
 * Data is stored to a JSON-file with [JSON Flat File Data Store](https://github.com/ttu/json-flatfile-datastore)
-* Can be installed as a dotnet global tool [#](#install-as-a-dotnet-global-tool)
-* Can be used without .NET
-  * Docker [#](#docker) 
-  * Self-contained Application [#](#self-contained-application)
 
 
 ## Table of contents
