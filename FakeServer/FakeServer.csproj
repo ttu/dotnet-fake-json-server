@@ -8,7 +8,7 @@
         <ToolCommandName>fake-server</ToolCommandName>
         <PackageId>FakeServer</PackageId>
         <Authors>Tomi Tuhkanen</Authors>
-        <Company/>
+        <Company />
         <Description>Fake JSON Server</Description>
         <Version>0.11.0</Version>
         <PackageProjectUrl>https://github.com/ttu/dotnet-fake-json-server</PackageProjectUrl>
@@ -37,31 +37,31 @@
       <Content Include="wwwroot\index.html" />
     </ItemGroup>-->
     <ItemGroup>
-        <PackageReference Include="GraphQL" Version="2.4.0"/>
-        <PackageReference Include="JsonFlatFileDataStore" Version="2.4.1"/>
-        <PackageReference Include="Marvin.Cache.Headers" Version="6.1.0"/>
-        <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="4.0.2"/>
-        <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.21.0"/>
-        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.12"/>
-        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.12"/>
-        <PackageReference Include="Microsoft.AspNetCore.ResponseCaching" Version="2.2.0"/>
-        <PackageReference Include="Microsoft.AspNetCore.SpaServices" Version="3.1.32"/>
-        <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="6.0.12"/>
-        <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="4.4.0"/>
-        <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="6.0.0"/>
-        <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="6.0.0"/>
-        <PackageReference Include="Pluralize.NET.Core" Version="1.0.0"/>
-        <PackageReference Include="Serilog.AspNetCore" Version="6.1.0"/>
-        <PackageReference Include="Serilog.Extensions.Logging" Version="3.1.0"/>
-        <PackageReference Include="Serilog.Settings.Configuration" Version="3.4.0"/>
-        <PackageReference Include="Serilog.Sinks.Console" Version="4.1.0"/>
-        <PackageReference Include="Serilog.Sinks.RollingFile" Version="3.3.0"/>
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0"/>
-        <PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.24"/>
-        <PackageReference Include="System.Reflection.TypeExtensions" Version="4.7.0"/>
+        <PackageReference Include="GraphQL" Version="2.4.0" />
+        <PackageReference Include="JsonFlatFileDataStore" Version="2.4.2" />
+        <PackageReference Include="Marvin.Cache.Headers" Version="6.1.0" />
+        <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="4.0.2" />
+        <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.21.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.19" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.19" />
+        <PackageReference Include="Microsoft.AspNetCore.ResponseCaching" Version="2.2.0" />
+        <PackageReference Include="Microsoft.AspNetCore.SpaServices" Version="3.1.32" />
+        <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="6.0.19" />
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="4.6.0" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="7.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="7.0.0" />
+        <PackageReference Include="Pluralize.NET.Core" Version="1.0.0" />
+        <PackageReference Include="Serilog.AspNetCore" Version="7.0.0" />
+        <PackageReference Include="Serilog.Extensions.Logging" Version="7.0.0" />
+        <PackageReference Include="Serilog.Settings.Configuration" Version="7.0.0" />
+        <PackageReference Include="Serilog.Sinks.Console" Version="4.1.0" />
+        <PackageReference Include="Serilog.Sinks.RollingFile" Version="3.3.0" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+        <PackageReference Include="System.Linq.Dynamic.Core" Version="1.3.3" />
+        <PackageReference Include="System.Reflection.TypeExtensions" Version="4.7.0" />
     </ItemGroup>
     <ItemGroup>
-        <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="1.0.0"/>
+        <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="1.0.0" />
     </ItemGroup>
     <ItemGroup>
         <Content Update="appsettings.json">
