@@ -1,73 +1,74 @@
 ﻿<!DOCTYPE html>
 <html>
-<head>
-    <meta charset="utf-8"/>
+  <head>
+    <meta charset="utf-8" />
     <title>Fake JSON Server</title>
 
     <style type="text/css">
-        [v-cloak] {
-            display: none;
-        }
+      [v-cloak] {
+        display: none;
+      }
     </style>
-</head>
-<body>
-<div id="app" v-cloak>
-    <div>
+  </head>
+  <body>
+    <div id="app" v-cloak>
+      <div>
         <h3>Collections found:</h3>
         {{ collections }}
-    </div>
-    <br/>
-    <div>
+      </div>
+      <br />
+      <div>
         <h3>Last update:</h3>
         <div>Method: {{ lastUpdate.method }}</div>
         <div>Path: {{ lastUpdate.path }}</div>
         <div>Collection: {{ lastUpdate.collection }}</div>
         <div>Id: {{ lastUpdate.itemId }}</div>
+      </div>
     </div>
-</div>
-</body>
+  </body>
 
-<script src="https://unpkg.com/vue"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/superagent/3.5.2/superagent.min.js"></script>
+  <script src="https://unpkg.com/vue@2.7.16/dist/vue.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/superagent/3.5.2/superagent.min.js"></script>
 
-<script>
+  <script>
     var app = new Vue({
-        el: '#app',
-        data: {
-            collections: '',
-            lastUpdate: {
-                method: '-',
-                path: '-',
-                collection: '-',
-                itemId: '-'
-            }
-        }
+      el: "#app",
+      data: {
+        collections: "",
+        lastUpdate: {
+          method: "-",
+          path: "-",
+          collection: "-",
+          itemId: "-",
+        },
+      },
     });
 
     const request = window.superagent;
 
     request
-        .get(`http://${window.location.host}/api`)
-        .then(response => {
-            app.collections = response.body;
-        }).catch(error => {
+      .get(`http://${window.location.host}/api`)
+      .then((response) => {
+        app.collections = response.body;
+      })
+      .catch((error) => {
         console.log(error.message || error);
-    });
+      });
 
     const webSocket = new WebSocket(`ws://${window.location.host}/ws`);
 
     webSocket.onmessage = (evt) => {
-        app.lastUpdate = JSON.parse(evt.data);
+      app.lastUpdate = JSON.parse(evt.data);
     };
 
     webSocket.onopen = () => {
-        console.log('open');
+      console.log("open");
     };
     webSocket.onclose = () => {
-        console.log('closed');
+      console.log("closed");
     };
     webSocket.onerror = (evt) => {
-        console.log(evt.data);
+      console.log(evt.data);
     };
-</script>
+  </script>
 </html>
