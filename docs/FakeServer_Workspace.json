@@ -982,8 +982,11 @@
                 {
                     "listen": "test",
                     "script": {
+                        "exec": [
+                            ""
+                        ],
                         "type": "text/javascript",
-                        "exec": []
+                        "packages": {}
                     }
                 }
             ],
@@ -993,6 +996,9 @@
                 "disableCookies": false
             },
             "request": {
+                "auth": {
+                    "type": "noauth"
+                },
                 "method": "POST",
                 "header": [
                     {
@@ -1076,8 +1082,11 @@
                 {
                     "listen": "test",
                     "script": {
+                        "exec": [
+                            ""
+                        ],
                         "type": "text/javascript",
-                        "exec": []
+                        "packages": {}
                     }
                 }
             ],
@@ -1088,17 +1097,16 @@
             },
             "request": {
                 "auth": {
-                    "type": "bearer",
-                    "bearer": [
-                        {
-                            "key": "token",
-                            "value": "{{ authtoken  }}",
-                            "type": "string"
-                        }
-                    ]
+                    "type": "noauth"
                 },
                 "method": "POST",
-                "header": [],
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsImp0aSI6IjRiNGM2MjAwLTk4OTktNGQ5NS05ODhjLTlkNDU1Y2EwYWY2NCIsImlhdCI6MTczMDYxNzEzNywibmJmIjoxNzMwNjE3MTM3LCJleHAiOjE3MzA2MTc0MzcsImlzcyI6IkV4YW1wbGVJc3N1ZXIiLCJhdWQiOiJFeGFtcGxlQXVkaWVuY2UifQ.mCW04fwGVdVse1YynxI3FTzMS_1HarO-CMCkTwmsa8k",
+                        "type": "text"
+                    }
+                ],
                 "url": {
                     "raw": "{{ baseurl }}/logout",
                     "host": [
@@ -1117,8 +1125,11 @@
                 {
                     "listen": "test",
                     "script": {
+                        "exec": [
+                            ""
+                        ],
                         "type": "text/javascript",
-                        "exec": []
+                        "packages": {}
                     }
                 }
             ],
@@ -1132,7 +1143,7 @@
                 "header": [
                     {
                         "key": "Authorization",
-                        "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsImp0aSI6ImI0OTZjZWFjLTI4MDctNGYwYi1iOTQwLWY4OTA1NTQzYWY0MiIsImlhdCI6MTU2Mzc4Mzg2NiwibmJmIjoxNTYzNzgzODY2LCJleHAiOjE1NjM3ODQxNjYsImlzcyI6IkV4YW1wbGVJc3N1ZXIiLCJhdWQiOiJFeGFtcGxlQXVkaWVuY2UifQ.lU_jjqZX1GpTENglwDLYNAGXPMwA0O4LFmJoCs7htQw"
+                        "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsImp0aSI6IjRiNGM2MjAwLTk4OTktNGQ5NS05ODhjLTlkNDU1Y2EwYWY2NCIsImlhdCI6MTczMDYxNzEzNywibmJmIjoxNzMwNjE3MTM3LCJleHAiOjE3MzA2MTc0MzcsImlzcyI6IkV4YW1wbGVJc3N1ZXIiLCJhdWQiOiJFeGFtcGxlQXVkaWVuY2UifQ.mCW04fwGVdVse1YynxI3FTzMS_1HarO-CMCkTwmsa8k"
                     }
                 ],
                 "url": {
@@ -1154,8 +1165,11 @@
                 {
                     "listen": "test",
                     "script": {
+                        "exec": [
+                            ""
+                        ],
                         "type": "text/javascript",
-                        "exec": []
+                        "packages": {}
                     }
                 }
             ],
@@ -1166,47 +1180,29 @@
             },
             "request": {
                 "auth": {
-                    "type": "oauth2",
-                    "oauth2": [
-                        {
-                            "key": "accessTokenUrl",
-                            "value": "{{ baseurl }}/token",
-                            "type": "string"
-                        },
-                        {
-                            "key": "clientId",
-                            "value": "root",
-                            "type": "string"
-                        },
-                        {
-                            "key": "clientSecret",
-                            "value": "admin",
-                            "type": "string"
-                        },
-                        {
-                            "key": "grant_type",
-                            "value": "client_credentials",
-                            "type": "string"
-                        },
+                    "type": "basic",
+                    "basic": [
                         {
                             "key": "password",
-                            "value": "admin",
+                            "value": "root",
                             "type": "string"
                         },
                         {
                             "key": "username",
-                            "value": "root",
-                            "type": "string"
-                        },
-                        {
-                            "key": "client_authentication",
-                            "value": "header",
+                            "value": "admin",
                             "type": "string"
                         }
                     ]
                 },
                 "method": "GET",
-                "header": [],
+                "header": [
+                    {
+                        "key": "",
+                        "value": "",
+                        "type": "text",
+                        "disabled": true
+                    }
+                ],
                 "url": {
                     "raw": "{{ baseurl }}/api/families",
                     "host": [
@@ -1226,8 +1222,11 @@
                 {
                     "listen": "test",
                     "script": {
+                        "exec": [
+                            ""
+                        ],
                         "type": "text/javascript",
-                        "exec": []
+                        "packages": {}
                     }
                 }
             ],
@@ -1241,7 +1240,7 @@
                 "header": [
                     {
                         "key": "X-API-KEY",
-                        "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsImp0aSI6ImI0OTZjZWFjLTI4MDctNGYwYi1iOTQwLWY4OTA1NTQzYWY0MiIsImlhdCI6MTU2Mzc4Mzg2NiwibmJmIjoxNTYzNzgzODY2LCJleHAiOjE1NjM3ODQxNjYsImlzcyI6IkV4YW1wbGVJc3N1ZXIiLCJhdWQiOiJFeGFtcGxlQXVkaWVuY2UifQ.lU_jjqZX1GpTENglwDLYNAGXPMwA0O4LFmJoCs7htQw"
+                        "value": "abcd1234"
                     }
                 ],
                 "url": {
@@ -1258,14 +1257,33 @@
             "response": []
         }
     ],
-    "variable": [
+    "event": [
         {
-            "key": "authtoken",
-            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsImp0aSI6ImNkN2IyMGYxLWI1M2EtNGFmMy1hMzU0LWVhYWRmNWMzYzc3YSIsImlhdCI6MTUxODE1NDg1MiwibmJmIjoxNTE4MTU0ODUyLCJleHAiOjE1MTgxNTUxNTIsImlzcyI6IkV4YW1wbGVJc3N1ZXIiLCJhdWQiOiJFeGFtcGxlQXVkaWVuY2UifQ.agarbgo3efQXkfo2ajkoknmW7eH0ksAH7SX8V7muRjM"
+            "listen": "prerequest",
+            "script": {
+                "type": "text/javascript",
+                "packages": {},
+                "exec": [
+                    ""
+                ]
+            }
         },
         {
-            "key": "baseurl",
-            "value": "http://localhost:57602"
+            "listen": "test",
+            "script": {
+                "type": "text/javascript",
+                "packages": {},
+                "exec": [
+                    ""
+                ]
+            }
+        }
+    ],
+    "variable": [
+        {
+            "key": " baseurl ",
+            "value": "http://localhost:57602",
+            "type": "default"
         }
     ]
 }
