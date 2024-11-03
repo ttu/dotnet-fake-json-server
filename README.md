@@ -277,7 +277,7 @@ $ curl http://localhost:57602/api/users/
 
 ### Example queries
 
-Example queries are in [Insomnia](https://insomnia.rest/) workspace format in [FakeServer_Insomnia_Workspace.json](https://github.com/ttu/dotnet-fake-json-server/blob/master/docs/FakeServer_Insomnia_Workspace.json). 
+Example queries are available in [Postman](https://www.postman.com/) workspace format in [FakeServer_Workspace.json](https://github.com/ttu/dotnet-fake-json-server/blob/master/docs/FakeServer_Workspace.json). These queries can be used in [Postman](https://www.postman.com/), [Insomnia](https://insomnia.rest/), [Yaak](https://yaak.app/), and similar tools.
 
 ## Features
 
