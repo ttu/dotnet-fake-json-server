@@ -51,7 +51,10 @@ public static class ApiKeyAuthenticationExtensions
     {
         return new OpenApiSecurityScheme
         {
-            Type = SecuritySchemeType.ApiKey, Scheme = ApiKeyAuthenticationDefaults.AuthenticationScheme, In = ParameterLocation.Header, Name = "X-API-KEY"
+            Type = SecuritySchemeType.ApiKey,
+            Scheme = ApiKeyAuthenticationDefaults.AuthenticationScheme,
+            In = ParameterLocation.Header,
+            Name = "X-API-KEY"
         };
     }
 
@@ -62,7 +65,8 @@ public static class ApiKeyAuthenticationExtensions
         {
             Reference = new OpenApiReference
             {
-                Type = ReferenceType.SecurityScheme, Id = ApiKeyAuthenticationDefaults.AuthenticationScheme
+                Type = ReferenceType.SecurityScheme,
+                Id = ApiKeyAuthenticationDefaults.AuthenticationScheme
             }
         };
 

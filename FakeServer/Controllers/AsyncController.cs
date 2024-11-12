@@ -63,7 +63,7 @@ public class AsyncController : Controller
     /// <returns></returns>
     /// <response code="202">New async operation started</response>
     [HttpPut("{collectionId}/{id}")]
-    public IActionResult ReplaceItem(string collectionId, [FromRoute] [DynamicBinder] dynamic id, [FromBody] dynamic item)
+    public IActionResult ReplaceItem(string collectionId, [FromRoute][DynamicBinder] dynamic id, [FromBody] dynamic item)
     {
         if (item == null)
             return BadRequest();
@@ -101,7 +101,7 @@ public class AsyncController : Controller
     /// <response code="415">Unsupported content type</response>
     [HttpPatch("{collectionId}/{id}")]
     [Consumes(Constants.JsonMergePatch, new[] { Constants.MergePatchJson })]
-    public IActionResult UpdateItemMerge(string collectionId, [FromRoute] [DynamicBinder] dynamic id, [FromBody] JToken patchData)
+    public IActionResult UpdateItemMerge(string collectionId, [FromRoute][DynamicBinder] dynamic id, [FromBody] JToken patchData)
     {
         dynamic sourceData = JsonConvert.DeserializeObject<ExpandoObject>(patchData.ToString());
 
@@ -176,7 +176,7 @@ public class AsyncController : Controller
     /// <returns></returns>
     /// <response code="202">New async operation started</response>
     [HttpDelete("{collectionId}/{id}")]
-    public IActionResult DeleteItem(string collectionId, [FromRoute] [DynamicBinder] dynamic id)
+    public IActionResult DeleteItem(string collectionId, [FromRoute][DynamicBinder] dynamic id)
     {
         var action = new Func<dynamic>(() =>
         {

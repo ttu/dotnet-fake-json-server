@@ -152,7 +152,7 @@ public class DynamicController : Controller
     /// <response code="404">Item not found</response>
     [HttpGet("{collectionId}/{id}")]
     [HttpHead("{collectionId}/{id}")]
-    public IActionResult GetItem(string collectionId, [FromRoute] [DynamicBinder] dynamic id)
+    public IActionResult GetItem(string collectionId, [FromRoute][DynamicBinder] dynamic id)
     {
         if (_ds.IsItem(collectionId))
             return BadRequest();
@@ -177,7 +177,7 @@ public class DynamicController : Controller
     /// <response code="404">Nested item not found</response>
     [HttpGet("{collectionId}/{id}/{*path}")]
     [HttpHead("{collectionId}/{id}/{*path}")]
-    public IActionResult GetNested(string collectionId, [FromRoute] [DynamicBinder] dynamic id, string path)
+    public IActionResult GetNested(string collectionId, [FromRoute][DynamicBinder] dynamic id, string path)
     {
         if (_ds.IsItem(collectionId))
             return BadRequest();
@@ -231,7 +231,7 @@ public class DynamicController : Controller
     /// <response code="400">Replace data is null or item is not in a collection</response>
     /// <response code="404">Item not found</response>
     [HttpPut("{collectionId}/{id}")]
-    public async Task<IActionResult> ReplaceItem(string collectionId, [FromRoute] [DynamicBinder] dynamic id, [FromBody] dynamic item)
+    public async Task<IActionResult> ReplaceItem(string collectionId, [FromRoute][DynamicBinder] dynamic id, [FromBody] dynamic item)
     {
         if (item == null || _ds.IsItem(collectionId))
             return BadRequest();
@@ -266,7 +266,7 @@ public class DynamicController : Controller
     /// <response code="415">Unsupported content type</response>
     [HttpPatch("{collectionId}/{id}")]
     [Consumes(Constants.JsonMergePatch, new[] { Constants.MergePatchJson })]
-    public async Task<IActionResult> UpdateItemMerge(string collectionId, [FromRoute] [DynamicBinder] dynamic id, [FromBody] JToken patchData)
+    public async Task<IActionResult> UpdateItemMerge(string collectionId, [FromRoute][DynamicBinder] dynamic id, [FromBody] JToken patchData)
     {
         dynamic sourceData = JsonConvert.DeserializeObject<ExpandoObject>(patchData.ToString());
 
@@ -303,7 +303,7 @@ public class DynamicController : Controller
     /// <response code="415">Unsupported content type</response>
     [HttpPatch("{collectionId}/{itemId}")]
     [Consumes(Constants.JsonPatchJson)]
-    public async Task<IActionResult> UpdateItemJsonPatch(string collectionId, [FromRoute] [DynamicBinder] dynamic itemId, [FromBody] JsonPatchDocument patchDoc)
+    public async Task<IActionResult> UpdateItemJsonPatch(string collectionId, [FromRoute][DynamicBinder] dynamic itemId, [FromBody] JsonPatchDocument patchDoc)
     {
         if (_ds.IsItem(collectionId))
             return BadRequest();
@@ -346,7 +346,7 @@ public class DynamicController : Controller
     /// <response code="415">Unsupported content type</response>
     [HttpPatch("{collectionId}/{id}/{*path}")]
     [Consumes(Constants.JsonMergePatch, new[] { Constants.MergePatchJson })]
-    public async Task<IActionResult> UpdateNestedItemMerge(string collectionId, [FromRoute] [DynamicBinder] dynamic id, string path,
+    public async Task<IActionResult> UpdateNestedItemMerge(string collectionId, [FromRoute][DynamicBinder] dynamic id, string path,
         [FromBody] JToken patchData)
     {
         if (_ds.IsItem(collectionId))
@@ -400,7 +400,7 @@ public class DynamicController : Controller
     /// <response code="415">Unsupported content type</response>
     [HttpPatch("{collectionId}/{itemId}/{*path}")]
     [Consumes(Constants.JsonPatchJson)]
-    public async Task<IActionResult> UpdateNestedItemJsonPatch(string collectionId, [FromRoute] [DynamicBinder] dynamic itemId, string path,
+    public async Task<IActionResult> UpdateNestedItemJsonPatch(string collectionId, [FromRoute][DynamicBinder] dynamic itemId, string path,
         [FromBody] JsonPatchDocument patchDoc)
     {
         if (_ds.IsItem(collectionId))
@@ -436,7 +436,7 @@ public class DynamicController : Controller
     /// <response code="400">Item is not in a collection</response>
     /// <response code="404">Item not found</response>
     [HttpDelete("{collectionId}/{id}")]
-    public async Task<IActionResult> DeleteItem(string collectionId, [FromRoute] [DynamicBinder] dynamic id)
+    public async Task<IActionResult> DeleteItem(string collectionId, [FromRoute][DynamicBinder] dynamic id)
     {
         if (_ds.IsItem(collectionId))
             return BadRequest();
