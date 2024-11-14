@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Reflection;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.AspNetCore;

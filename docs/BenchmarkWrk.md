@@ -11,6 +11,7 @@ $ dotnet run --urls http://localhost:57602
 Do first benchmark against `/api` endpoint using OPTIONS method, as it only uses OptionsMiddleware.
 
 Create a script file (e.g. options.lua) for `OPTIONS` request.
+
 ```lua
 wrk.method = "OPTIONS"
 ```

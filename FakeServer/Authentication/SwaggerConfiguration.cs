@@ -1,4 +1,4 @@
-using FakeServer.Authentication.ApiKey;
+﻿using FakeServer.Authentication.ApiKey;
 using FakeServer.Authentication.Basic;
 using FakeServer.Authentication.Jwt;
 using Microsoft.AspNetCore.Authentication.JwtBearer;

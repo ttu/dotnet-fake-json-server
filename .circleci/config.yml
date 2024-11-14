@@ -15,8 +15,8 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-            keys:
-              - deps-{{ checksum "FakeServer/FakeServer.csproj" }}-{{ checksum "FakeServer.Test/FakeServer.Test.csproj" }}
+          keys:
+            - deps-{{ checksum "FakeServer/FakeServer.csproj" }}-{{ checksum "FakeServer.Test/FakeServer.Test.csproj" }}
       - run:
           name: "Install project dependencies"
           command: dotnet.exe restore

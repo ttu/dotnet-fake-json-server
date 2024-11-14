@@ -1,1289 +1,1289 @@
 {
-    "info": {
-        "_postman_id": "a2100dcc-cda9-4b82-b7e0-64a536b58de9",
-        "name": "FakeServer",
-        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-        "_exporter_id": "689536"
+  "info": {
+    "_postman_id": "a2100dcc-cda9-4b82-b7e0-64a536b58de9",
+    "name": "FakeServer",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "689536"
+  },
+  "item": [
+    {
+      "name": "GraphQL",
+      "item": [
+        {
+          "name": "Query application/graphql User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": []
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": true,
+            "disableUrlEncoding": false,
+            "disableCookies": false
+          },
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/graphql"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "query {\n  users(id: 3) {\n    name\n    work {\n      location\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{ baseurl }}/graphql",
+              "host": [
+                "{{ baseurl }}"
+              ],
+              "path": [
+                "graphql"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Query application/json User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": []
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": true,
+            "disableUrlEncoding": false,
+            "disableCookies": false
+          },
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "graphql"
+            },
+            "url": {
+              "raw": "{{ baseurl }}/graphql",
+              "host": [
+                "{{ baseurl }}"
+              ],
+              "path": [
+                "graphql"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
     },
-    "item": [
+    {
+      "name": "Collections",
+      "event": [
         {
-            "name": "GraphQL",
-            "item": [
-                {
-                    "name": "Query application/graphql User",
-                    "event": [
-                        {
-                            "listen": "test",
-                            "script": {
-                                "type": "text/javascript",
-                                "exec": []
-                            }
-                        }
-                    ],
-                    "protocolProfileBehavior": {
-                        "followRedirects": true,
-                        "disableUrlEncoding": false,
-                        "disableCookies": false
-                    },
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/graphql"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "query {\n  users(id: 3) {\n    name\n    work {\n      location\n    }\n  }\n}",
-                            "options": {
-                                "raw": {
-                                    "language": "json"
-                                }
-                            }
-                        },
-                        "url": {
-                            "raw": "{{ baseurl }}/graphql",
-                            "host": [
-                                "{{ baseurl }}"
-                            ],
-                            "path": [
-                                "graphql"
-                            ]
-                        }
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Query application/json User",
-                    "event": [
-                        {
-                            "listen": "test",
-                            "script": {
-                                "type": "text/javascript",
-                                "exec": []
-                            }
-                        }
-                    ],
-                    "protocolProfileBehavior": {
-                        "followRedirects": true,
-                        "disableUrlEncoding": false,
-                        "disableCookies": false
-                    },
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "graphql"
-                        },
-                        "url": {
-                            "raw": "{{ baseurl }}/graphql",
-                            "host": [
-                                "{{ baseurl }}"
-                            ],
-                            "path": [
-                                "graphql"
-                            ]
-                        }
-                    },
-                    "response": []
-                }
-            ]
-        },
-        {
-            "name": "Collections",
-            "event": [
-                {
-                    "listen": "test",
-                    "script": {
-                        "type": "text/javascript",
-                        "exec": []
-                    }
-                }
-            ],
-            "protocolProfileBehavior": {
-                "followRedirects": true,
-                "disableUrlEncoding": false,
-                "disableCookies": false
-            },
-            "request": {
-                "method": "GET",
-                "header": [],
-                "url": {
-                    "raw": "{{ baseurl }}/api",
-                    "host": [
-                        "{{ baseurl }}"
-                    ],
-                    "path": [
-                        "api"
-                    ]
-                }
-            },
-            "response": []
-        },
-        {
-            "name": "Query",
-            "event": [
-                {
-                    "listen": "test",
-                    "script": {
-                        "type": "text/javascript",
-                        "exec": []
-                    }
-                }
-            ],
-            "protocolProfileBehavior": {
-                "followRedirects": true,
-                "disableUrlEncoding": false,
-                "disableCookies": false
-            },
-            "request": {
-                "method": "GET",
-                "header": [],
-                "url": {
-                    "raw": "{{ baseurl }}/api/families",
-                    "host": [
-                        "{{ baseurl }}"
-                    ],
-                    "path": [
-                        "api",
-                        "families"
-                    ]
-                }
-            },
-            "response": []
-        },
-        {
-            "name": "Query item with id",
-            "event": [
-                {
-                    "listen": "test",
-                    "script": {
-                        "type": "text/javascript",
-                        "exec": []
-                    }
-                }
-            ],
-            "protocolProfileBehavior": {
-                "followRedirects": true,
-                "disableUrlEncoding": false,
-                "disableCookies": false
-            },
-            "request": {
-                "method": "GET",
-                "header": [],
-                "url": {
-                    "raw": "{{ baseurl }}/api/families/19",
-                    "host": [
-                        "{{ baseurl }}"
-                    ],
-                    "path": [
-                        "api",
-                        "families",
-                        "19"
-                    ]
-                }
-            },
-            "response": []
-        },
-        {
-            "name": "Query nested items",
-            "event": [
-                {
-                    "listen": "test",
-                    "script": {
-                        "type": "text/javascript",
-                        "exec": []
-                    }
-                }
-            ],
-            "protocolProfileBehavior": {
-                "followRedirects": true,
-                "disableUrlEncoding": false,
-                "disableCookies": false
-            },
-            "request": {
-                "method": "GET",
-                "header": [],
-                "url": {
-                    "raw": "{{ baseurl }}/api/families/15/parents",
-                    "host": [
-                        "{{ baseurl }}"
-                    ],
-                    "path": [
-                        "api",
-                        "families",
-                        "15",
-                        "parents"
-                    ]
-                }
-            },
-            "response": []
-        },
-        {
-            "name": "Query object",
-            "event": [
-                {
-                    "listen": "test",
-                    "script": {
-                        "type": "text/javascript",
-                        "exec": []
-                    }
-                }
-            ],
-            "protocolProfileBehavior": {
-                "followRedirects": true,
-                "disableUrlEncoding": false,
-                "disableCookies": false
-            },
-            "request": {
-                "method": "GET",
-                "header": [],
-                "url": {
-                    "raw": "{{ baseurl }}/api/configuration",
-                    "host": [
-                        "{{ baseurl }}"
-                    ],
-                    "path": [
-                        "api",
-                        "configuration"
-                    ]
-                }
-            },
-            "response": []
-        },
-        {
-            "name": "Allowed methods",
-            "event": [
-                {
-                    "listen": "test",
-                    "script": {
-                        "type": "text/javascript",
-                        "exec": []
-                    }
-                }
-            ],
-            "protocolProfileBehavior": {
-                "followRedirects": true,
-                "disableUrlEncoding": false,
-                "disableCookies": false
-            },
-            "request": {
-                "method": "OPTIONS",
-                "header": [],
-                "url": {
-                    "raw": "{{ baseurl }}/api/familes",
-                    "host": [
-                        "{{ baseurl }}"
-                    ],
-                    "path": [
-                        "api",
-                        "familes"
-                    ]
-                }
-            },
-            "response": []
-        },
-        {
-            "name": "Headers, no body",
-            "event": [
-                {
-                    "listen": "test",
-                    "script": {
-                        "type": "text/javascript",
-                        "exec": []
-                    }
-                }
-            ],
-            "protocolProfileBehavior": {
-                "followRedirects": true,
-                "disableUrlEncoding": false,
-                "disableCookies": false
-            },
-            "request": {
-                "method": "HEAD",
-                "header": [],
-                "url": {
-                    "raw": "{{ baseurl }}/api/families/5",
-                    "host": [
-                        "{{ baseurl }}"
-                    ],
-                    "path": [
-                        "api",
-                        "families",
-                        "5"
-                    ]
-                }
-            },
-            "response": []
-        },
-        {
-            "name": "Slice",
-            "event": [
-                {
-                    "listen": "test",
-                    "script": {
-                        "type": "text/javascript",
-                        "exec": []
-                    }
-                }
-            ],
-            "protocolProfileBehavior": {
-                "followRedirects": true,
-                "disableUrlEncoding": false,
-                "disableCookies": false
-            },
-            "request": {
-                "method": "GET",
-                "header": [],
-                "url": {
-                    "raw": "{{ baseurl  }}/api/families?skip=5&take=2",
-                    "host": [
-                        "{{ baseurl  }}"
-                    ],
-                    "path": [
-                        "api",
-                        "families"
-                    ],
-                    "query": [
-                        {
-                            "key": "skip",
-                            "value": "5"
-                        },
-                        {
-                            "key": "take",
-                            "value": "2"
-                        }
-                    ]
-                }
-            },
-            "response": []
-        },
-        {
-            "name": "Filter",
-            "event": [
-                {
-                    "listen": "test",
-                    "script": {
-                        "type": "text/javascript",
-                        "exec": []
-                    }
-                }
-            ],
-            "protocolProfileBehavior": {
-                "followRedirects": true,
-                "disableUrlEncoding": false,
-                "disableCookies": false
-            },
-            "request": {
-                "method": "GET",
-                "header": [],
-                "url": {
-                    "raw": "{{ baseurl }}/api/families?parents.eyeColor=brown",
-                    "host": [
-                        "{{ baseurl }}"
-                    ],
-                    "path": [
-                        "api",
-                        "families"
-                    ],
-                    "query": [
-                        {
-                            "key": "parents.eyeColor",
-                            "value": "brown"
-                        }
-                    ]
-                }
-            },
-            "response": []
-        },
-        {
-            "name": "Child properties",
-            "event": [
-                {
-                    "listen": "test",
-                    "script": {
-                        "type": "text/javascript",
-                        "exec": []
-                    }
-                }
-            ],
-            "protocolProfileBehavior": {
-                "followRedirects": true,
-                "disableUrlEncoding": false,
-                "disableCookies": false
-            },
-            "request": {
-                "method": "GET",
-                "header": [],
-                "url": {
-                    "raw": "{{ baseurl }}/api/families?children.age=14",
-                    "host": [
-                        "{{ baseurl }}"
-                    ],
-                    "path": [
-                        "api",
-                        "families"
-                    ],
-                    "query": [
-                        {
-                            "key": "children.age",
-                            "value": "14"
-                        }
-                    ]
-                }
-            },
-            "response": []
-        },
-        {
-            "name": "Filter operators",
-            "event": [
-                {
-                    "listen": "test",
-                    "script": {
-                        "type": "text/javascript",
-                        "exec": []
-                    }
-                }
-            ],
-            "protocolProfileBehavior": {
-                "followRedirects": true,
-                "disableUrlEncoding": false,
-                "disableCookies": false
-            },
-            "request": {
-                "method": "GET",
-                "header": [],
-                "url": {
-                    "raw": "{{ baseurl }}/api/families?children.age_lt=10",
-                    "host": [
-                        "{{ baseurl }}"
-                    ],
-                    "path": [
-                        "api",
-                        "families"
-                    ],
-                    "query": [
-                        {
-                            "key": "children.age_lt",
-                            "value": "10"
-                        }
-                    ]
-                }
-            },
-            "response": []
-        },
-        {
-            "name": "Full-text search",
-            "event": [
-                {
-                    "listen": "test",
-                    "script": {
-                        "type": "text/javascript",
-                        "exec": []
-                    }
-                }
-            ],
-            "protocolProfileBehavior": {
-                "followRedirects": true,
-                "disableUrlEncoding": false,
-                "disableCookies": false
-            },
-            "request": {
-                "method": "GET",
-                "header": [],
-                "url": {
-                    "raw": "{{ baseurl }}/api/families?q=Avenue",
-                    "host": [
-                        "{{ baseurl }}"
-                    ],
-                    "path": [
-                        "api",
-                        "families"
-                    ],
-                    "query": [
-                        {
-                            "key": "q",
-                            "value": "Avenue"
-                        }
-                    ]
-                }
-            },
-            "response": []
-        },
-        {
-            "name": "Select Fields",
-            "event": [
-                {
-                    "listen": "test",
-                    "script": {
-                        "type": "text/javascript",
-                        "exec": []
-                    }
-                }
-            ],
-            "protocolProfileBehavior": {
-                "followRedirects": true,
-                "disableUrlEncoding": false,
-                "disableCookies": false
-            },
-            "request": {
-                "method": "GET",
-                "header": [],
-                "url": {
-                    "raw": "{{ baseurl }}/api/families?fields=familyName,address",
-                    "host": [
-                        "{{ baseurl }}"
-                    ],
-                    "path": [
-                        "api",
-                        "families"
-                    ],
-                    "query": [
-                        {
-                            "key": "fields",
-                            "value": "familyName,address"
-                        }
-                    ]
-                }
-            },
-            "response": []
-        },
-        {
-            "name": "Query item with id (If-None-Match - 304 - Not Modified)",
-            "event": [
-                {
-                    "listen": "test",
-                    "script": {
-                        "type": "text/javascript",
-                        "exec": []
-                    }
-                }
-            ],
-            "protocolProfileBehavior": {
-                "followRedirects": true,
-                "disableUrlEncoding": false,
-                "disableCookies": false
-            },
-            "request": {
-                "method": "GET",
-                "header": [
-                    {
-                        "key": "If-None-Match",
-                        "value": "\"HfGeT_OtCWI1UE-PESFgYpv_v-c\""
-                    }
-                ],
-                "url": {
-                    "raw": "{{ baseurl }}/api/families/19",
-                    "host": [
-                        "{{ baseurl }}"
-                    ],
-                    "path": [
-                        "api",
-                        "families",
-                        "19"
-                    ]
-                }
-            },
-            "response": []
-        },
-        {
-            "name": "Query with Content Negotiation (Accept - text/csv)",
-            "event": [
-                {
-                    "listen": "test",
-                    "script": {
-                        "type": "text/javascript",
-                        "exec": []
-                    }
-                }
-            ],
-            "protocolProfileBehavior": {
-                "followRedirects": true,
-                "disableUrlEncoding": false,
-                "disableCookies": false
-            },
-            "request": {
-                "method": "GET",
-                "header": [
-                    {
-                        "key": "Accept",
-                        "value": "text/csv"
-                    }
-                ],
-                "url": {
-                    "raw": "{{ baseurl }}/api/families/1",
-                    "host": [
-                        "{{ baseurl }}"
-                    ],
-                    "path": [
-                        "api",
-                        "families",
-                        "1"
-                    ]
-                }
-            },
-            "response": []
-        },
-        {
-            "name": "Query with Content Negotiation (Accept - text/xml)",
-            "event": [
-                {
-                    "listen": "test",
-                    "script": {
-                        "type": "text/javascript",
-                        "exec": []
-                    }
-                }
-            ],
-            "protocolProfileBehavior": {
-                "followRedirects": true,
-                "disableUrlEncoding": false,
-                "disableCookies": false
-            },
-            "request": {
-                "method": "GET",
-                "header": [
-                    {
-                        "key": "Accept",
-                        "value": "text/xml"
-                    }
-                ],
-                "url": {
-                    "raw": "{{ baseurl }}/api/families",
-                    "host": [
-                        "{{ baseurl }}"
-                    ],
-                    "path": [
-                        "api",
-                        "families"
-                    ]
-                }
-            },
-            "response": []
-        },
-        {
-            "name": "Query with Content Negotiation (Accept - 406 - Not Acceptable)",
-            "event": [
-                {
-                    "listen": "test",
-                    "script": {
-                        "type": "text/javascript",
-                        "exec": []
-                    }
-                }
-            ],
-            "protocolProfileBehavior": {
-                "followRedirects": true,
-                "disableUrlEncoding": false,
-                "disableCookies": false
-            },
-            "request": {
-                "method": "GET",
-                "header": [
-                    {
-                        "key": "Accept",
-                        "value": "application/vnd.api+json"
-                    }
-                ],
-                "url": {
-                    "raw": "{{ baseurl }}/api/users/1",
-                    "host": [
-                        "{{ baseurl }}"
-                    ],
-                    "path": [
-                        "api",
-                        "users",
-                        "1"
-                    ]
-                }
-            },
-            "response": []
-        },
-        {
-            "name": "Add item",
-            "event": [
-                {
-                    "listen": "test",
-                    "script": {
-                        "type": "text/javascript",
-                        "exec": []
-                    }
-                }
-            ],
-            "protocolProfileBehavior": {
-                "followRedirects": true,
-                "disableUrlEncoding": false,
-                "disableCookies": false
-            },
-            "request": {
-                "method": "POST",
-                "header": [
-                    {
-                        "key": "Content-Type",
-                        "value": "application/json"
-                    }
-                ],
-                "body": {
-                    "mode": "raw",
-                    "raw": "{\n\t\t\"faimlyName\": \"Woods\",\n\t\t\"address\": {\n\t\t\t\"city\": \"Helsinki\",\n\t\t\t\"postNumber\": 100\n\t\t},\n\t\t\"notes\": \"something random\"\n}",
-                    "options": {
-                        "raw": {
-                            "language": "json"
-                        }
-                    }
-                },
-                "url": {
-                    "raw": "{{ baseurl }}/api/families",
-                    "host": [
-                        "{{ baseurl }}"
-                    ],
-                    "path": [
-                        "api",
-                        "families"
-                    ]
-                }
-            },
-            "response": []
-        },
-        {
-            "name": "Replace item",
-            "event": [
-                {
-                    "listen": "test",
-                    "script": {
-                        "type": "text/javascript",
-                        "exec": []
-                    }
-                }
-            ],
-            "protocolProfileBehavior": {
-                "followRedirects": true,
-                "disableUrlEncoding": false,
-                "disableCookies": false
-            },
-            "request": {
-                "method": "PUT",
-                "header": [
-                    {
-                        "key": "Content-Type",
-                        "value": "application/json"
-                    }
-                ],
-                "body": {
-                    "mode": "raw",
-                    "raw": "{\n\t\"faimlyName\": \"Woods\",\n\t\"address\": {\n\t\t\"city\": \"Helsinki\",\n\t\t\"postNumber\": 100\n\t},\n\t\"notes\": \"something random\",\n\t\"parents\": [\n\t\t{\n\t\t\t\"id\": 0,\n\t\t\t\"name\": \"Joan\"\n\t\t},\n\t\t{\n\t\t\t\"id\": 1,\n\t\t\t\"name\": \"Maurice\"\n\t\t}\n\t]\n}",
-                    "options": {
-                        "raw": {
-                            "language": "json"
-                        }
-                    }
-                },
-                "url": {
-                    "raw": "{{ baseurl }}/api/families/20",
-                    "host": [
-                        "{{ baseurl }}"
-                    ],
-                    "path": [
-                        "api",
-                        "families",
-                        "20"
-                    ]
-                }
-            },
-            "response": []
-        },
-        {
-            "name": "Replace item (If-Match - 412- Precondition Failed)",
-            "event": [
-                {
-                    "listen": "test",
-                    "script": {
-                        "type": "text/javascript",
-                        "exec": []
-                    }
-                }
-            ],
-            "protocolProfileBehavior": {
-                "followRedirects": true,
-                "disableUrlEncoding": false,
-                "disableCookies": false
-            },
-            "request": {
-                "method": "PUT",
-                "header": [
-                    {
-                        "key": "Content-Type",
-                        "value": "application/json"
-                    },
-                    {
-                        "key": "If-Match",
-                        "value": "aaa"
-                    }
-                ],
-                "body": {
-                    "mode": "raw",
-                    "raw": "{\n\t\"faimlyName\": \"Woods\",\n\t\"address\": {\n\t\t\"city\": \"Helsinki\",\n\t\t\"postNumber\": 100\n\t},\n\t\"notes\": \"something random\",\n\t\"parents\": [\n\t\t{\n\t\t\t\"id\": 0,\n\t\t\t\"name\": \"Joan\"\n\t\t},\n\t\t{\n\t\t\t\"id\": 1,\n\t\t\t\"name\": \"Maurice\"\n\t\t}\n\t]\n}",
-                    "options": {
-                        "raw": {
-                            "language": "json"
-                        }
-                    }
-                },
-                "url": {
-                    "raw": "{{ baseurl }}/api/families/20",
-                    "host": [
-                        "{{ baseurl }}"
-                    ],
-                    "path": [
-                        "api",
-                        "families",
-                        "20"
-                    ]
-                }
-            },
-            "response": []
-        },
-        {
-            "name": "Update item (JSON Patch)",
-            "event": [
-                {
-                    "listen": "test",
-                    "script": {
-                        "type": "text/javascript",
-                        "exec": []
-                    }
-                }
-            ],
-            "protocolProfileBehavior": {
-                "followRedirects": true,
-                "disableUrlEncoding": false,
-                "disableCookies": false
-            },
-            "request": {
-                "method": "PATCH",
-                "header": [
-                    {
-                        "key": "Content-Type",
-                        "value": "application/json-patch+json"
-                    }
-                ],
-                "body": {
-                    "mode": "raw",
-                    "raw": "[\n\t{ \"op\": \"replace\", \"path\": \"age\", \"value\": 41 },\n\t{ \"op\": \"replace\", \"path\": \"work/name\", \"value\": \"Railways Co\" },\n\t{ \"op\": \"replace\", \"path\": \"work/location\", \"value\": \"SF\" },\n\t{ \"op\": \"add\", \"path\": \"notes\", \"value\": \"This is a new field\" }\n]",
-                    "options": {
-                        "raw": {
-                            "language": "json"
-                        }
-                    }
-                },
-                "url": {
-                    "raw": "{{ baseurl }}/api/users/1",
-                    "host": [
-                        "{{ baseurl }}"
-                    ],
-                    "path": [
-                        "api",
-                        "users",
-                        "1"
-                    ]
-                }
-            },
-            "response": []
-        },
-        {
-            "name": "Update item (Merge Patch)",
-            "event": [
-                {
-                    "listen": "test",
-                    "script": {
-                        "type": "text/javascript",
-                        "exec": []
-                    }
-                }
-            ],
-            "protocolProfileBehavior": {
-                "followRedirects": true,
-                "disableUrlEncoding": false,
-                "disableCookies": false
-            },
-            "request": {
-                "method": "PATCH",
-                "header": [
-                    {
-                        "key": "Content-Type",
-                        "value": "application/json+merge-patch"
-                    }
-                ],
-                "body": {
-                    "mode": "raw",
-                    "raw": "{\n\t\"age\": \"41\",\n\t\"work\": {\n\t\t\"name\": \"Railways Co\",\n\t\t\"location\": \"SF\"\n\t},\n\t\"notes\": \"This is a new field\"\n}",
-                    "options": {
-                        "raw": {
-                            "language": "json"
-                        }
-                    }
-                },
-                "url": {
-                    "raw": "{{ baseurl }}/api/users/1",
-                    "host": [
-                        "{{ baseurl }}"
-                    ],
-                    "path": [
-                        "api",
-                        "users",
-                        "1"
-                    ]
-                }
-            },
-            "response": []
-        },
-        {
-            "name": "Delete item",
-            "event": [
-                {
-                    "listen": "test",
-                    "script": {
-                        "type": "text/javascript",
-                        "exec": []
-                    }
-                }
-            ],
-            "protocolProfileBehavior": {
-                "followRedirects": true,
-                "disableUrlEncoding": false,
-                "disableCookies": false
-            },
-            "request": {
-                "method": "DELETE",
-                "header": [],
-                "url": {
-                    "raw": "{{ baseurl }}/api/families/20",
-                    "host": [
-                        "{{ baseurl }}"
-                    ],
-                    "path": [
-                        "api",
-                        "families",
-                        "20"
-                    ]
-                }
-            },
-            "response": []
-        },
-        {
-            "name": "Login",
-            "event": [
-                {
-                    "listen": "test",
-                    "script": {
-                        "exec": [
-                            ""
-                        ],
-                        "type": "text/javascript",
-                        "packages": {}
-                    }
-                }
-            ],
-            "protocolProfileBehavior": {
-                "followRedirects": true,
-                "disableUrlEncoding": false,
-                "disableCookies": false
-            },
-            "request": {
-                "auth": {
-                    "type": "noauth"
-                },
-                "method": "POST",
-                "header": [
-                    {
-                        "key": "Content-Type",
-                        "value": "multipart/form-data"
-                    }
-                ],
-                "body": {
-                    "mode": "formdata",
-                    "formdata": [
-                        {
-                            "key": "Username",
-                            "value": "admin"
-                        },
-                        {
-                            "key": "Password",
-                            "value": "root"
-                        }
-                    ]
-                },
-                "url": {
-                    "raw": "{{ baseurl }}/token",
-                    "host": [
-                        "{{ baseurl }}"
-                    ],
-                    "path": [
-                        "token"
-                    ]
-                }
-            },
-            "response": []
-        },
-        {
-            "name": "Login (Content-Type: application/json)",
-            "event": [
-                {
-                    "listen": "test",
-                    "script": {
-                        "type": "text/javascript",
-                        "exec": []
-                    }
-                }
-            ],
-            "protocolProfileBehavior": {
-                "followRedirects": true,
-                "disableUrlEncoding": false,
-                "disableCookies": false
-            },
-            "request": {
-                "method": "POST",
-                "header": [
-                    {
-                        "key": "Content-Type",
-                        "value": "application/json"
-                    }
-                ],
-                "body": {
-                    "mode": "raw",
-                    "raw": "{\n\t\"username\": \"admin\",\n\t\"password\": \"root\"\n}",
-                    "options": {
-                        "raw": {
-                            "language": "json"
-                        }
-                    }
-                },
-                "url": {
-                    "raw": "{{ baseurl }}/token",
-                    "host": [
-                        "{{ baseurl }}"
-                    ],
-                    "path": [
-                        "token"
-                    ]
-                }
-            },
-            "response": []
-        },
-        {
-            "name": "Logout",
-            "event": [
-                {
-                    "listen": "test",
-                    "script": {
-                        "exec": [
-                            ""
-                        ],
-                        "type": "text/javascript",
-                        "packages": {}
-                    }
-                }
-            ],
-            "protocolProfileBehavior": {
-                "followRedirects": true,
-                "disableUrlEncoding": false,
-                "disableCookies": false
-            },
-            "request": {
-                "auth": {
-                    "type": "noauth"
-                },
-                "method": "POST",
-                "header": [
-                    {
-                        "key": "Authorization",
-                        "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsImp0aSI6IjRiNGM2MjAwLTk4OTktNGQ5NS05ODhjLTlkNDU1Y2EwYWY2NCIsImlhdCI6MTczMDYxNzEzNywibmJmIjoxNzMwNjE3MTM3LCJleHAiOjE3MzA2MTc0MzcsImlzcyI6IkV4YW1wbGVJc3N1ZXIiLCJhdWQiOiJFeGFtcGxlQXVkaWVuY2UifQ.mCW04fwGVdVse1YynxI3FTzMS_1HarO-CMCkTwmsa8k",
-                        "type": "text"
-                    }
-                ],
-                "url": {
-                    "raw": "{{ baseurl }}/logout",
-                    "host": [
-                        "{{ baseurl }}"
-                    ],
-                    "path": [
-                        "logout"
-                    ]
-                }
-            },
-            "response": []
-        },
-        {
-            "name": "Query with Authorization header",
-            "event": [
-                {
-                    "listen": "test",
-                    "script": {
-                        "exec": [
-                            ""
-                        ],
-                        "type": "text/javascript",
-                        "packages": {}
-                    }
-                }
-            ],
-            "protocolProfileBehavior": {
-                "followRedirects": true,
-                "disableUrlEncoding": false,
-                "disableCookies": false
-            },
-            "request": {
-                "method": "GET",
-                "header": [
-                    {
-                        "key": "Authorization",
-                        "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsImp0aSI6IjRiNGM2MjAwLTk4OTktNGQ5NS05ODhjLTlkNDU1Y2EwYWY2NCIsImlhdCI6MTczMDYxNzEzNywibmJmIjoxNzMwNjE3MTM3LCJleHAiOjE3MzA2MTc0MzcsImlzcyI6IkV4YW1wbGVJc3N1ZXIiLCJhdWQiOiJFeGFtcGxlQXVkaWVuY2UifQ.mCW04fwGVdVse1YynxI3FTzMS_1HarO-CMCkTwmsa8k"
-                    }
-                ],
-                "url": {
-                    "raw": "{{ baseurl }}/api/families",
-                    "host": [
-                        "{{ baseurl }}"
-                    ],
-                    "path": [
-                        "api",
-                        "families"
-                    ]
-                }
-            },
-            "response": []
-        },
-        {
-            "name": "Query with Client Credentials",
-            "event": [
-                {
-                    "listen": "test",
-                    "script": {
-                        "exec": [
-                            ""
-                        ],
-                        "type": "text/javascript",
-                        "packages": {}
-                    }
-                }
-            ],
-            "protocolProfileBehavior": {
-                "followRedirects": true,
-                "disableUrlEncoding": false,
-                "disableCookies": false
-            },
-            "request": {
-                "auth": {
-                    "type": "basic",
-                    "basic": [
-                        {
-                            "key": "password",
-                            "value": "root",
-                            "type": "string"
-                        },
-                        {
-                            "key": "username",
-                            "value": "admin",
-                            "type": "string"
-                        }
-                    ]
-                },
-                "method": "GET",
-                "header": [
-                    {
-                        "key": "",
-                        "value": "",
-                        "type": "text",
-                        "disabled": true
-                    }
-                ],
-                "url": {
-                    "raw": "{{ baseurl }}/api/families",
-                    "host": [
-                        "{{ baseurl }}"
-                    ],
-                    "path": [
-                        "api",
-                        "families"
-                    ]
-                }
-            },
-            "response": []
-        },
-        {
-            "name": "Query with API key",
-            "event": [
-                {
-                    "listen": "test",
-                    "script": {
-                        "exec": [
-                            ""
-                        ],
-                        "type": "text/javascript",
-                        "packages": {}
-                    }
-                }
-            ],
-            "protocolProfileBehavior": {
-                "followRedirects": true,
-                "disableUrlEncoding": false,
-                "disableCookies": false
-            },
-            "request": {
-                "method": "GET",
-                "header": [
-                    {
-                        "key": "X-API-KEY",
-                        "value": "abcd1234"
-                    }
-                ],
-                "url": {
-                    "raw": "{{ baseurl }}/api/families",
-                    "host": [
-                        "{{ baseurl }}"
-                    ],
-                    "path": [
-                        "api",
-                        "families"
-                    ]
-                }
-            },
-            "response": []
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": []
+          }
         }
-    ],
-    "event": [
+      ],
+      "protocolProfileBehavior": {
+        "followRedirects": true,
+        "disableUrlEncoding": false,
+        "disableCookies": false
+      },
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{ baseurl }}/api",
+          "host": [
+            "{{ baseurl }}"
+          ],
+          "path": [
+            "api"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Query",
+      "event": [
         {
-            "listen": "prerequest",
-            "script": {
-                "type": "text/javascript",
-                "packages": {},
-                "exec": [
-                    ""
-                ]
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": []
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "followRedirects": true,
+        "disableUrlEncoding": false,
+        "disableCookies": false
+      },
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{ baseurl }}/api/families",
+          "host": [
+            "{{ baseurl }}"
+          ],
+          "path": [
+            "api",
+            "families"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Query item with id",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": []
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "followRedirects": true,
+        "disableUrlEncoding": false,
+        "disableCookies": false
+      },
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{ baseurl }}/api/families/19",
+          "host": [
+            "{{ baseurl }}"
+          ],
+          "path": [
+            "api",
+            "families",
+            "19"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Query nested items",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": []
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "followRedirects": true,
+        "disableUrlEncoding": false,
+        "disableCookies": false
+      },
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{ baseurl }}/api/families/15/parents",
+          "host": [
+            "{{ baseurl }}"
+          ],
+          "path": [
+            "api",
+            "families",
+            "15",
+            "parents"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Query object",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": []
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "followRedirects": true,
+        "disableUrlEncoding": false,
+        "disableCookies": false
+      },
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{ baseurl }}/api/configuration",
+          "host": [
+            "{{ baseurl }}"
+          ],
+          "path": [
+            "api",
+            "configuration"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Allowed methods",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": []
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "followRedirects": true,
+        "disableUrlEncoding": false,
+        "disableCookies": false
+      },
+      "request": {
+        "method": "OPTIONS",
+        "header": [],
+        "url": {
+          "raw": "{{ baseurl }}/api/familes",
+          "host": [
+            "{{ baseurl }}"
+          ],
+          "path": [
+            "api",
+            "familes"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Headers, no body",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": []
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "followRedirects": true,
+        "disableUrlEncoding": false,
+        "disableCookies": false
+      },
+      "request": {
+        "method": "HEAD",
+        "header": [],
+        "url": {
+          "raw": "{{ baseurl }}/api/families/5",
+          "host": [
+            "{{ baseurl }}"
+          ],
+          "path": [
+            "api",
+            "families",
+            "5"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Slice",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": []
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "followRedirects": true,
+        "disableUrlEncoding": false,
+        "disableCookies": false
+      },
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{ baseurl  }}/api/families?skip=5&take=2",
+          "host": [
+            "{{ baseurl  }}"
+          ],
+          "path": [
+            "api",
+            "families"
+          ],
+          "query": [
+            {
+              "key": "skip",
+              "value": "5"
+            },
+            {
+              "key": "take",
+              "value": "2"
             }
-        },
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Filter",
+      "event": [
         {
-            "listen": "test",
-            "script": {
-                "type": "text/javascript",
-                "packages": {},
-                "exec": [
-                    ""
-                ]
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": []
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "followRedirects": true,
+        "disableUrlEncoding": false,
+        "disableCookies": false
+      },
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{ baseurl }}/api/families?parents.eyeColor=brown",
+          "host": [
+            "{{ baseurl }}"
+          ],
+          "path": [
+            "api",
+            "families"
+          ],
+          "query": [
+            {
+              "key": "parents.eyeColor",
+              "value": "brown"
             }
+          ]
         }
-    ],
-    "variable": [
+      },
+      "response": []
+    },
+    {
+      "name": "Child properties",
+      "event": [
         {
-            "key": " baseurl ",
-            "value": "http://localhost:57602",
-            "type": "default"
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": []
+          }
         }
-    ]
+      ],
+      "protocolProfileBehavior": {
+        "followRedirects": true,
+        "disableUrlEncoding": false,
+        "disableCookies": false
+      },
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{ baseurl }}/api/families?children.age=14",
+          "host": [
+            "{{ baseurl }}"
+          ],
+          "path": [
+            "api",
+            "families"
+          ],
+          "query": [
+            {
+              "key": "children.age",
+              "value": "14"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Filter operators",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": []
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "followRedirects": true,
+        "disableUrlEncoding": false,
+        "disableCookies": false
+      },
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{ baseurl }}/api/families?children.age_lt=10",
+          "host": [
+            "{{ baseurl }}"
+          ],
+          "path": [
+            "api",
+            "families"
+          ],
+          "query": [
+            {
+              "key": "children.age_lt",
+              "value": "10"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Full-text search",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": []
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "followRedirects": true,
+        "disableUrlEncoding": false,
+        "disableCookies": false
+      },
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{ baseurl }}/api/families?q=Avenue",
+          "host": [
+            "{{ baseurl }}"
+          ],
+          "path": [
+            "api",
+            "families"
+          ],
+          "query": [
+            {
+              "key": "q",
+              "value": "Avenue"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Select Fields",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": []
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "followRedirects": true,
+        "disableUrlEncoding": false,
+        "disableCookies": false
+      },
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{ baseurl }}/api/families?fields=familyName,address",
+          "host": [
+            "{{ baseurl }}"
+          ],
+          "path": [
+            "api",
+            "families"
+          ],
+          "query": [
+            {
+              "key": "fields",
+              "value": "familyName,address"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Query item with id (If-None-Match - 304 - Not Modified)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": []
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "followRedirects": true,
+        "disableUrlEncoding": false,
+        "disableCookies": false
+      },
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "If-None-Match",
+            "value": "\"HfGeT_OtCWI1UE-PESFgYpv_v-c\""
+          }
+        ],
+        "url": {
+          "raw": "{{ baseurl }}/api/families/19",
+          "host": [
+            "{{ baseurl }}"
+          ],
+          "path": [
+            "api",
+            "families",
+            "19"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Query with Content Negotiation (Accept - text/csv)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": []
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "followRedirects": true,
+        "disableUrlEncoding": false,
+        "disableCookies": false
+      },
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "text/csv"
+          }
+        ],
+        "url": {
+          "raw": "{{ baseurl }}/api/families/1",
+          "host": [
+            "{{ baseurl }}"
+          ],
+          "path": [
+            "api",
+            "families",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Query with Content Negotiation (Accept - text/xml)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": []
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "followRedirects": true,
+        "disableUrlEncoding": false,
+        "disableCookies": false
+      },
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "text/xml"
+          }
+        ],
+        "url": {
+          "raw": "{{ baseurl }}/api/families",
+          "host": [
+            "{{ baseurl }}"
+          ],
+          "path": [
+            "api",
+            "families"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Query with Content Negotiation (Accept - 406 - Not Acceptable)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": []
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "followRedirects": true,
+        "disableUrlEncoding": false,
+        "disableCookies": false
+      },
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/vnd.api+json"
+          }
+        ],
+        "url": {
+          "raw": "{{ baseurl }}/api/users/1",
+          "host": [
+            "{{ baseurl }}"
+          ],
+          "path": [
+            "api",
+            "users",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Add item",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": []
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "followRedirects": true,
+        "disableUrlEncoding": false,
+        "disableCookies": false
+      },
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n\t\t\"faimlyName\": \"Woods\",\n\t\t\"address\": {\n\t\t\t\"city\": \"Helsinki\",\n\t\t\t\"postNumber\": 100\n\t\t},\n\t\t\"notes\": \"something random\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{ baseurl }}/api/families",
+          "host": [
+            "{{ baseurl }}"
+          ],
+          "path": [
+            "api",
+            "families"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Replace item",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": []
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "followRedirects": true,
+        "disableUrlEncoding": false,
+        "disableCookies": false
+      },
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n\t\"faimlyName\": \"Woods\",\n\t\"address\": {\n\t\t\"city\": \"Helsinki\",\n\t\t\"postNumber\": 100\n\t},\n\t\"notes\": \"something random\",\n\t\"parents\": [\n\t\t{\n\t\t\t\"id\": 0,\n\t\t\t\"name\": \"Joan\"\n\t\t},\n\t\t{\n\t\t\t\"id\": 1,\n\t\t\t\"name\": \"Maurice\"\n\t\t}\n\t]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{ baseurl }}/api/families/20",
+          "host": [
+            "{{ baseurl }}"
+          ],
+          "path": [
+            "api",
+            "families",
+            "20"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Replace item (If-Match - 412- Precondition Failed)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": []
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "followRedirects": true,
+        "disableUrlEncoding": false,
+        "disableCookies": false
+      },
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "If-Match",
+            "value": "aaa"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n\t\"faimlyName\": \"Woods\",\n\t\"address\": {\n\t\t\"city\": \"Helsinki\",\n\t\t\"postNumber\": 100\n\t},\n\t\"notes\": \"something random\",\n\t\"parents\": [\n\t\t{\n\t\t\t\"id\": 0,\n\t\t\t\"name\": \"Joan\"\n\t\t},\n\t\t{\n\t\t\t\"id\": 1,\n\t\t\t\"name\": \"Maurice\"\n\t\t}\n\t]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{ baseurl }}/api/families/20",
+          "host": [
+            "{{ baseurl }}"
+          ],
+          "path": [
+            "api",
+            "families",
+            "20"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Update item (JSON Patch)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": []
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "followRedirects": true,
+        "disableUrlEncoding": false,
+        "disableCookies": false
+      },
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json-patch+json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "[\n\t{ \"op\": \"replace\", \"path\": \"age\", \"value\": 41 },\n\t{ \"op\": \"replace\", \"path\": \"work/name\", \"value\": \"Railways Co\" },\n\t{ \"op\": \"replace\", \"path\": \"work/location\", \"value\": \"SF\" },\n\t{ \"op\": \"add\", \"path\": \"notes\", \"value\": \"This is a new field\" }\n]",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{ baseurl }}/api/users/1",
+          "host": [
+            "{{ baseurl }}"
+          ],
+          "path": [
+            "api",
+            "users",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Update item (Merge Patch)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": []
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "followRedirects": true,
+        "disableUrlEncoding": false,
+        "disableCookies": false
+      },
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json+merge-patch"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n\t\"age\": \"41\",\n\t\"work\": {\n\t\t\"name\": \"Railways Co\",\n\t\t\"location\": \"SF\"\n\t},\n\t\"notes\": \"This is a new field\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{ baseurl }}/api/users/1",
+          "host": [
+            "{{ baseurl }}"
+          ],
+          "path": [
+            "api",
+            "users",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Delete item",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": []
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "followRedirects": true,
+        "disableUrlEncoding": false,
+        "disableCookies": false
+      },
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{ baseurl }}/api/families/20",
+          "host": [
+            "{{ baseurl }}"
+          ],
+          "path": [
+            "api",
+            "families",
+            "20"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Login",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {}
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "followRedirects": true,
+        "disableUrlEncoding": false,
+        "disableCookies": false
+      },
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "multipart/form-data"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "Username",
+              "value": "admin"
+            },
+            {
+              "key": "Password",
+              "value": "root"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{ baseurl }}/token",
+          "host": [
+            "{{ baseurl }}"
+          ],
+          "path": [
+            "token"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Login (Content-Type: application/json)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": []
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "followRedirects": true,
+        "disableUrlEncoding": false,
+        "disableCookies": false
+      },
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n\t\"username\": \"admin\",\n\t\"password\": \"root\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{ baseurl }}/token",
+          "host": [
+            "{{ baseurl }}"
+          ],
+          "path": [
+            "token"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Logout",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {}
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "followRedirects": true,
+        "disableUrlEncoding": false,
+        "disableCookies": false
+      },
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsImp0aSI6IjRiNGM2MjAwLTk4OTktNGQ5NS05ODhjLTlkNDU1Y2EwYWY2NCIsImlhdCI6MTczMDYxNzEzNywibmJmIjoxNzMwNjE3MTM3LCJleHAiOjE3MzA2MTc0MzcsImlzcyI6IkV4YW1wbGVJc3N1ZXIiLCJhdWQiOiJFeGFtcGxlQXVkaWVuY2UifQ.mCW04fwGVdVse1YynxI3FTzMS_1HarO-CMCkTwmsa8k",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{ baseurl }}/logout",
+          "host": [
+            "{{ baseurl }}"
+          ],
+          "path": [
+            "logout"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Query with Authorization header",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {}
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "followRedirects": true,
+        "disableUrlEncoding": false,
+        "disableCookies": false
+      },
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsImp0aSI6IjRiNGM2MjAwLTk4OTktNGQ5NS05ODhjLTlkNDU1Y2EwYWY2NCIsImlhdCI6MTczMDYxNzEzNywibmJmIjoxNzMwNjE3MTM3LCJleHAiOjE3MzA2MTc0MzcsImlzcyI6IkV4YW1wbGVJc3N1ZXIiLCJhdWQiOiJFeGFtcGxlQXVkaWVuY2UifQ.mCW04fwGVdVse1YynxI3FTzMS_1HarO-CMCkTwmsa8k"
+          }
+        ],
+        "url": {
+          "raw": "{{ baseurl }}/api/families",
+          "host": [
+            "{{ baseurl }}"
+          ],
+          "path": [
+            "api",
+            "families"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Query with Client Credentials",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {}
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "followRedirects": true,
+        "disableUrlEncoding": false,
+        "disableCookies": false
+      },
+      "request": {
+        "auth": {
+          "type": "basic",
+          "basic": [
+            {
+              "key": "password",
+              "value": "root",
+              "type": "string"
+            },
+            {
+              "key": "username",
+              "value": "admin",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [
+          {
+            "key": "",
+            "value": "",
+            "type": "text",
+            "disabled": true
+          }
+        ],
+        "url": {
+          "raw": "{{ baseurl }}/api/families",
+          "host": [
+            "{{ baseurl }}"
+          ],
+          "path": [
+            "api",
+            "families"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Query with API key",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {}
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "followRedirects": true,
+        "disableUrlEncoding": false,
+        "disableCookies": false
+      },
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "X-API-KEY",
+            "value": "abcd1234"
+          }
+        ],
+        "url": {
+          "raw": "{{ baseurl }}/api/families",
+          "host": [
+            "{{ baseurl }}"
+          ],
+          "path": [
+            "api",
+            "families"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": " baseurl ",
+      "value": "http://localhost:57602",
+      "type": "default"
+    }
+  ]
 }
