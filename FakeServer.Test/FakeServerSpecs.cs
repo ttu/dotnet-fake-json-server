@@ -997,7 +997,7 @@ public class FakeServerSpecs : IDisposable
             }
         }
 
-        var newBook = new { title = "Adventures of Robin Hood" };
+        var newBook = new { title = "Adventures of Robin Hood", year = 1883 };
 
         // POST
 
@@ -1019,10 +1019,11 @@ public class FakeServerSpecs : IDisposable
         result.EnsureSuccessStatusCode();
         var item = JsonConvert.DeserializeObject<JObject>(await result.Content.ReadAsStringAsync());
         Assert.Equal(newBook.title, item["title"].Value<string>());
+        Assert.Equal(newBook.year, item["year"].Value<int>());
 
         // PUT
 
-        var updateBook = new { title = "Adventures of Sherlock Holmes" };
+        var updateBook = new { title = "Adventures of Sherlock Holmes", year = 1890 };
 
         content = new StringContent(JsonConvert.SerializeObject(updateBook), Encoding.UTF8, "application/json");
         result = await _fixture.Client.PutAsync($"async/book/0", content);
@@ -1037,8 +1038,9 @@ public class FakeServerSpecs : IDisposable
         result.EnsureSuccessStatusCode();
         item = JsonConvert.DeserializeObject<JObject>(await result.Content.ReadAsStringAsync());
         Assert.Equal(updateBook.title, item["title"].Value<string>());
+        Assert.Equal(updateBook.year, item["year"].Value<int>());
 
-        // PATCH
+        // PATCH (MergePatchJson)
 
         var patchBook = new { author = "Edgar Allen Poe" };
 
@@ -1057,6 +1059,31 @@ public class FakeServerSpecs : IDisposable
         item = JsonConvert.DeserializeObject<JObject>(await result.Content.ReadAsStringAsync());
         Assert.Equal(patchBook.author, item["author"].Value<string>());
         Assert.Equal(updateBook.title, item["title"].Value<string>());
+        Assert.Equal(updateBook.year, item["year"].Value<int>());
+
+        // PATCH (JsonPatchJson)
+
+        var jsonPatchBook = new dynamic[]
+        {
+            new { op = "replace", path = "year", value = 1849 }
+        };
+
+        content = new StringContent(JsonConvert.SerializeObject(jsonPatchBook), Encoding.UTF8, Constants.JsonPatchJson);
+        request = new HttpRequestMessage(new HttpMethod("PATCH"), $"async/book/0") { Content = content };
+        result = await _fixture.Client.SendAsync(request);
+        result.EnsureSuccessStatusCode();
+
+        queueUrl = result.Headers.Location;
+
+        resultForAction = await GetWhenStatusNotOk(queueUrl);
+        Assert.Equal(HttpStatusCode.SeeOther, resultForAction.StatusCode);
+
+        result = await _fixture.Client.GetAsync(resultForAction.Headers.Location);
+        result.EnsureSuccessStatusCode();
+        item = JsonConvert.DeserializeObject<JObject>(await result.Content.ReadAsStringAsync());
+        Assert.Equal(patchBook.author, item["author"].Value<string>());
+        Assert.Equal(updateBook.title, item["title"].Value<string>());
+        Assert.Equal(jsonPatchBook[0].value, item["year"].Value<int>());
 
         // DELETE
 

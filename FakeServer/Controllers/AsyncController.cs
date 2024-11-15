@@ -147,7 +147,7 @@ public class AsyncController : Controller
     /// <response code="415">Unsupported content type</response>
     [HttpPatch("{collectionId}/{itemId}")]
     [Consumes(Constants.JsonPatchJson)]
-    public IActionResult UpdateItemJsonPatch(string collectionId, dynamic itemId, [FromBody] JsonPatchDocument patchDoc)
+    public IActionResult UpdateItemJsonPatch(string collectionId, [FromRoute][DynamicBinder] dynamic itemId, [FromBody] JsonPatchDocument patchDoc)
     {
         if (_ds.IsItem(collectionId))
             return BadRequest();

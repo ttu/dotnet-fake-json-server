@@ -4,6 +4,7 @@
 * FIXED: Return 404 for merge patch if item not found
 * ADDED: JsonPatch support for PATCH endpoints
 * CHANGED: Target framework to .NET 6
+* FIEXD: Async JsonPatch endpoint
 
 ### [0.11.0] - 2022-05-17
 * FIXED: Basic Authentication unauthorized result
