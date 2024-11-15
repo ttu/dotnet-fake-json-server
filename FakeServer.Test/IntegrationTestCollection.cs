@@ -26,6 +26,7 @@ public class IntegrationFixture : ICollectionFixture<WebApplicationFactory<Start
             { "currentPath", path },
             { "file", _newFilePath },
             { "DataStore:IdField", "id" },
+            { "Jobs:DelayMs", "500" },
             { "Caching:ETag:Enabled", "true" }
         };
 
