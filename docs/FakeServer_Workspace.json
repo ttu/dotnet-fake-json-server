@@ -1255,6 +1255,313 @@
         }
       },
       "response": []
+    },
+    {
+      "name": "Async - Add item",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {}
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "followRedirects": true,
+        "disableUrlEncoding": false,
+        "disableCookies": false
+      },
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n\t\t\"faimlyName\": \"Woods\",\n\t\t\"address\": {\n\t\t\t\"city\": \"Helsinki\",\n\t\t\t\"postNumber\": 100\n\t\t},\n\t\t\"notes\": \"something random\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{ baseurl }}/async/families",
+          "host": [
+            "{{ baseurl }}"
+          ],
+          "path": [
+            "async",
+            "families"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Async - Replace item",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {}
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "followRedirects": true,
+        "disableUrlEncoding": false,
+        "disableCookies": false
+      },
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n\t\"faimlyName\": \"Woods\",\n\t\"address\": {\n\t\t\"city\": \"Helsinki\",\n\t\t\"postNumber\": 100\n\t},\n\t\"notes\": \"something random\",\n\t\"parents\": [\n\t\t{\n\t\t\t\"id\": 0,\n\t\t\t\"name\": \"Joan\"\n\t\t},\n\t\t{\n\t\t\t\"id\": 1,\n\t\t\t\"name\": \"Maurice\"\n\t\t}\n\t]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{ baseurl }}/async/families/20",
+          "host": [
+            "{{ baseurl }}"
+          ],
+          "path": [
+            "async",
+            "families",
+            "20"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Async - Update item (JSON Patch)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {}
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "followRedirects": true,
+        "disableUrlEncoding": false,
+        "disableCookies": false
+      },
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json-patch+json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "[\n\t{ \"op\": \"replace\", \"path\": \"age\", \"value\": 41 },\n\t{ \"op\": \"replace\", \"path\": \"work/name\", \"value\": \"Railways Co\" },\n\t{ \"op\": \"replace\", \"path\": \"work/location\", \"value\": \"SF\" },\n\t{ \"op\": \"add\", \"path\": \"notes\", \"value\": \"This is a new field\" }\n]",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{ baseurl }}/async/users/1",
+          "host": [
+            "{{ baseurl }}"
+          ],
+          "path": [
+            "async",
+            "users",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Async - Update item (Merge Patch)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {}
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "followRedirects": true,
+        "disableUrlEncoding": false,
+        "disableCookies": false
+      },
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json+merge-patch"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n\t\"age\": \"41\",\n\t\"work\": {\n\t\t\"name\": \"Railways Co\",\n\t\t\"location\": \"SF\"\n\t},\n\t\"notes\": \"This is a new field\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{ baseurl }}/async/users/1",
+          "host": [
+            "{{ baseurl }}"
+          ],
+          "path": [
+            "async",
+            "users",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Async - Delete item",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {}
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "followRedirects": true,
+        "disableUrlEncoding": false,
+        "disableCookies": false
+      },
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{ baseurl }}/async/families/20",
+          "host": [
+            "{{ baseurl }}"
+          ],
+          "path": [
+            "async",
+            "families",
+            "20"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Async Queue - Get item",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {}
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "followRedirects": false,
+        "disableUrlEncoding": false,
+        "disableCookies": false
+      },
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{ baseurl }}/async/queue/f2e89",
+          "host": [
+            "{{ baseurl }}"
+          ],
+          "path": [
+            "async",
+            "queue",
+            "f2e89"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Async Queue - Delete item",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {}
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "followRedirects": true,
+        "disableUrlEncoding": false,
+        "disableCookies": false
+      },
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{ baseurl }}/async/queue/e3734",
+          "host": [
+            "{{ baseurl }}"
+          ],
+          "path": [
+            "async",
+            "queue",
+            "e3734"
+          ]
+        }
+      },
+      "response": []
     }
   ],
   "event": [
