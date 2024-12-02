@@ -277,7 +277,7 @@ public class DynamicControllerTests
     }
 
     [Fact]
-    public void GetItems_Single()
+    public void SingleItem_GetItems_Ok()
     {
         var filePath = UTHelpers.Up();
         var ds = new DataStore(filePath);
@@ -297,7 +297,7 @@ public class DynamicControllerTests
     }
 
     [Fact]
-    public void GetItem_Single_BadRequest()
+    public void SingleItem_GetItem_BadRequest()
     {
         var filePath = UTHelpers.Up();
         var ds = new DataStore(filePath);
@@ -313,7 +313,7 @@ public class DynamicControllerTests
     }
 
     [Fact]
-    public void GetNested_Single_BadRequest()
+    public void SingleItem_GetNested_BadRequest()
     {
         var filePath = UTHelpers.Up();
         var ds = new DataStore(filePath);
@@ -329,7 +329,25 @@ public class DynamicControllerTests
     }
 
     [Fact]
-    public async Task AddItem_Single_Conflict()
+    public async Task SingleItem_AddNewItem_Conflict()
+    {
+        var filePath = UTHelpers.Up();
+        var ds = new DataStore(filePath);
+        var apiSettings = Options.Create(new ApiSettings());
+        var dsSettings = Options.Create(new DataStoreSettings());
+
+        var controller = new DynamicController(ds, apiSettings, dsSettings);
+
+        var item = new { ip = "0.0.0.0", password = "hello" };
+
+        var result = await controller.AddNewItem("configuration", JToken.FromObject(item));
+        Assert.IsType<ConflictResult>(result);
+
+        UTHelpers.Down(filePath);
+    }
+
+    [Fact]
+    public async Task SingelItem_ReplaceSingleItem_NotFound()
     {
         var filePath = UTHelpers.Up();
         var ds = new DataStore(filePath);
@@ -340,8 +358,50 @@ public class DynamicControllerTests
 
         var item = new { value = "hello" };
 
-        var result = await controller.AddNewItem("configuration", JToken.FromObject(item));
-        Assert.IsType<ConflictResult>(result);
+        var result = await controller.ReplaceSingleItem("new_item", JToken.FromObject(item));
+        Assert.IsType<NotFoundResult>(result);
+
+        UTHelpers.Down(filePath);
+    }
+
+    [Fact]
+    public async Task SingleItem_ReplaceSingleItem_Replaced()
+    {
+        var filePath = UTHelpers.Up();
+        var ds = new DataStore(filePath);
+        var apiSettings = Options.Create(new ApiSettings());
+        var dsSettings = Options.Create(new DataStoreSettings());
+
+        var controller = new DynamicController(ds, apiSettings, dsSettings);
+
+        var updateItem = new { ip = "0.0.0.0", password = "hello" };
+
+        var result = await controller.ReplaceSingleItem("configuration", JToken.FromObject(updateItem));
+        Assert.IsType<NoContentResult>(result);
+
+        var getResult = controller.GetItems("configuration");
+        var okObjectResult = getResult as OkObjectResult;
+        dynamic item = okObjectResult.Value as ExpandoObject;
+        Assert.Equal("0.0.0.0", item.ip);
+        Assert.Equal("hello", item.password);
+
+        UTHelpers.Down(filePath);
+    }
+
+    [Fact]
+    public async Task SingelItem_ReplaceSingleItem_Added()
+    {
+        var filePath = UTHelpers.Up();
+        var ds = new DataStore(filePath);
+        var apiSettings = Options.Create(new ApiSettings { UpsertOnPut = true });
+        var dsSettings = Options.Create(new DataStoreSettings());
+
+        var controller = new DynamicController(ds, apiSettings, dsSettings);
+
+        var item = new { value = "hello" };
+
+        var result = await controller.ReplaceSingleItem("new_item", JToken.FromObject(item));
+        Assert.IsType<NoContentResult>(result);
 
         UTHelpers.Down(filePath);
     }
