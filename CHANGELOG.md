@@ -2,9 +2,10 @@
 
 ### [Unreleased]
 * FIXED: Return 404 for merge patch if item not found
-* ADDED: JsonPatch support for PATCH en
+* ADDED: JsonPatch support for PATCH endpoints
 * FIXED: Async JsonPatch endpoint
-*  CHANGED: Target framework to .NET 8
+* CHANGED: Target framework to .NET 8
+* CHANGED: build-env image to sdk:8.0
 
 ### [0.11.0] - 2022-05-17
 * FIXED: Basic Authentication unauthorized result
