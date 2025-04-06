@@ -50,7 +50,7 @@ Fake JSON Server is a Fake REST API that can be used as a Back End for prototypi
 
 ### Developed with
  
-* .NET 6
+* .NET 8
 * ASP.NET Core
 * Data is stored to a JSON-file with [JSON Flat File Data Store](https://github.com/ttu/json-flatfile-datastore)
 
