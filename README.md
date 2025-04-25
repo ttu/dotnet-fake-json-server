@@ -93,6 +93,7 @@ Fake JSON Server is a Fake REST API that can be used as a Back End for prototypi
     + [Data Store Id-field name](#data-store-id-field-name)
     + [Eager data reload](#eager-data-reload)
     + [Reload](#reload)
+    + [Health Check](#health-check)
   * [Endpoints](#endpoints)
     + [JSON data used in examples](#json-data-used-in-examples)
     + [List collections (GET)](#list-collections-get)
@@ -591,6 +592,7 @@ GET      /
 POST     /token
 POST     /logout
 POST     /admin/reload
+GET      /health
 
 GET      /api
 HEAD     /api
@@ -716,6 +718,50 @@ Reload endpoint can be used to reload JSON data from the file to Data Store. End
 ```sh
 $ curl -X POST http://localhost:57602/admin/reload --data ""
 ```
+
+### Health Check
+
+The health check endpoint provides status information about the Fake JSON Server. It monitors critical dependencies (like the data store) and reports service status, uptime, and version information.
+
+```
+> GET /health
+
+200 OK                        : Application is healthy
+503 Service Unavailable       : Application is unhealthy (data store is inaccessible)
+```
+
+The response contains:
+- `status`: "Healthy" when all services are operational, "Unhealthy" otherwise
+- `uptime`: Duration since application startup in days, hours, and minutes (only when healthy)
+- `version`: Application version number
+
+Example of a healthy response:
+
+```sh
+$ curl http://localhost:57602/health
+```
+
+```json
+{
+  "status": "Healthy",
+  "uptime": "2 days, 5 hours, 30 minutes",
+  "version": "1.0.0"
+}
+```
+
+Example of an unhealthy response:
+
+```json
+{
+  "status": "Unhealthy",
+  "version": "1.0.0"
+}
+```
+
+This endpoint is useful for:
+- Monitoring service health in production environments
+- Integration with container orchestration systems for health probes
+- Checking if the data store is accessible
 
 ### Endpoints
 
