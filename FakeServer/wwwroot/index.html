@@ -27,48 +27,63 @@
     </div>
   </body>
 
-  <script src="https://unpkg.com/vue@2.7.16/dist/vue.js"></script>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/superagent/3.5.2/superagent.min.js"></script>
 
   <script>
-    var app = new Vue({
-      el: "#app",
-      data: {
-        collections: "",
-        lastUpdate: {
+    const { createApp, watchEffect, ref } = Vue;
+    const request = window.superagent;
+
+    const app = createApp({
+      setup() {
+        const collections = ref([]);
+        const lastUpdate = ref({
           method: "-",
           path: "-",
           collection: "-",
           itemId: "-",
-        },
+        });
+
+        watchEffect(async () => {
+          // Fetch collections
+          request
+            .get(`http://${window.location.host}/api`)
+            .then((response) => {
+              collections.value = response.body;
+            })
+            .catch((error) => {
+              console.error("Error fetching collections:", error.message || error);
+            });
+
+          // Set up WebSocket
+          const webSocket = new WebSocket(`ws://${window.location.host}/ws`);
+
+          webSocket.onmessage = (evt) => {
+            try {
+              lastUpdate.value = JSON.parse(evt.data);
+            } catch (e) {
+              console.error("Error parsing WebSocket message:", e);
+            }
+          };
+
+          webSocket.onopen = () => {
+            console.log("WebSocket opened.");
+          };
+          webSocket.onclose = () => {
+            console.log("WebSocket closed.");
+          };
+          webSocket.onerror = (evt) => {
+            console.error("WebSocket error:", evt.data || evt);
+          };
+        });
+
+        return {
+          collections,
+          lastUpdate,
+        };
       },
     });
 
-    const request = window.superagent;
-
-    request
-      .get(`http://${window.location.host}/api`)
-      .then((response) => {
-        app.collections = response.body;
-      })
-      .catch((error) => {
-        console.log(error.message || error);
-      });
-
-    const webSocket = new WebSocket(`ws://${window.location.host}/ws`);
-
-    webSocket.onmessage = (evt) => {
-      app.lastUpdate = JSON.parse(evt.data);
-    };
-
-    webSocket.onopen = () => {
-      console.log("open");
-    };
-    webSocket.onclose = () => {
-      console.log("closed");
-    };
-    webSocket.onerror = (evt) => {
-      console.log(evt.data);
-    };
+    app.mount("#app");
   </script>
 </html>
