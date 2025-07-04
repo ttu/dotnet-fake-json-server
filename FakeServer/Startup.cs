@@ -2,6 +2,7 @@
 using FakeServer.Authentication.Jwt;
 using FakeServer.Common;
 using FakeServer.Common.Formatters;
+using FakeServer.Controllers;
 using FakeServer.CustomResponse;
 using FakeServer.GraphQL;
 using FakeServer.Jobs;
@@ -44,9 +45,9 @@ public class Startup
         var jsonFilePath = Path.Combine(Configuration["currentPath"], Configuration["file"]);
         services.AddSingleton<IDataStore>(new DataStore(jsonFilePath, keyProperty: Configuration["DataStore:IdField"],
             reloadBeforeGetCollection: Configuration.GetValue<bool>("DataStore:EagerDataReload")));
+        services.AddSingleton<HealthCheckController.HealthChecker>();
         services.AddSingleton<IMessageBus, MessageBus>();
-        services.AddSingleton<JobsService>();
-
+        services.AddSingleton<JobsService>();        
         services.Configure<AuthenticationSettings>(Configuration.GetSection("Authentication"));
         services.Configure<ApiSettings>(Configuration.GetSection("Api"));
         services.Configure<DataStoreSettings>(Configuration.GetSection("DataStore"));
