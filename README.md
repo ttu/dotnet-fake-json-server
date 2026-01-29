@@ -622,16 +622,65 @@ POST     /graphql
 
 ### Collections and objects
 
-Fake JSON Server is designed for prototyping, so by default it supports only resources in a collection.
+Fake JSON Server supports both collections (arrays) and single objects at the root level.
 
-If the JSON-file has a single object on a root level, then the route from that property is handled like a single object.
+#### Collections
+
+Collections are arrays of items that support full CRUD operations with auto-generated IDs:
 
 ```json
 {
-  "collection": [],
-  "object": {}
+  "users": [
+    { "id": 1, "name": "Phil", "age": 40 },
+    { "id": 2, "name": "Larry", "age": 37 }
+  ],
+  "posts": []
 }
 ```
+
+#### Single Objects
+
+Single objects are handled differently - they don't have IDs and support only GET, PUT, PATCH, and DELETE operations:
+
+```json
+{
+  "users": [...],
+  "configuration": {
+    "apiUrl": "https://api.example.com",
+    "timeout": 5000,
+    "features": {
+      "auth": true,
+      "logging": false
+    }
+  }
+}
+```
+
+**Single Object Operations:**
+
+```sh
+# Get single object
+$ curl http://localhost:57602/api/configuration
+
+# Update single object (replaces entire object)
+$ curl -X PUT -H "Content-type: application/json" \
+  -d '{"apiUrl": "https://new-api.com", "timeout": 3000}' \
+  http://localhost:57602/api/configuration
+
+# Partially update single object
+$ curl -X PATCH -H "Content-type: application/json+merge-patch" \
+  -d '{"timeout": 8000}' \
+  http://localhost:57602/api/configuration
+
+# Delete single object (sets to null)
+$ curl -X DELETE http://localhost:57602/api/configuration
+```
+
+**Key Differences:**
+- Collections: Support POST (create), GET, PUT, PATCH, DELETE with auto-generated IDs
+- Single Objects: Support GET, PUT, PATCH, DELETE only (no POST, no IDs)
+- Single objects return the object directly, not wrapped in an array
+- DELETE on single objects sets the value to `null` instead of removing the item
 
 
 ### Routes
@@ -780,6 +829,8 @@ Data used in example requests, unless otherwise stated:
   "configuration": { "ip": "192.168.0.1" }
 }
 ```
+
+Note: `users` and `movies` are collections (arrays), while `configuration` is a single object.
 
 Example JSON generation guide for data used in unit tests [CreateJSON.md](docs/CreateJson.md).
 
