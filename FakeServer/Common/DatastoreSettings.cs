@@ -5,4 +5,6 @@ public class DataStoreSettings
     public string IdField { get; set; } = "id";
 
     public bool EagerDataReload { get; set; }
+    
+    public bool PreserveDataOnRepublish { get; set; } = false;
 }

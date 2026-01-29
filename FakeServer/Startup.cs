@@ -42,6 +42,15 @@ public class Startup
         }
 
         var jsonFilePath = Path.Combine(Configuration["currentPath"], Configuration["file"]);
+        var preserveData = Configuration.GetValue<bool>("DataStore:PreserveDataOnRepublish");
+        
+        // Backup existing data if preserve option is enabled
+        var backupPath = jsonFilePath + ".backup";
+        if (preserveData && File.Exists(jsonFilePath) && !File.Exists(backupPath))
+        {
+            File.Copy(jsonFilePath, backupPath);
+        }
+        
         services.AddSingleton<IDataStore>(new DataStore(jsonFilePath, keyProperty: Configuration["DataStore:IdField"],
             reloadBeforeGetCollection: Configuration.GetValue<bool>("DataStore:EagerDataReload")));
         services.AddSingleton<IMessageBus, MessageBus>();

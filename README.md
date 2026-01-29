@@ -592,6 +592,7 @@ GET      /
 POST     /token
 POST     /logout
 POST     /admin/reload
+POST     /admin/restore-backup
 GET      /health
 
 GET      /api
@@ -758,7 +759,22 @@ By default Data Store updates its internal data on every request by reading the 
 
 For performance reasons `EagerDataReload` can be changed to _false_. Then the data is reloaded from the file only when Data Store is initialized and when the data is updated. 
 
-If `EagerDataReload` is _false_ and JSON file is updated manually, reload endpoint must be called if new data will be queried before any updates. 
+If `EagerDataReload` is _false_ and JSON file is updated manually, reload endpoint must be called if new data will be queried before any updates.
+
+### Preserve data on republish
+
+When `PreserveDataOnRepublish` is enabled, the server will automatically backup existing data before startup and provide a restore endpoint.
+
+```json
+"DataStore": {
+  "PreserveDataOnRepublish": true
+}
+```
+
+When enabled:
+- Existing `datastore.json` is backed up to `datastore.json.backup` on startup
+- Use `/admin/restore-backup` endpoint to restore previous data after republishing
+- Backup is only created if it doesn't already exist 
 
 ### Reload
 
