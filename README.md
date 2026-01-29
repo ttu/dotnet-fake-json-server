@@ -646,12 +646,7 @@ Single objects are handled differently - they don't have IDs and support only GE
 {
   "users": [...],
   "configuration": {
-    "apiUrl": "https://api.example.com",
-    "timeout": 5000,
-    "features": {
-      "auth": true,
-      "logging": false
-    }
+    "ip": "192.168.0.1"
   }
 }
 ```
