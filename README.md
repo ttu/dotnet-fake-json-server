@@ -592,6 +592,7 @@ GET      /
 POST     /token
 POST     /logout
 POST     /admin/reload
+POST     /admin/restore-backup
 GET      /health
 
 GET      /api
@@ -622,16 +623,65 @@ POST     /graphql
 
 ### Collections and objects
 
-Fake JSON Server is designed for prototyping, so by default it supports only resources in a collection.
+Fake JSON Server supports both collections (arrays) and single objects at the root level.
 
-If the JSON-file has a single object on a root level, then the route from that property is handled like a single object.
+#### Collections
+
+Collections are arrays of items that support full CRUD operations with auto-generated IDs:
 
 ```json
 {
-  "collection": [],
-  "object": {}
+  "users": [
+    { "id": 1, "name": "Phil", "age": 40 },
+    { "id": 2, "name": "Larry", "age": 37 }
+  ],
+  "posts": []
 }
 ```
+
+#### Single Objects
+
+Single objects are handled differently - they don't have IDs and support only GET, PUT, PATCH, and DELETE operations:
+
+```json
+{
+  "users": [...],
+  "configuration": {
+    "apiUrl": "https://api.example.com",
+    "timeout": 5000,
+    "features": {
+      "auth": true,
+      "logging": false
+    }
+  }
+}
+```
+
+**Single Object Operations:**
+
+```sh
+# Get single object
+$ curl http://localhost:57602/api/configuration
+
+# Update single object (replaces entire object)
+$ curl -X PUT -H "Content-type: application/json" \
+  -d '{"apiUrl": "https://new-api.com", "timeout": 3000}' \
+  http://localhost:57602/api/configuration
+
+# Partially update single object
+$ curl -X PATCH -H "Content-type: application/json+merge-patch" \
+  -d '{"timeout": 8000}' \
+  http://localhost:57602/api/configuration
+
+# Delete single object (sets to null)
+$ curl -X DELETE http://localhost:57602/api/configuration
+```
+
+**Key Differences:**
+- Collections: Support POST (create), GET, PUT, PATCH, DELETE with auto-generated IDs
+- Single Objects: Support GET, PUT, PATCH, DELETE only (no POST, no IDs)
+- Single objects return the object directly, not wrapped in an array
+- DELETE on single objects sets the value to `null` instead of removing the item
 
 
 ### Routes
@@ -709,7 +759,22 @@ By default Data Store updates its internal data on every request by reading the 
 
 For performance reasons `EagerDataReload` can be changed to _false_. Then the data is reloaded from the file only when Data Store is initialized and when the data is updated. 
 
-If `EagerDataReload` is _false_ and JSON file is updated manually, reload endpoint must be called if new data will be queried before any updates. 
+If `EagerDataReload` is _false_ and JSON file is updated manually, reload endpoint must be called if new data will be queried before any updates.
+
+### Preserve data on republish
+
+When `PreserveDataOnRepublish` is enabled, the server will automatically backup existing data before startup and provide a restore endpoint.
+
+```json
+"DataStore": {
+  "PreserveDataOnRepublish": true
+}
+```
+
+When enabled:
+- Existing `datastore.json` is backed up to `datastore.json.backup` on startup
+- Use `/admin/restore-backup` endpoint to restore previous data after republishing
+- Backup is only created if it doesn't already exist 
 
 ### Reload
 
@@ -780,6 +845,8 @@ Data used in example requests, unless otherwise stated:
   "configuration": { "ip": "192.168.0.1" }
 }
 ```
+
+Note: `users` and `movies` are collections (arrays), while `configuration` is a single object.
 
 Example JSON generation guide for data used in unit tests [CreateJSON.md](docs/CreateJson.md).
 

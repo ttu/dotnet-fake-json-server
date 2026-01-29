@@ -9,15 +9,48 @@ namespace FakeServer.Controllers;
 public class AdminController : Controller
 {
     private readonly IDataStore _ds;
+    private readonly IConfiguration _config;
 
-    public AdminController(IDataStore ds)
+    public AdminController(IDataStore ds, IConfiguration config)
     {
         _ds = ds;
+        _config = config;
     }
 
     [HttpPost("reload")]
     public void ReloadFromFile()
     {
         _ds.Reload();
+    }
+    
+    [HttpPost("restore-backup")]
+    public IActionResult RestoreFromBackup()
+    {
+        var currentPath = _config["currentPath"];
+        var file = _config["file"];
+        
+        if (string.IsNullOrEmpty(currentPath) || string.IsNullOrEmpty(file))
+        {
+            return StatusCode(500, "Server configuration is missing currentPath or file settings");
+        }
+        
+        var jsonFilePath = Path.Combine(currentPath, file);
+        var backupPath = jsonFilePath + ".backup";
+        
+        if (!System.IO.File.Exists(backupPath))
+        {
+            return NotFound("No backup file found");
+        }
+        
+        try
+        {
+            System.IO.File.Copy(backupPath, jsonFilePath, true);
+            _ds.Reload();
+            return Ok("Data restored from backup");
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Failed to restore backup: {ex.Message}");
+        }
     }
 }
