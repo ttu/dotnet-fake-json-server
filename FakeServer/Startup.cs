@@ -48,7 +48,14 @@ public class Startup
         var backupPath = jsonFilePath + ".backup";
         if (preserveData && File.Exists(jsonFilePath) && !File.Exists(backupPath))
         {
-            File.Copy(jsonFilePath, backupPath);
+            try
+            {
+                File.Copy(jsonFilePath, backupPath);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Warning: Failed to create backup of datastore: {ex.Message}");
+            }
         }
         
         services.AddSingleton<IDataStore>(new DataStore(jsonFilePath, keyProperty: Configuration["DataStore:IdField"],

@@ -9,11 +9,13 @@
 ```
 
 ### Usage Flow
-1. **First run**: Server starts, no backup exists
-2. **Add data**: Use API to add users, posts, etc.
-3. **Republish**: Run `dotnet publish` - data gets backed up automatically
-4. **After republish**: Original data is lost, but backup exists
+1. **Server starts**: If backup enabled and no .backup exists, current datastore.json is backed up
+2. **Add data**: Use API to add users, posts, etc. during runtime
+3. **Republish**: Run `dotnet publish` - creates new build but doesn't create backup itself
+4. **New startup**: The new datastore.json will only be backed up on next startup if no .backup exists
 5. **Restore**: Call `POST /admin/restore-backup` to restore previous data
+
+**Note**: To ensure newly added runtime data is captured, delete the existing .backup file before restarting after adding data.
 
 ### API Endpoints
 ```bash

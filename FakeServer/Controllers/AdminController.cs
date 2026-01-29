@@ -26,7 +26,15 @@ public class AdminController : Controller
     [HttpPost("restore-backup")]
     public IActionResult RestoreFromBackup()
     {
-        var jsonFilePath = Path.Combine(_config["currentPath"], _config["file"]);
+        var currentPath = _config["currentPath"];
+        var file = _config["file"];
+        
+        if (string.IsNullOrEmpty(currentPath) || string.IsNullOrEmpty(file))
+        {
+            return StatusCode(500, "Server configuration is missing currentPath or file settings");
+        }
+        
+        var jsonFilePath = Path.Combine(currentPath, file);
         var backupPath = jsonFilePath + ".backup";
         
         if (!System.IO.File.Exists(backupPath))
@@ -34,9 +42,15 @@ public class AdminController : Controller
             return NotFound("No backup file found");
         }
         
-        System.IO.File.Copy(backupPath, jsonFilePath, true);
-        _ds.Reload();
-        
-        return Ok("Data restored from backup");
+        try
+        {
+            System.IO.File.Copy(backupPath, jsonFilePath, true);
+            _ds.Reload();
+            return Ok("Data restored from backup");
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Failed to restore backup: {ex.Message}");
+        }
     }
 }
