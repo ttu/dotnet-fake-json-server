@@ -10,6 +10,49 @@
       "name": "GraphQL",
       "item": [
         {
+          "name": "Query application/getallusers",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": []
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": true,
+            "disableUrlEncoding": false,
+            "disableCookies": false
+          },
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "query {\n  users {\n    id\n    name\n    age\n    location\n    work {\n      name\n      location\n      rating\n    }\n  }\n}",
+                "variables": ""
+              }
+            },
+            "url": {
+              "raw": "{{ baseurl }}/graphql",
+              "host": [
+                "{{ baseurl }}"
+              ],
+              "path": [
+                "graphql"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
           "name": "Query application/graphql User",
           "event": [
             {
@@ -71,6 +114,7 @@
             "disableCookies": false
           },
           "request": {
+            "description": "Same query as 'Query application/graphql User' but with Content-Type: application/json. application/graphql sends the query as a raw string body, application/json wraps it as { \"query\": \"...\" }.",
             "method": "POST",
             "header": [
               {
@@ -79,7 +123,11 @@
               }
             ],
             "body": {
-              "mode": "graphql"
+              "mode": "graphql",
+              "graphql": {
+                "query": "query {\n  users(id: 3) {\n    name\n    work {\n      location\n    }\n  }\n}",
+                "variables": ""
+              }
             },
             "url": {
               "raw": "{{ baseurl }}/graphql",
@@ -92,7 +140,179 @@
             }
           },
           "response": []
-        }
+        },
+        {
+          "name": "Mutation application/json addUsers",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": []
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": true,
+            "disableUrlEncoding": false,
+            "disableCookies": false
+          },
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "mutation {\n  addUsers(input: {\n    users: {\n      name: Newton\n      age: 45\n      location: SF\n      work: {\n        name: ACME\n        location: SF\n        rating: 4.5\n      }\n    }\n  }) {\n    users {\n      id\n      name\n      age\n      location\n      work {\n        name\n        location\n        rating\n      }\n    }\n  }\n}",
+                "variables": ""
+              }
+            },
+            "url": {
+              "raw": "{{ baseurl }}/graphql",
+              "host": [
+                "{{ baseurl }}"
+              ],
+              "path": [
+                "graphql"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Mutation application/json updateUsers",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": []
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": true,
+            "disableUrlEncoding": false,
+            "disableCookies": false
+          },
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "mutation {\n  updateUsers(input: {\n    id: 2\n    patch: {\n      name: Jimmy\n      age: 87\n    }\n  }) {\n    users {\n      id\n      name\n      age\n      location\n    }\n  }\n}",
+                "variables": ""
+              }
+            },
+            "url": {
+              "raw": "{{ baseurl }}/graphql",
+              "host": [
+                "{{ baseurl }}"
+              ],
+              "path": [
+                "graphql"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Mutation application/json replaceUsers",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": []
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": true,
+            "disableUrlEncoding": false,
+            "disableCookies": false
+          },
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "mutation {\n  replaceUsers(input: {\n    id: 2\n    users: {\n      name: Newton\n      age: 45\n      location: SF\n      work: {\n        name: ACME\n        location: SF\n        rating: 4.5\n      }\n    }\n  }) {\n    users {\n      id\n      name\n      age\n      location\n      work {\n        name\n        location\n        rating\n      }\n    }\n  }\n}",
+                "variables": ""
+              }
+            },
+            "url": {
+              "raw": "{{ baseurl }}/graphql",
+              "host": [
+                "{{ baseurl }}"
+              ],
+              "path": [
+                "graphql"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Mutation application/json deleteUsers",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": []
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "followRedirects": true,
+            "disableUrlEncoding": false,
+            "disableCookies": false
+          },
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "mutation {\n  deleteUsers(input: {\n    id: 2\n  })\n}",
+                "variables": ""
+              }
+            },
+            "url": {
+              "raw": "{{ baseurl }}/graphql",
+              "host": [
+                "{{ baseurl }}"
+              ],
+              "path": [
+                "graphql"
+              ]
+            }
+          },
+          "response": []
+        },
       ]
     },
     {
