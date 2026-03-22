@@ -5,7 +5,7 @@ Fake JSON Server
 
 | Build server | Platform       | Build status |
 |--------------|----------------|-------------|
-| Travis       | Linux / macOS  |[![Build Status](https://app.travis-ci.com/ttu/dotnet-fake-json-server.svg?branch=master)](https://app.travis-ci.com/ttu/dotnet-fake-json-server)| 
+| GitHub Actions | Linux / macOS | [![CI](https://github.com/ttu/dotnet-fake-json-server/actions/workflows/ci.yml/badge.svg)](https://github.com/ttu/dotnet-fake-json-server/actions/workflows/ci.yml) |
 | CircleCI     | Windows        |[![CircleCI](https://dl.circleci.com/status-badge/img/gh/ttu/dotnet-fake-json-server/tree/master.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/ttu/dotnet-fake-json-server/tree/master)|
 
 Fake JSON Server is a Fake REST API that can be used as a Back End for prototyping or as a template for a CRUD Back End. Fake JSON Server also has an experimental GraphQL query and mutation support.
