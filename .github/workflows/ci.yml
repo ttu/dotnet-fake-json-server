@@ -5,6 +5,8 @@ on:
     branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
+  schedule:
+    - cron: '0 0 * * 0'  # Runs at 00:00 UTC every Sunday
 
 permissions:
   contents: read
