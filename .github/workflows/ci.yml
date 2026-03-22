@@ -33,7 +33,6 @@ jobs:
             **/*.csproj
             **/*.props
             **/*.targets
-            global.json
 
       - name: Restore
         run: dotnet restore FakeServer.sln
