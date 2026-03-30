@@ -1,9 +1,0 @@
-language: csharp
-os: linux
-dist: focal
-mono: none
-dotnet: 8.0.14 
-solution: FakeServer.sln
-script:
-  - dotnet restore
-  - dotnet build
