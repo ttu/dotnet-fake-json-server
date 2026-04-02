@@ -1,4 +1,4 @@
-﻿using JsonFlatFileDataStore;
+using JsonFlatFileDataStore;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,16 +8,17 @@ namespace FakeServer.Controllers;
 [Route("admin")]
 public class AdminController : Controller
 {
-    private readonly IDataStore _ds;
+    private readonly IDataStore _dataStore;
 
-    public AdminController(IDataStore ds)
+    public AdminController(IDataStore dataStore)
     {
-        _ds = ds;
+        _dataStore = dataStore;
     }
 
     [HttpPost("reload")]
-    public void ReloadFromFile()
+    public IActionResult ReloadFromFile()
     {
-        _ds.Reload();
+        _dataStore.Reload();
+        return NoContent();
     }
 }
