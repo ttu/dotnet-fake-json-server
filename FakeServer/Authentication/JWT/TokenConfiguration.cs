@@ -8,7 +8,8 @@ namespace FakeServer.Authentication.Jwt;
 public static class TokenConfiguration
 {
     // secretKey contains a secret passphrase only your server knows
-    private static string _secretKey = "mysupersecret_secretkey!123";
+    // HMAC-SHA256 requires a key of at least 256 bits, so the passphrase must be at least 32 characters
+    private static string _secretKey = "mysupersecret_secretkey!123456789";
 
     private static SymmetricSecurityKey _signingKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_secretKey));
 
