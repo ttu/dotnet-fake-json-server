@@ -37,7 +37,7 @@ public class ObjectHelperTests
 
         Assert.Equal("/api/humans", msg.Path.Value);
         Assert.Equal("humans", msg.Collection.Value);
-        Assert.Equal(null, msg.ItemId.Value);
+        Assert.Null(msg.ItemId.Value);
         Assert.Equal("POST", msg.Method.Value);
     }
 

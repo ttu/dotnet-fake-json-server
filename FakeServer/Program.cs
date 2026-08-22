@@ -2,6 +2,7 @@
 using System.Reflection;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.AspNetCore;
+using Microsoft.Extensions.Logging;
 using Serilog;
 
 namespace FakeServer;
@@ -70,7 +71,7 @@ public class Program
     public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
         WebHost.CreateDefaultBuilder(args)
             .UseStartup<Startup>()
-            .UseSerilog();
+            .ConfigureLogging(logging => logging.ClearProviders().AddSerilog());
 
     private static bool IsConfigValid(IConfigurationRoot config) => config["DataStore:IdField"] != null;
 
