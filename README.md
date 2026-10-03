@@ -8,18 +8,18 @@ Fake JSON Server
 | GitHub Actions | Linux / macOS | [![CI](https://github.com/ttu/dotnet-fake-json-server/actions/workflows/ci.yml/badge.svg)](https://github.com/ttu/dotnet-fake-json-server/actions/workflows/ci.yml) |
 | CircleCI     | Windows        |[![CircleCI](https://dl.circleci.com/status-badge/img/gh/ttu/dotnet-fake-json-server/tree/master.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/ttu/dotnet-fake-json-server/tree/master)|
 
-Fake JSON Server is a Fake REST API that can be used as a Back End for prototyping or as a template for a CRUD Back End. Fake JSON Server also has an experimental GraphQL query and mutation support.
+Fake JSON Server is a Fake REST API that can be used as a Back End for prototyping or as a template for a CRUD Back End. Fake JSON Server also has experimental GraphQL query and mutation support.
 
 * No need to define types for resources, uses dynamic typing
 * No need to define routes, routes are handled dynamically
 * No database, data is stored to a single JSON file
 * No setup required, just start the server and API is ready to be used with any data
 
-### Why to use this?
+### Why use this?
 
-1) API is built following the best practices and can be used as a reference when building your own API
-1) Contains all common features used with well functioning APIs (see features listed below)
-1) Can be run on Windows, Linux and macOS without any installation or prerequisites from executable or with Docker
+1) API is built following best practices and can be used as a reference when building your own API
+1) Contains all common features used with well-functioning APIs (see features listed below)
+1) Can be run on Windows, Linux and macOS without any installation or prerequisites as a standalone executable or with Docker
 
 ### Docs website
 
@@ -32,7 +32,7 @@ Fake JSON Server is a Fake REST API that can be used as a Back End for prototypi
 * Supported HTTP methods [#](#routes-functionalities-and-examples)
   * All methods for CRUD operations (_GET, PUT, POST, PATCH, DELETE_)
   * Methods for fetching resource information (_HEAD_, _OPTIONS_)
-* Async versions of update operations with long running operations and queues [#](#async-operations)
+* Async versions of update operations with long-running operations and queues [#](#async-operations)
 * REST API follows best practices from multiple guides 
   * Uses correct Status Codes, Headers, etc.
   * As all guides have slightly different recommendations, this compilation is based on our opinions
