@@ -1699,7 +1699,7 @@ ws.onmessage = async (evt) => {
 };
 ```
 
-Notifications from mutations have `path` without the `/api/` prefix (e.g. `users/2`) and a numeric `itemId`, so match on `collection` rather than `path`.
+Notifications from mutations have `path` without the `/api/` prefix (e.g. `users/2`), so match on `collection` rather than `path`. Their `itemId` has the same type as the item's id (a number for numeric ids, a string for string ids), while REST notifications always send `itemId` as a string.
 
 ## Guidelines
 
