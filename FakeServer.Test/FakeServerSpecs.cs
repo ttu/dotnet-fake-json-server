@@ -1429,6 +1429,43 @@ public class FakeServerSpecs : IDisposable
     }
 
     [Fact]
+    public async Task PostGraphQL_Mutation_SendsWebSocketNotification()
+    {
+        // GraphQL subscriptions are not supported, so clients listen to /ws for changes made with mutations
+        var webSocket = await _fixture.CreateWebSocketClient();
+
+        var patch = @"
+                mutation {
+                      updateFamilies( input: {
+                        id: 4
+                        patch: {
+                          familyName: Habboo
+                        }
+                      }) {
+                          families {
+                            id
+                          }
+                        }
+                }";
+
+        var contentMutation = new StringContent(patch, Encoding.UTF8, "application/graphql");
+        var resultMutation = await _fixture.Client.PostAsync($"graphql", contentMutation);
+
+        Assert.Equal(HttpStatusCode.OK, resultMutation.StatusCode);
+
+        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+        var buffer = new byte[1024 * 4];
+        var received = await webSocket.ReceiveAsync(buffer, cts.Token);
+        var message = JsonConvert.DeserializeObject<JObject>(Encoding.UTF8.GetString(buffer, 0, received.Count));
+
+        await webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Test finished", CancellationToken.None);
+
+        Assert.Equal("PATCH", message["method"].Value<string>());
+        Assert.Equal("families", message["collection"].Value<string>());
+        Assert.Equal(4, message["itemId"].Value<int>());
+    }
+
+    [Fact]
     public async Task PostGraphQL_Mutation_Add_Delete()
     {
         var add = @"

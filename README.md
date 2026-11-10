@@ -122,6 +122,7 @@ Fake JSON Server is a Fake REST API that can be used as a Back End for prototypi
       - [Update Item](#update-item)
       - [Replace item](#replace-item-1)
       - [Delete item](#delete-item-1)
+    + [Subscription](#subscription)
 - [Guidelines](#guidelines)
 - [Other Links](#other-links)
 - [Releases](#releases)
@@ -1674,6 +1675,31 @@ Response:
   }
 }
 ```
+
+#### Subscription
+
+Subscriptions are not supported. A `subscription` operation returns `400 Bad Request` with error `Subscription operation not supported`.
+
+To get notified of changes, connect to the [WebSocket](#websockets) endpoint `/ws`. Mutations send the same update notifications as REST requests. A notification tells what changed, so fetch the new data with a normal query.
+
+```js
+const ws = new WebSocket("ws://localhost:57602/ws");
+
+ws.onmessage = async (evt) => {
+  const { method, collection, itemId } = JSON.parse(evt.data);
+
+  if (collection !== "users") return;
+
+  const response = await fetch("http://localhost:57602/graphql", {
+    method: "POST",
+    headers: { "Content-Type": "application/graphql" },
+    body: "{ users { id name } }",
+  });
+  console.log(method, itemId, (await response.json()).data.users);
+};
+```
+
+Notifications from mutations have `path` without the `/api/` prefix (e.g. `users/2`), so match on `collection` rather than `path`. Their `itemId` has the same type as the item's id (a number for numeric ids, a string for string ids), while REST notifications always send `itemId` as a string.
 
 ## Guidelines
 
